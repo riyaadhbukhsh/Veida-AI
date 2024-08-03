@@ -1,3 +1,4 @@
+#Riyaadh B Aug 2nd 
 ## MongoDB Connection and Data Handling
 
 ### Setup and Mock Data
@@ -8,6 +9,9 @@
 
 - Created a test Python file for MongoDB named `mongo_test.py` to understand and verify the functionality.
 
+- [mongo_test.py](server/mongo_test.py)
+
+
 ### Back-End Implementation
 
 - Developed a Flask application that:
@@ -15,6 +19,9 @@
   - Pulls the `users` data from the database.
   - Converts the data to JSON format.
   - Returns the JSON data at the `@index` route.
+
+  - [server.py](server/server.py)
+  - [veidaai/app/page.js](veidaai/app/page.js)
 
 ### Front-End Integration
 
