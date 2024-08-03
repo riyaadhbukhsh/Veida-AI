@@ -1,39 +1,27 @@
-import os
-import json
-from bson import json_util
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, jsonify
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
-
-
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
-##!Mongo Information and client connect @RB
-mongo_password = "Ggbxv9Tfq4hVLLuC"
-mongo_db_access = f"mongodb+srv://rbukhsh:{mongo_password}@veidaai.6vxc6jh.mongodb.net/?retryWrites=true&w=majority&appName=VeidaAI"
-client = MongoClient(mongo_db_access)
-
-
-##!TESTING DATABASE CONNECTION @RB
-db = client.sample_mflix.users
-test_data = db.find({}, {"_id": 0})
-json_data = json_util.dumps(test_data)
-test = json.loads(json_data)
-
-##!END OF TESTING DATABASE CONNECTION @RB
-
-@app.route('/', methods =["GET"])
-def home():
-    return "Welcome to the home page"
-
+# MongoDB setup
+mongo_uri = os.getenv('MONGO_URI')
+client = MongoClient(mongo_uri)
+db = client['VeidaAI']  # Replace 'VeidaAI' with your actual database name
 
 @app.route('/api/test', methods=["GET"])
 def index():
-    #return jsonify(test)
-    return jsonify({"message": "Hello, World!", "people": ["John", "Jane", "Jim"], "test_users_db": test})
+    try:
+        # Use a specific collection, e.g., 'users'
+        collection = db.users
+        test_data = list(collection.find({}, {"_id": 0}).limit(10))
+        return jsonify({"test_users_db": test_data})
+    except Exception as e:
+        app.logger.error(f"Error accessing MongoDB: {str(e)}")
+        return jsonify({"error": "An error occurred while accessing the database."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port = 8080)
+    app.run(debug=True, port=8080)

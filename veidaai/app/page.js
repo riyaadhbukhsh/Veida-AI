@@ -1,43 +1,34 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
-
-// testing api requests cross server
 export default function Home() {
-
-  const [message, setMessage] = useState("Loading");
-  const [people, setPeople] = useState([]);
-
-  //!MongoDB Test Users @RB
-  const [test_users_db, setTestUsersDb] = useState([]);
+  const router = useRouter();
+  const [testUsersDb, setTestUsersDb] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/test")
       .then((response) => response.json())
-      .then((data) =>{ 
-      setMessage(data.message);
-      setPeople(data.people);
- 
-      setTestUsersDb(data.test_users_db);
-    });
+      .then((data) => setTestUsersDb(data.test_users_db))
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  const handleLoginRedirect = () => {
+    router.push('/login');
+  };
+
   return (
     <div>
-      {message}
-      <div>
-      {people.map((person, index) => (
-        <div key={index}>{person}</div>
-      ))}
-      </div>
-
+      <button onClick={handleLoginRedirect}>Go to Login</button>
       <div>
         <h1>MongoDB Test Users</h1>
-        {test_users_db.map((user,index) => (
-          <div key={index} style={{margin: "10px", border: "1px solid black", padding: "10px"}}> Name: {user.name} ||| Email: {user.email} </div>
+        {testUsersDb.map((user, index) => (
+          <div key={index} style={{margin: "10px", border: "1px solid black", padding: "10px"}}>
+            Name: {user.name} ||| Email: {user.email}
+          </div>
         ))}
       </div>
     </div>
-
-  
   );
 }

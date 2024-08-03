@@ -1,9 +1,18 @@
-import { SignIn } from "@clerk/nextjs";
+import { Box } from "@mui/material";
+import SignInComponent from './SignInComponent';
 
 export default function SignInPage() {
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <SignIn routing="path" path="/login" />
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <SignInComponent />
+    </Box>
   );
 }
