@@ -4,3 +4,40 @@
   padding: 0;
   margin: 0;
 }
+
+body {
+  color: #f0f0f0;
+  background-color: #1e1e1e;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.container {
+  max-width: 72rem; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.c2 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

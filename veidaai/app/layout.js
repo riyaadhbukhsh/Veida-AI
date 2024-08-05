@@ -1,7 +1,17 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import {
+  ClerkProvider,
+  ClerkLoaded,
+  ClerkLoading,
+} from '@clerk/nextjs'
+import './globals.css'
+import Navbar from '../components/navbar';
+import {dark} from "@clerk/themes"
+
 
 const inter = Inter({ subsets: ["latin"] });
+
 
 export const metadata = {
   title: "Create Next App",
@@ -10,8 +20,24 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <ClerkProvider appearance={{baseTheme: dark}}>
+      <html lang="en">
+      <body className={inter.className}>
+        <ClerkLoading>
+          <div className = "loading">Loading...</div>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <div className="container">
+            <div className="c2">
+              <Navbar />
+              {children}
+            </div>
+          </div>
+        </ClerkLoaded>
+          
+          
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -33,3 +33,8 @@
 - Need to start thinking about infrastructure for managing users within the database.
 
 **That's all for now.**
+
+
+# Everett Aug 3rd/4th
+
+I recorded a video explaining the changes because there are a lot, check discord for the link.

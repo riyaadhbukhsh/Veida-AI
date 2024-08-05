@@ -1,0 +1,41 @@
+.Navbar {
+    background-color: #082f49; /* bg-cyan-950 */
+    border-bottom-left-radius: 0.75rem; /* rounded-b-xl */
+    border-bottom-right-radius: 0.75rem; /* rounded-b-xl */
+}
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    list-style-type: none;
+    margin: 0;
+}
+
+.left, .center, .right {
+    display: flex;
+    align-items: center;
+}
+
+.center {
+    margin-left: 6rem; /* Add left margin to move it slightly right */
+}
+
+.right {
+    gap: 1.5rem; /* Space between Sign-In and Sign-Up */
+}
+
+.links li {
+    color: white;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.userButton{
+    display: flex;
+    align-items: center;
+}
