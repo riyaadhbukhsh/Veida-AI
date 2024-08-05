@@ -2,6 +2,7 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import os
+import datetime
 
 load_dotenv()
 
@@ -112,3 +113,115 @@ def delete_notes(clerk_id, notes_name):
         return False
     return True
 
+#untested
+def get_note_names(clerk_id):
+    """
+    Get the names of all notes for a user.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+
+    Returns:
+        list: A list of note names for the user, or an empty list if the user has no notes.
+    """
+    notes_collection = db.notes
+    user_notes = notes_collection.find_one({'clerk_id': clerk_id})
+    if user_notes and 'note_data' in user_notes:
+        return list(user_notes['note_data'].keys())
+    return []
+
+def get_note_by_name(clerk_id, note_name):
+    """
+    Get a specific note for a user by its name.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        note_name (str): The name of the note to retrieve.
+
+    Returns:
+        str: The content of the note if found, None otherwise.
+    """
+    notes_collection = db.notes
+    user_notes = notes_collection.find_one({'clerk_id': clerk_id})
+    if user_notes and 'note_data' in user_notes:
+        return user_notes['note_data'].get(note_name)
+    return None
+
+
+# Assuming you have a MongoDB connection established
+client = MongoClient('your_mongodb_uri')
+db = client['VeidaAI']
+users_collection = db['users']
+
+def update_last_seen(clerk_id, class_name, deck_name, card_id):
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name, f"classes.$.decks.{deck_name}.cards.id": card_id},
+        {"$set": {f"classes.$.decks.{deck_name}.cards.$.last_seen": datetime.now()}}
+    )
+
+def make_deck(clerk_id, class_name, deck_name, cards, due_by):
+    new_deck = {
+        deck_name: {
+            "cards": [{"id": str(ObjectId()), "front": card[0], "back": card[1], "last_seen": None, "due_by": due_by} for card in cards],
+            "due_by": due_by
+        }
+    }
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name},
+        {"$set": {f"classes.$.decks.{deck_name}": new_deck[deck_name]}}
+    )
+
+def delete_deck(clerk_id, class_name, deck_name):
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name},
+        {"$unset": {f"classes.$.decks.{deck_name}": ""}}
+    )
+
+def remove_card(clerk_id, class_name, deck_name, card_id):
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name},
+        {"$pull": {f"classes.$.decks.{deck_name}.cards": {"id": card_id}}}
+    )
+
+def add_card(clerk_id, class_name, deck_name, front, back):
+    new_card = {"id": str(ObjectId()), "front": front, "back": back, "last_seen": None, "due_by": None}
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name},
+        {"$push": {f"classes.$.decks.{deck_name}.cards": new_card}}
+    )
+
+def edit_deck(clerk_id, class_name, old_deck_name, new_deck_name=None, new_due_by=None):
+    update_fields = {}
+    if new_deck_name:
+        update_fields[f"classes.$.decks.{new_deck_name}"] = f"$classes.$.decks.{old_deck_name}"
+        update_fields[f"classes.$.decks.{old_deck_name}"] = ""
+    if new_due_by:
+        update_fields[f"classes.$.decks.{old_deck_name}.due_by"] = new_due_by
+    
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": class_name},
+        {"$rename" if new_deck_name else "$set": update_fields}
+    )
+    if new_deck_name:
+        users_collection.update_one(
+            {"clerk_id": clerk_id, "classes.name": class_name},
+            {"$unset": {f"classes.$.decks.{old_deck_name}": ""}}
+        )
+
+def edit_class(clerk_id, old_class_name, new_class_name):
+    users_collection.update_one(
+        {"clerk_id": clerk_id, "classes.name": old_class_name},
+        {"$set": {"classes.$.name": new_class_name}}
+    )
+
+def get_flashcards(clerk_id, class_name=None, deck_name=None):
+    query = {"clerk_id": clerk_id}
+    if class_name:
+        query["classes.name"] = class_name
+    
+    projection = {"classes": 1, "_id": 0}
+    if class_name and deck_name:
+        projection[f"classes.decks.{deck_name}"] = 1
+    
+    result = users_collection.find_one(query, projection)
+    return result["classes"] if result else None
