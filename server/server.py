@@ -12,8 +12,7 @@ from pptx import Presentation
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
-import io
-import PyPDF2
+import fitz  # PyMuPDF
 
 
 load_dotenv()
@@ -25,6 +24,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
+
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -46,13 +46,9 @@ def extract_text():
 
     try:
         if file_type == 'pdf':
-            pdf_reader = PyPDF2.PdfReader(file)
-            for page in pdf_reader.pages:
-                extracted_text += page.extract_text() + "\n"
-            file.seek(0)
-            images = convert_from_bytes(file.read())
-            for image in images:
-                extracted_text += pytesseract.image_to_string(image) + "\n"
+            pdf_document = fitz.open(stream=file.read(), filetype="pdf")
+            for page in pdf_document:
+                extracted_text += page.get_text() + "\n"
         elif file_type in ['jpg', 'jpeg', 'png']:
             image = Image.open(file)
             extracted_text = pytesseract.image_to_string(image)
