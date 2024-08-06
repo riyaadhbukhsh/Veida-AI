@@ -7,15 +7,63 @@ from helpers.mongo import create_or_update_notes, delete_notes, get_note_names, 
 from helpers.mongo import update_last_seen, make_deck, delete_deck, remove_card, add_card, edit_deck, edit_class, get_flashcards #flashcard funcs
 from datetime import datetime
 
+from pdf2image import convert_from_bytes
+from pptx import Presentation
+from PIL import Image, UnidentifiedImageError
+import pytesseract
+from flask_cors import CORS
+import io
+import PyPDF2
+
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
+
+@app.route('/api/extract_text', methods=['POST'])
+def extract_text():
+    """
+    Extract text from uploaded files (PDF, PPTX, images).
+    
+    Returns:
+        tuple: A JSON response containing the extracted text and HTTP status code.
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    file_type = file.filename.split('.')[-1].lower()
+    extracted_text = ""
+
+    try:
+        if file_type == 'pdf':
+            pdf_reader = PyPDF2.PdfReader(file)
+            for page in pdf_reader.pages:
+                extracted_text += page.extract_text() + "\n"
+            file.seek(0)
+            images = convert_from_bytes(file.read())
+            for image in images:
+                extracted_text += pytesseract.image_to_string(image) + "\n"
+        elif file_type in ['jpg', 'jpeg', 'png']:
+            image = Image.open(file)
+            extracted_text = pytesseract.image_to_string(image)
+        else:
+            return jsonify({"error": "Unsupported file type"}), 400
+
+        return jsonify({"extracted_text": extracted_text}), 200
+    except UnidentifiedImageError:
+        return jsonify({"error": "Unsupported image type"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/webhook/clerk', methods=['POST'])
 def clerk_webhook():
