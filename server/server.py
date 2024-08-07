@@ -303,7 +303,8 @@ def route_delete_course():
     else:
         return jsonify({"error": "Course not found"}), 404
     
-    @app.route('/api/update_lastseen', methods=['POST'])
+
+@app.route('/api/update_lastseen', methods=['POST'])
 def route_update_lastseen():
     """
     Updates the last seen date of a flashcard.
