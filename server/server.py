@@ -1,19 +1,17 @@
-from flask import Flask, jsonify, request, render_template_string
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-from helpers.mongo import create_user, update_user, delete_user #user funcs
-from helpers.mongo import create_or_update_notes, delete_notes, get_note_names, get_note_by_name #notes funcs
-from helpers.mongo import update_last_seen, make_deck, delete_deck, remove_card, add_card, edit_deck, edit_class, get_flashcards #flashcard funcs
+from helpers.mongo import create_user, update_user, delete_user  # user funcs
+from helpers.mongo import create_or_update_notes, delete_notes, get_note_names, get_note_by_name  # notes funcs
+from helpers.mongo import update_last_seen, make_deck, delete_deck, remove_card, add_card, edit_deck, edit_class, get_flashcards  # flashcard funcs
 from datetime import datetime
 
-from pdf2image import convert_from_bytes
-from pptx import Presentation
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
-
+import io
 
 load_dotenv()
 
@@ -29,8 +27,8 @@ db = client['VeidaAI']
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
     """
-    Extract text from uploaded files (PDF, PPTX, images).
-    
+    Extract text from uploaded PDF and image files.
+
     Returns:
         tuple: A JSON response containing the extracted text and HTTP status code.
     """
@@ -47,8 +45,13 @@ def extract_text():
     try:
         if file_type == 'pdf':
             pdf_document = fitz.open(stream=file.read(), filetype="pdf")
-            for page in pdf_document:
+            for page_num, page in enumerate(pdf_document, start=1):
                 extracted_text += page.get_text() + "\n"
+                # Render the page to an image
+                pix = page.get_pixmap()
+                img_bytes = pix.tobytes("png")
+                image = Image.open(io.BytesIO(img_bytes))
+                extracted_text += pytesseract.image_to_string(image) + "\n"
         elif file_type in ['jpg', 'jpeg', 'png']:
             image = Image.open(file)
             extracted_text = pytesseract.image_to_string(image)
