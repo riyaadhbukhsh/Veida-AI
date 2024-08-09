@@ -32,7 +32,39 @@ def create_user(user_data):
         'created_at': user_data['created_at']
     })
 
+def update_user(user_data):
+    """
+    Update an existing user's information in the database.
 
+    Args:
+        user_data (dict): A dictionary containing updated user information from Clerk.
+
+    Returns:
+        None
+    """
+    users_collection = db.users
+    users_collection.update_one(
+        {'clerk_id': user_data['id']},
+        {'$set': {
+            'email': user_data['email_addresses'][0]['email_address'],
+            'username': user_data.get('username'),
+            'first_name': user_data.get('first_name'),
+            'last_name': user_data.get('last_name'),
+        }}
+    )
+
+def delete_user(user_data):
+    """
+    Delete a user from the database.
+
+    Args:
+        user_data (dict): A dictionary containing user information from Clerk.
+
+    Returns:
+        None
+    """
+    users_collection = db.users
+    users_collection.delete_one({'clerk_id': user_data['id']})
 
 def make_course(clerk_id, course_name, notes):
     """
@@ -216,7 +248,7 @@ def delete_course(clerk_id, course_name):
         {"clerk_id": clerk_id},
         {"$pull": {"courses": {"course_name": course_name}}}
     )
-    return result.deleted_count > 0
+    return result.modified_count > 0
 
 def update_lastseen(clerk_id, course_name, card_id):
     """
@@ -282,3 +314,28 @@ def edit_note(clerk_id, course_name, notes_name, new_content):
         {"$set": {f"courses.$.notes.{notes_name}": new_content}}
     )
     return result.modified_count > 0
+
+def make_deck(clerk_id, course_name, deck_name, cards):
+    """
+    Create a new deck for a user.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        course_name (str): The name of the course.
+        deck_name (str): The name of the deck.
+        cards (list): A list of flashcards for the deck.
+
+    Returns:
+        None
+    """
+    new_deck = {
+        "deck_name": deck_name,
+        "cards": cards,
+        "created_at": datetime.datetime.now(),
+        "updated_at": datetime.datetime.now()
+    }
+    courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"$addToSet": {"courses.$.decks": new_deck}},
+        upsert=True
+    )

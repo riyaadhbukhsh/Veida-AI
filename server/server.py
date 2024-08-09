@@ -1,9 +1,12 @@
-from flask import Flask, jsonify, request, render_template_string
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import requests
 from helpers.mongo import (
     create_user,
+    delete_user,
+    update_user,
     make_course,
     create_or_update_notes,
     delete_notes,
@@ -16,16 +19,15 @@ from helpers.mongo import (
     delete_course,
     edit_flashcard,
     edit_note,
-    update_lastseen
-    
+    update_lastseen,
+    make_deck
 )
-from pdf2image import convert_from_bytes
-from pptx import Presentation
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
-
+import io
+import openai
 
 load_dotenv()
 
@@ -36,6 +38,10 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
+
+# Groq API setup
+openai_api_key = os.getenv('OPENAI_API_KEY')
+openai_client = openai.OpenAI(api_key=openai_api_key)
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -62,13 +68,28 @@ def extract_text():
             pdf_document = fitz.open(stream=file.read(), filetype="pdf")
             for page in pdf_document:
                 extracted_text += page.get_text() + "\n"
+                # Extract text from images in the PDF
+                images = page.get_images(full=True)
+                for img in images:
+                    xref = img[0]
+                    base_image = pdf_document.extract_image(xref)
+                    image_bytes = base_image["image"]
+                    image = Image.open(io.BytesIO(image_bytes))
+                    extracted_text += pytesseract.image_to_string(image) + "\n"
         elif file_type in ['jpg', 'jpeg', 'png']:
             image = Image.open(file)
             extracted_text = pytesseract.image_to_string(image)
         else:
             return jsonify({"error": "Unsupported file type"}), 400
+        
+        # Call the functions with extracted_text
+        notes = generate_notes(extracted_text)
+        flashcards = generate_flashcards(notes)
 
-        return jsonify({"extracted_text": extracted_text}), 200
+        print(notes)
+        print(flashcards)
+
+        return jsonify({"extracted_text": extracted_text, "summary_notes": notes, "flashcards": flashcards}), 200
     except UnidentifiedImageError:
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
@@ -369,7 +390,104 @@ def route_edit_note():
 
     success = edit_note(clerk_id, course_name, notes_name, new_content)
     return jsonify({"success": success}), 200 if success else 404
+
+def generate_notes(extracted_text):
+    """
+    Generate notes using OpenAI API.
+
+    This function generates notes from the provided text.
     
+    Args:
+        extracted_text (str): The text extracted from the file.
+
+    Returns:
+        str: Generated notes.
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "As the perfect consistent educator, your task is to transform the provided text into well-structured, detailed lecture notes without leaving out any subject matter."
+                        "Omit all: course related information, administrative details, agendas, announcements, homework and other school related content."
+                        "Ensure that every single new and relevant information, definition, term, concept, and formula related to the course are included."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": extracted_text
+                }
+            ]
+        )
+        notes = response.choices[0].message.content
+
+        # Store the generated notes in MongoDB
+        # create_or_update_notes(clerk_id, course_name, notes, notes_name)
+
+        return notes
+    except Exception as e:
+        print(f"Error: {e}")
+        return 'Error generating notes.'
+
+def generate_flashcards(notes):
+    """
+    Generate flashcards using OpenAI API.
+
+    This function generates flashcards from the provided text.
     
+    Args:
+        notes (str): The summarized notes extracted from the lecture.
+
+    Returns:
+        list: Generated flashcards.
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
+                        "Ensure that each question can be answered using **only** the information contained within the provided text."
+                        "Avoid generating questions that require any outside knowledge or inference."
+                        "Keep questions and answers clear, concise, and directly related to the provided material."
+                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
+                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
+                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
+                        "Example: Flashcard 1:"
+                        "Front: What is Dollar-Cost Averaging (DCA)? "
+                        "Back: Investing a fixed amount on a regular schedule"
+                        "..."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": notes
+                }
+            ]
+        )
+        flashcards_text = response.choices[0].message.content
+
+        # Parse the flashcards from the response
+        flashcards = []
+        for flashcard in flashcards_text.split("Flashcard")[1:]:
+            parts = flashcard.split("Front:")[1].split("Back:")
+            front = parts[0].strip()
+            back = parts[1].strip()
+            flashcards.append({"front": front, "back": back})
+        
+        return flashcards
+
+        # Store each flashcard in the database
+        # for card in flashcards:
+            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
