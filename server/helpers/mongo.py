@@ -315,27 +315,66 @@ def edit_note(clerk_id, course_name, notes_name, new_content):
     )
     return result.modified_count > 0
 
-def make_deck(clerk_id, course_name, deck_name, cards):
+
+def create_or_update_next_study_date(clerk_id, course_name, card_id, next_study_date):
     """
-    Create a new deck for a user.
+    Create or update the next study date for a specific flashcard.
 
     Args:
         clerk_id (str): The Clerk ID of the user.
         course_name (str): The name of the course.
-        deck_name (str): The name of the deck.
-        cards (list): A list of flashcards for the deck.
+        card_id (str): The ID of the flashcard.
+        next_study_date (datetime): The next study date to be set.
 
     Returns:
         None
     """
-    new_deck = {
-        "deck_name": deck_name,
-        "cards": cards,
-        "created_at": datetime.datetime.now(),
-        "updated_at": datetime.datetime.now()
-    }
-    courses_collection.update_one(
-        {"clerk_id": clerk_id, "courses.course_name": course_name},
-        {"$addToSet": {"courses.$.decks": new_deck}},
-        upsert=True
+    result = courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name, "courses.flashcards.id": card_id},
+        {"$set": {"courses.$[course].flashcards.$[card].next_study_date": next_study_date}},
+        array_filters=[{"course.course_name": course_name}, {"card.id": card_id}]
     )
+    return result.modified_count > 0
+
+def get_next_study_date(clerk_id, course_name, card_id):
+    """
+    Retrieve the next study date for a specific flashcard.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+
+    Returns:
+        datetime or None: The next study date if found, None otherwise.
+    """
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            if course['course_name'] == course_name:
+                for card in course['flashcards']:
+                    if card['id'] == card_id:
+                        return card.get('next_study_date')
+    return None
+
+def get_flashcards_with_today_study_date(clerk_id):
+    """
+    Retrieve all flashcards with a next study date of today.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+
+    Returns:
+        list: A list of flashcards with today's next study date.
+    """
+    today = datetime.datetime.now().date()
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    flashcards_today = []
+
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            for card in course['flashcards']:
+                if card.get('next_study_date') and card['next_study_date'].date() == today:
+                    flashcards_today.append(card)
+
+    return flashcards_today

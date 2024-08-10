@@ -20,7 +20,9 @@ from helpers.mongo import (
     edit_flashcard,
     edit_note,
     update_lastseen,
-    make_deck
+    get_next_study_date,
+    get_flashcards_with_today_study_date,
+    create_or_update_next_study_date
 )
 from PIL import Image, UnidentifiedImageError
 import pytesseract
@@ -390,6 +392,68 @@ def route_edit_note():
 
     success = edit_note(clerk_id, course_name, notes_name, new_content)
     return jsonify({"success": success}), 200 if success else 404
+
+@app.route('/api/create_or_update_next_study_date', methods=['POST'])
+def route_create_or_update_next_study_date():
+    """
+    Creates or updates the next study date for a specific flashcard.
+
+    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, card_id, and next_study_date.
+
+    Returns:
+        tuple: A JSON response indicating success and HTTP status code 200.
+    """
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    card_id = data.get('card_id')
+    next_study_date = data.get('next_study_date')
+
+    if not all([clerk_id, course_name, card_id, next_study_date]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    create_or_update_next_study_date(clerk_id, course_name, card_id, next_study_date)
+    return jsonify({"message": "Next study date updated successfully"}), 200
+
+@app.route('/api/get_next_study_date', methods=['GET'])
+def route_get_next_study_date():
+    """
+    Retrieves the next study date for a specific flashcard.
+
+    This endpoint accepts a GET request with query parameters clerk_id, course_name, and card_id.
+
+    Returns:
+        tuple: A JSON response containing the next study date and HTTP status code 200.
+    """
+    clerk_id = request.args.get('clerk_id')
+    course_name = request.args.get('course_name')
+    card_id = request.args.get('card_id')
+
+    if not all([clerk_id, course_name, card_id]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    next_study_date = get_next_study_date(clerk_id, course_name, card_id)
+    return jsonify({"next_study_date": next_study_date}), 200
+
+@app.route('/api/get_flashcards_today', methods=['GET'])
+def route_get_flashcards_today():
+    """
+    Retrieves all flashcards with a next study date of today.
+
+    This endpoint accepts a GET request with query parameter clerk_id.
+
+    Returns:
+        tuple: A JSON response containing the list of flashcards and HTTP status code 200.
+    """
+    clerk_id = request.args.get('clerk_id')
+
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    flashcards_today = get_flashcards_with_today_study_date(clerk_id)
+    return jsonify({"flashcards": flashcards_today}), 200
+
+
 
 def generate_notes(extracted_text):
     """
