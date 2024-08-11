@@ -66,7 +66,7 @@ def delete_user(user_data):
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
 
-def make_course(clerk_id, course_name, notes):
+def make_course(clerk_id, course_name, notes, due_by):
     """
     Create a new course for a user.
 
@@ -74,6 +74,7 @@ def make_course(clerk_id, course_name, notes):
         clerk_id (str): The Clerk ID of the user.
         course_name (str): The name of the course.
         notes (dict): A dictionary of notes for the course.
+        due_by (datetime): The due date for the course.
 
     Returns:
         None
@@ -83,14 +84,15 @@ def make_course(clerk_id, course_name, notes):
         "notes": notes,
         "flashcards": [],
         "created_at": datetime.datetime.now(),
-        "updated_at": datetime.datetime.now()
+        "updated_at": datetime.datetime.now(),
+        "due_by": due_by  # Add due_by field
     }
     courses_collection.update_one(
         {"clerk_id": clerk_id},
         {"$addToSet": {"courses": new_course}},
         upsert=True
     )
-
+    
 def create_or_update_notes(clerk_id, course_name, notes, notes_name):
     """
     Create or update notes for a specific course.
@@ -378,3 +380,43 @@ def get_flashcards_with_today_study_date(clerk_id):
                     flashcards_today.append(card)
 
     return flashcards_today
+
+def update_times_seen(clerk_id, course_name, card_id):
+    """
+    Increments the times_seen field for a specific flashcard.
+
+    Args:
+        clerk_id (str): The ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+
+    Returns:
+        None
+    """
+    courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name, "courses.flashcards.id": card_id},
+        {"$inc": {"courses.$[course].flashcards.$[card].times_seen": 1}},
+        array_filters=[{"course.course_name": course_name}, {"card.id": card_id}]
+    )
+
+
+def get_times_seen(clerk_id, course_name, card_id):
+    """
+    Retrieves the times_seen field for a specific flashcard.
+
+    Args:
+        clerk_id (str): The ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+
+    Returns:
+        int: The number of times the flashcard has been seen.
+    """
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            if course['course_name'] == course_name:
+                for card in course['flashcards']:
+                    if card['id'] == card_id:
+                        return card.get('times_seen', 0)  # Return 0 if not found
+    return 0

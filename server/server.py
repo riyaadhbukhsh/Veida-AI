@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-import requests
 from helpers.mongo import (
     create_user,
     delete_user,
@@ -22,14 +21,21 @@ from helpers.mongo import (
     update_lastseen,
     get_next_study_date,
     get_flashcards_with_today_study_date,
-    create_or_update_next_study_date
+    create_or_update_next_study_date,
+    get_times_seen,
+    update_times_seen
+)
+from helpers.ai import (
+    generate_flashcards,
+    generate_notes
 )
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
 import io
-import openai
+import datetime
+
 
 load_dotenv()
 
@@ -40,10 +46,6 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
-
-# Groq API setup
-openai_api_key = os.getenv('OPENAI_API_KEY')
-openai_client = openai.OpenAI(api_key=openai_api_key)
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -120,25 +122,27 @@ def clerk_webhook():
 
     return jsonify({"success": True}), 200
 
-@app.route('/api/create_course', methods=['POST'])
-def route_create_course():
+
+@app.route('/api/make_course', methods=['POST'])
+def route_make_course():
     """
     Creates a new course for a user.
 
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
+    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and due_by date.
 
     Returns:
-        tuple: A JSON response indicating success and HTTP status code 201.
+        tuple: A JSON response indicating success and HTTP status code.
     """
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
-    notes = data.get('notes', {})
+    notes = data.get('notes')
+    due_by = datetime.datetime.fromisoformat(data.get('due_by'))  # Parse due_by date
 
-    if not all([clerk_id, course_name]):
+    if not all([clerk_id, course_name, notes, due_by]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    make_course(clerk_id, course_name, notes)
+    make_course(clerk_id, course_name, notes, due_by)
     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
@@ -453,105 +457,28 @@ def route_get_flashcards_today():
     flashcards_today = get_flashcards_with_today_study_date(clerk_id)
     return jsonify({"flashcards": flashcards_today}), 200
 
-
-
-def generate_notes(extracted_text):
+@app.route('/api/update_times_seen', methods=['POST'])
+def route_update_times_seen():
     """
-    Generate notes using OpenAI API.
+    Updates the times_seen count for a specific flashcard.
 
-    This function generates notes from the provided text.
+    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and card_id.
     
-    Args:
-        extracted_text (str): The text extracted from the file.
-
     Returns:
-        str: Generated notes.
+        tuple: A JSON response indicating success and HTTP status code.
     """
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "As the perfect consistent educator, your task is to transform the provided text into well-structured, detailed lecture notes without leaving out any subject matter."
-                        "Omit all: course related information, administrative details, agendas, announcements, homework and other school related content."
-                        "Ensure that every single new and relevant information, definition, term, concept, and formula related to the course are included."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": extracted_text
-                }
-            ]
-        )
-        notes = response.choices[0].message.content
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    card_id = data.get('card_id')
 
-        # Store the generated notes in MongoDB
-        # create_or_update_notes(clerk_id, course_name, notes, notes_name)
+    if not all([clerk_id, course_name, card_id]):
+        return jsonify({"error": "Missing required fields"}), 400
 
-        return notes
-    except Exception as e:
-        print(f"Error: {e}")
-        return 'Error generating notes.'
+    update_times_seen(clerk_id, course_name, card_id)
+    return jsonify({"message": "Times seen updated successfully"}), 200
 
-def generate_flashcards(notes):
-    """
-    Generate flashcards using OpenAI API.
-
-    This function generates flashcards from the provided text.
-    
-    Args:
-        notes (str): The summarized notes extracted from the lecture.
-
-    Returns:
-        list: Generated flashcards.
-    """
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
-                        "Ensure that each question can be answered using **only** the information contained within the provided text."
-                        "Avoid generating questions that require any outside knowledge or inference."
-                        "Keep questions and answers clear, concise, and directly related to the provided material."
-                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
-                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
-                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
-                        "Example: Flashcard 1:"
-                        "Front: What is Dollar-Cost Averaging (DCA)? "
-                        "Back: Investing a fixed amount on a regular schedule"
-                        "..."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": notes
-                }
-            ]
-        )
-        flashcards_text = response.choices[0].message.content
-
-        # Parse the flashcards from the response
-        flashcards = []
-        for flashcard in flashcards_text.split("Flashcard")[1:]:
-            parts = flashcard.split("Front:")[1].split("Back:")
-            front = parts[0].strip()
-            back = parts[1].strip()
-            flashcards.append({"front": front, "back": back})
-        
-        return flashcards
-
-        # Store each flashcard in the database
-        # for card in flashcards:
-            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
 
 if __name__ == '__main__':
+    
     app.run(debug=True, port=8080)
