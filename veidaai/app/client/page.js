@@ -105,17 +105,19 @@ const ClientPage = () => {
           </span>
           <hr></hr>
 
-          {courses.map((course, i) => (
-            // <div key={course.course_name} className="course-item">
+          <div id="courses-list">
+            {courses.map((course, i) => (
+              // <div key={course.course_name} className="course-item">
               <div key={i} className="course-item">
-              <h3 onClick={() => setShowCreateForm(true)}>
-                {course.course_name}
-              </h3>
-              {/* <p>{course.description}</p> */}
-            </div>
-          ))}
+                <h3 onClick={() => setShowCreateForm(true)}>
+                  {course.course_name}
+                </h3>
+                {/* <p>{course.description}</p> */}
+              </div>
+            ))}
+          </div>
         </div>
-      ) : (
+        ) : (
         <div style={{textAlign: 'center'}}>
           <h3>No courses yet</h3>
           <p>Your courses will appear here</p>
