@@ -52,7 +52,7 @@ const ClientPage = () => {
     );
   }
 
-  const loadAndSetCourses = async () => {
+  const fetchAndSetCourses = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
@@ -64,7 +64,7 @@ const ClientPage = () => {
       if (response.ok) {
         const data = await response.json();
         setCourses(data.courses);
-        console.log('courses', data.courses);
+        // console.log('courses', data.courses);
       } else {
         console.error('Failed to fetch courses');
       }
@@ -78,10 +78,10 @@ const ClientPage = () => {
     setShowCreateForm(false);
   };
 
-  // load courses upon loading
+  // load courses upon mounting
   useEffect(() => {
     if(userId) {
-      loadAndSetCourses();
+      fetchAndSetCourses();
     }
   }, [userId]);
 
@@ -97,17 +97,22 @@ const ClientPage = () => {
 
       {/* display user's courses */}
       {courses.length > 0 ? (
-        <div>
-          <h2>Your Courses</h2>
+        <div id="courses-container">
+
+          <span id="courses-header">
+            <h2>Your Courses</h2>
+            <button id="add-course-btn-1" onClick={() => setShowCreateForm(true)} title="Add new course">+</button>
+          </span>
+          <hr></hr>
+
           {courses.map((course) => (
-            <div key={course.course_name}>
-              <h3>{course.course_name}</h3>
+            <div key={course.course_name} className="course-item">
+              <h3 onClick={() => setShowCreateForm(true)}>
+                {course.course_name}
+              </h3>
               {/* <p>{course.description}</p> */}
             </div>
           ))}
-          <button onClick={() => setShowCreateForm(true)} >
-            Add new course
-          </button>
         </div>
       ) : (
         <div style={{textAlign: 'center'}}>
@@ -118,7 +123,8 @@ const ClientPage = () => {
           </button>
         </div>
       )}
-
+      
+      {/* course creation form */}
       {showCreateForm && (
         <CreateCourse onCourseCreated={handleCourseCreated} />
       )}

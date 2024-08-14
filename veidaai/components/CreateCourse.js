@@ -16,7 +16,7 @@ const CreateCourse = ({ onCourseCreated }) => {
         }
 
         try {
-            console.log('pre fetch\nuserId: ', userId);
+            // console.log('pre fetch\nuserId: ', userId);
             try {
                 const response = await fetch('http://localhost:8080/api/create_course', {
                     method: 'POST',
