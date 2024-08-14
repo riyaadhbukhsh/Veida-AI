@@ -28,21 +28,22 @@ const CreateCourse = ({ onCourseCreated }) => {
                         course_name: name,
                     }),
                 });
+
                 if (response.ok) {
                     onCourseCreated({clerk_id: userId, course_name: name});
                     setName('');
                     setDescription('');
                     setError('');
                 } else {
-                    const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    const errorData = JSON.parse(errorText);
-                    setError(errorData.message || 'Failed to create course');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
                 }
+
             } catch (fetchError) {
                 console.error('Fetch error:', fetchError);
                 setError('An error occurred while communicating with the server.');
             }
+
         } catch (err) {
             console.error('Outer error:', err);
             setError('An unexpected error occurred.');

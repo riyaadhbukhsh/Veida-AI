@@ -25,3 +25,8 @@ form {
   padding-left: 0.3em;
   padding-right: 0.3em;
 }
+
+#courses-list {
+  height: max(275px, 30vh);
+  overflow-y: scroll;
+}

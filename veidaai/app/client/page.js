@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import "./client.css";
 import CreateCourse from "../../components/CreateCourse";
@@ -10,6 +9,8 @@ const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
+  const [courses, setCourses] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -108,17 +109,21 @@ const ClientPage = () => {
             <h2>Your Courses</h2>
             <button id="add-course-btn-1" onClick={() => setShowCreateForm(true)} title="Add new course">+</button>
           </span>
+          
           <hr></hr>
 
-          {courses.map((course, i) => (
-            // <div key={course.course_name} className="course-item">
-              <div key={i} className="course-item">
-              <h3 onClick={() => setShowCreateForm(true)}>
-                {course.course_name}
-              </h3>
-              {/* <p>{course.description}</p> */}
-            </div>
-          ))}
+          <div id="courses-list">
+            {courses.map((course, i) => (
+              // <div key={course.course_name} className="course-item">
+                <div key={i} className="course-item">
+                <h3 onClick={() => setShowCreateForm(true)}>
+                  {course.course_name}
+                </h3>
+                {/* <p>{course.description}</p> */}
+              </div>
+            ))}
+          </div>
+
         </div>
       ) : (
         <div style={{textAlign: 'center'}}>
