@@ -22,8 +22,9 @@ from helpers.mongo import (
     get_next_study_date,
     get_flashcards_with_today_study_date,
     create_or_update_next_study_date,
-    get_times_seen,
-    update_times_seen
+    update_times_seen,
+    check_premium_status, 
+    update_premium_status
 )
 from helpers.ai import (
     generate_flashcards,
@@ -35,7 +36,7 @@ from flask_cors import CORS
 import fitz  # PyMuPDF
 import io
 import datetime
-
+import stripe
 
 load_dotenv()
 
@@ -46,6 +47,96 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
+
+# Set your Stripe API key
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+
+@app.route('/webhook/clerk', methods=['POST'])
+def clerk_webhook():
+    event = request.json
+    event_type = event.get('type')
+    user_data = event.get('data')
+
+    if event_type == 'user.created':
+        create_user(user_data)
+        check_premium_status(user_data['id'])  # Check premium status on user creation
+    elif event_type == 'user.updated':
+        update_user(user_data)
+        check_premium_status(user_data['id'])  # Check premium status on user update
+    elif event_type == 'user.deleted':
+        delete_user(user_data)
+
+    return jsonify({"success": True}), 200
+
+
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+@app.route('/api/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    data = request.json
+    clerk_id = data.get('clerk_id')
+
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price': 'price_1PnXLSGxUp9wQ6awUitR5t0v', 
+                'quantity': 1,
+            },
+        ],
+        mode='subscription',
+        success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
+        cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
+        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
+    )
+
+    return jsonify({'url': session.url})
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+    sig_header = request.headers['STRIPE_SIGNATURE']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        raise e
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        clerk_id = payment_intent['metadata']['clerk_id']
+        update_premium_status(clerk_id, True)
+        print(f"Updated premium status for clerk_id: {clerk_id}")
+    else:
+      print('Unhandled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
+            
+
+@app.route('/api/check_premium_status', methods=['GET'])
+def route_check_premium_status():
+    clerk_id = request.args.get('clerk_id')
+
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    is_premium = check_premium_status(clerk_id)
+    return jsonify({"premium": is_premium}), 200
+
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -98,29 +189,6 @@ def extract_text():
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/webhook/clerk', methods=['POST'])
-def clerk_webhook():
-    """
-    Handles Clerk webhook events for user management.
-
-    This endpoint processes POST requests from Clerk webhook, managing user creation, updates, and deletion in the database.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 200.
-    """
-    event = request.json
-    event_type = event.get('type')
-    user_data = event.get('data')
-
-    if event_type == 'user.created':
-        create_user(user_data)
-    elif event_type == 'user.updated':
-        update_user(user_data)
-    elif event_type == 'user.deleted':
-        delete_user(user_data)
-
-    return jsonify({"success": True}), 200
 
 
 @app.route('/api/make_course', methods=['POST'])

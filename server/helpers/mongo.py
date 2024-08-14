@@ -12,15 +12,54 @@ client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
 
-def create_user(user_data):
+def update_premium_status(clerk_id, premium):
     """
-    Create a new user in the database.
+    Update the premium status for a user.
 
     Args:
-        user_data (dict): A dictionary containing user information from Clerk.
+        clerk_id (str): The Clerk ID of the user.
+        premium (bool): The new premium status.
 
     Returns:
         None
+    """
+    users_collection = db.users
+    result = users_collection.update_one(
+        {'clerk_id': clerk_id},
+        {'$set': {'premium': premium}}
+    )
+    if result.modified_count == 0:
+        print(f"No document found with clerk_id: {clerk_id}")
+    else:
+        print(f"Updated premium status for clerk_id: {clerk_id}")
+        print(f"Update result: {result.raw_result}")
+        
+        
+def check_premium_status(clerk_id):
+    """
+    Check the premium status of a user and update it if expired.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+
+    Returns:
+        bool: True if the user is premium, False otherwise.
+    """
+    users_collection = db.users
+    user = users_collection.find_one({'clerk_id': clerk_id})
+
+    if user:
+        if user['premium'] and user['premium_expiry']:
+            if user['premium_expiry'] < datetime.datetime.now():
+                # If the premium has expired, set it to False
+                update_premium_status(clerk_id, False)
+                return False
+            return True
+    return False
+
+def create_user(user_data):
+    """
+    Create a new user in the database.
     """
     users_collection = db.users
     users_collection.insert_one({
@@ -29,7 +68,10 @@ def create_user(user_data):
         'username': user_data.get('username'),
         'first_name': user_data.get('first_name'),
         'last_name': user_data.get('last_name'),
-        'created_at': user_data['created_at']
+        'created_at': user_data['created_at'],
+        'updated_at': user_data['created_at'],
+        'premium': False,  # Set premium to False by default
+        'premium_expiry': None  # Initialize premium expiry as None
     })
 
 def update_user(user_data):

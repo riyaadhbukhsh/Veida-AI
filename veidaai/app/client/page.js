@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import "./client.css";
 
@@ -8,6 +8,13 @@ const ClientPage = () => {
   const { isSignedIn, user } = useAuth();
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      return;
+    }
+    // Add any side effects or data fetching logic here if needed
+  }, [isSignedIn]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
