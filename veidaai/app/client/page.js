@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import "./client.css";
-import CreateCourse from "../../components/createCourse";
+import CreateCourse from "../../components/CreateCourse";
 
 const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
@@ -105,8 +105,9 @@ const ClientPage = () => {
           </span>
           <hr></hr>
 
-          {courses.map((course) => (
-            <div key={course.course_name} className="course-item">
+          {courses.map((course, i) => (
+            // <div key={course.course_name} className="course-item">
+              <div key={i} className="course-item">
               <h3 onClick={() => setShowCreateForm(true)}>
                 {course.course_name}
               </h3>

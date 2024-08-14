@@ -29,8 +29,7 @@ const CreateCourse = ({ onCourseCreated }) => {
                     }),
                 });
                 if (response.ok) {
-                    const newCourse = await response.json();
-                    onCourseCreated(newCourse);
+                    onCourseCreated({clerk_id: userId, course_name: name});
                     setName('');
                     setDescription('');
                     setError('');
