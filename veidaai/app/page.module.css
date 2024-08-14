@@ -228,3 +228,11 @@
     transform: rotate(0deg);
   }
 }
+
+/*******************************/
+div.main {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+}
