@@ -193,25 +193,18 @@ def extract_text():
 
 
 @app.route('/api/create_course', methods=['POST'])
-def route_create_course():
-    """
-    Creates a new course for a user.
-
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 201.
-    """
+def create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
+    description = data.get('description')
     notes = data.get('notes', {})
 
-    if not all([clerk_id, course_name]):
+    if not all([clerk_id, course_name, description]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    make_course(clerk_id, course_name, notes)
-    return jsonify({"message": "Course created successfully"}), 201
+    make_course(clerk_id, course_name, description, notes)
+    return jsonify({"message": "Course created successfully"}), 200
 
 
 #!This was the issue to making courses
@@ -382,21 +375,14 @@ def route_get_flashcards():
     return jsonify({"flashcards": flashcards}), 200
 
 @app.route('/api/get_courses', methods=['GET'])
-def route_get_courses():
-    """
-    Retrieves all courses for a user.
-
-    This endpoint accepts a GET request with query parameter clerk_id. It returns a list of courses for the specified user.
-
-    Returns:
-        tuple: A JSON response containing the list of courses and HTTP status code 200.
-    """
+def get_courses_route():
     clerk_id = request.args.get('clerk_id')
 
     if not clerk_id:
         return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
     courses = get_courses(clerk_id)
+    return jsonify({"courses": courses}), 200
     return jsonify({"courses": courses}), 200
 
 @app.route('/api/delete_course', methods=['DELETE'])
