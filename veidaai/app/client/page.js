@@ -52,26 +52,32 @@ const ClientPage = () => {
     );
   }
 
-  // updates courses state with user's courses
-  const fetchAndSetCourses = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data.courses);
-      } else {
-        console.error('Failed to fetch courses');
+    // updates courses state with user's courses
+    const fetchAndSetCourses = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data.courses);
+        } else {
+          console.error('Failed to fetch courses');
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
       }
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-    }
-  }, [userId]);
+    };
+  
+    useEffect(() => {
+      if (userId) {
+        fetchAndSetCourses();
+      }
+    }, [userId, fetchAndSetCourses]);
 
   useEffect(() => {
     if (userId) {
