@@ -93,7 +93,11 @@ def create_checkout_session():
         mode='subscription',
         success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
         cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
-        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
+        subscription_data={
+            'metadata': {
+                'clerk_id': clerk_id  # Store clerk_id in metadata
+            }
+        }
     )
 
     return jsonify({'url': session.url})
@@ -102,7 +106,9 @@ def create_checkout_session():
 def webhook():
     event = None
     payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
+    if not sig_header:
+        return jsonify({"error": "Missing Stripe signature header"}), 400
 
     try:
         event = stripe.Webhook.construct_event(
@@ -110,22 +116,22 @@ def webhook():
         )
     except ValueError as e:
         # Invalid payload
-        raise e
+        print(f"Invalid payload: {e}")
+        return jsonify({"error": "Invalid payload"}), 400
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise e
+        return jsonify({"error": "Invalid signature"}), 400
 
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        clerk_id = payment_intent['metadata']['clerk_id']
+    if event['type'] == 'invoice.payment_succeeded':
+        invoice = event['data']['object']
+        subscription_id = invoice['subscription']
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        clerk_id = subscription['metadata'].get('clerk_id')
         update_premium_status(clerk_id, True)
         print(f"Updated premium status for clerk_id: {clerk_id}")
-    else:
-      print('Unhandled event type {}'.format(event['type']))
+
 
     return jsonify(success=True)
-            
+
 
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
