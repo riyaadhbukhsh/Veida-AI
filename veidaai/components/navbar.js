@@ -1,10 +1,9 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import "./navbar.css";
 import { UserButton } from "@clerk/nextjs";
+import "./navbar.css";
 
-// ... rest of the code remains unchanged ...
 const Navbar = async () => {
     const { userId } = await auth();
     return (
@@ -15,6 +14,8 @@ const Navbar = async () => {
                 </div>
                 <div className="center">
                     <Link href="/client"><li>Client Page</li></Link>
+                    <Link href="/premium"><li>Premium</li></Link>
+
                 </div>
                 <div className="right">
                     {!userId ? (

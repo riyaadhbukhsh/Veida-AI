@@ -9,9 +9,15 @@ const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
-
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      return;
+    }
+    // Add any side effects or data fetching logic here if needed
+  }, [isSignedIn]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -103,6 +109,7 @@ const ClientPage = () => {
             <h2>Your Courses</h2>
             <button id="add-course-btn-1" onClick={() => setShowCreateForm(true)} title="Add new course">+</button>
           </span>
+          
           <hr></hr>
 
           <div id="courses-list">
