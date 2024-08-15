@@ -13,13 +13,6 @@ const ClientPage = () => {
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  useEffect(() => {
-    if (!isSignedIn) {
-      return;
-    }
-    // Add any side effects or data fetching logic here if needed
-  }, [isSignedIn]);
-
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -59,6 +52,7 @@ const ClientPage = () => {
     );
   }
 
+  // updates courses state with user's courses
   const fetchAndSetCourses = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
@@ -85,12 +79,25 @@ const ClientPage = () => {
     setShowCreateForm(false);
   };
 
+  // format course names to be url friendly
+  // replace white spaces with hyphens and encodes special characters
+  function formatCourseName(courseName) {
+    // replace white spaces with hyphens
+    let hyphenated = courseName.replace(/\s+/g, '-');
+    // encode special characters
+    let encoded = encodeURIComponent(hyphenated);
+    return encoded;
+  }
+
   // load courses upon mounting
   useEffect(() => {
+    if (!isSignedIn) {
+      return;
+    }
     if(userId) {
       fetchAndSetCourses();
     }
-  }, [userId]);
+  }, [isSignedIn, userId]);
 
   return (
     <div className="client-page">
@@ -117,8 +124,8 @@ const ClientPage = () => {
             {courses.map((course, i) => (
               // <div key={course.course_name} className="course-item">
               <div key={i} className="course-item">
-                <Link  href={`/${course.course_name}`}>
-                  <h4>{course.course_name}</h4>
+                <Link  href={`/${formatCourseName(course.course_name)}`}>
+                  <h4 className="course">{course.course_name}</h4>
                 </Link>
                 {/* <p>{course.description}</p> */}
               </div>
@@ -128,14 +135,14 @@ const ClientPage = () => {
         ) : (
         <div style={{textAlign: 'center'}}>
           <h3>No courses yet</h3>
-          <p>Your courses will appear here</p>
+          {/* <p>Your courses will appear here</p> */}
           <button onClick={() => setShowCreateForm(true)}>
             Create a new course
           </button>
         </div>
       )}
       
-      {/* course creation form */}
+      {/* create course form */}
       {showCreateForm && (
         <CreateCourse onCourseCreated={handleCourseCreated} />
       )}

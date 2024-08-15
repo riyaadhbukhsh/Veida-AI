@@ -30,3 +30,11 @@ form {
   height: max(275px, 30vh);
   overflow-y: scroll;
 }
+
+h4.course {
+  margin-top: 0.5rem;
+}
+
+h4.course:hover {
+  color: #bbbbbb;
+}
