@@ -16,6 +16,7 @@
 .left, .center, .right {
     display: flex;
     align-items: center;
+    gap: 2rem;
 }
 
 .center {

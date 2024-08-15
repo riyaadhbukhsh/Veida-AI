@@ -8,10 +8,17 @@ const CreateCourse = ({ onCourseCreated }) => {
     const [description, setDescription] = useState('');
     const [error, setError] = useState('');
 
+    // forbid certain characters in course name
+    // because course name will be used in course-details url
+    const validateCourseName = (name) => {
+        const invalidChars = /[.!~*'()]/;
+        return !invalidChars.test(name);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!name || !description) {
-            setError('Please fill in all fields.');
+        if (!name || !validateCourseName(name)) {
+            setError('Please enter a valid course name without special characters: [.!~*\'()]');
             return;
         }
 
