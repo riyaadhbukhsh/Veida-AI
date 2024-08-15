@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import "./client.css";
 import CreateCourse from "../../components/CreateCourse";
@@ -10,13 +9,8 @@ const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!isSignedIn) {
-      return;
-    }
-    // Add any side effects or data fetching logic here if needed
-  }, [isSignedIn]);
+  const [courses, setCourses] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -49,15 +43,7 @@ const ClientPage = () => {
     }
   };
 
-  if (!isSignedIn) {
-    return (
-      <div className="client-page">
-        <h1>Please sign in to access this page</h1>
-      </div>
-    );
-  }
-
-  const fetchAndSetCourses = async () => {
+  const fetchAndSetCourses = useCallback(async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
@@ -65,30 +51,36 @@ const ClientPage = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setCourses(data.courses);
-        // console.log('courses', data.courses);
       } else {
         console.error('Failed to fetch courses');
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
-  }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchAndSetCourses();
+    }
+  }, [userId, fetchAndSetCourses]);
 
   const handleCourseCreated = (newCourse) => {
     setCourses([...courses, newCourse]);
     setShowCreateForm(false);
   };
 
-  // load courses upon mounting
-  useEffect(() => {
-    if(userId) {
-      fetchAndSetCourses();
-    }
-  }, [userId]);
+  if (!isSignedIn) {
+    return (
+      <div className="client-page">
+        <h1>Please sign in to access this page</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="client-page">
@@ -103,25 +95,21 @@ const ClientPage = () => {
       {/* display user's courses */}
       {courses.length > 0 ? (
         <div id="courses-container">
-
           <span id="courses-header">
             <h2>Your Courses</h2>
             <button id="add-course-btn-1" onClick={() => setShowCreateForm(true)} title="Add new course">+</button>
           </span>
           <hr></hr>
-
           {courses.map((course, i) => (
-            // <div key={course.course_name} className="course-item">
-              <div key={i} className="course-item">
+            <div key={i} className="course-item">
               <h3 onClick={() => setShowCreateForm(true)}>
                 {course.course_name}
               </h3>
-              {/* <p>{course.description}</p> */}
             </div>
           ))}
         </div>
       ) : (
-        <div style={{textAlign: 'center'}}>
+        <div style={{ textAlign: 'center' }}>
           <h3>No courses yet</h3>
           <p>Your courses will appear here</p>
           <button onClick={() => setShowCreateForm(true)}>
@@ -129,13 +117,13 @@ const ClientPage = () => {
           </button>
         </div>
       )}
-      
+
       {/* course creation form */}
       {showCreateForm && (
         <CreateCourse onCourseCreated={handleCourseCreated} />
       )}
     </div>
-  )
+  );
 };
 
 export default ClientPage;
