@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-import "./client.css";
 import CreateCourse from "../../components/CreateCourse";
+import "./client.css";
 
 const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
@@ -116,9 +117,9 @@ const ClientPage = () => {
             {courses.map((course, i) => (
               // <div key={course.course_name} className="course-item">
               <div key={i} className="course-item">
-                <h3 onClick={() => setShowCreateForm(true)}>
-                  {course.course_name}
-                </h3>
+                <Link  href={`/${course.course_name}`}>
+                  <h4>{course.course_name}</h4>
+                </Link>
                 {/* <p>{course.description}</p> */}
               </div>
             ))}

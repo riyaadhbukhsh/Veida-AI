@@ -1,21 +1,22 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import styles from './course.css';
+import { useParams, useSearchParams } from 'next/navigation';
+import "./course.css";
 
-export default function Home({ courseObj }) {
-  const router = useRouter();
-  const { courseName } = router.query;
+export default function CourseDetails() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  
+  const courseDetails = params['course-details'];
+  
+  // If you need to access additional query parameters:
+  // const additionalParam = searchParams.get('someParam');
 
-  if (router.isFallBack) {
-    return <div>Loading...</div>
-  }
 
   return (
-    <div className={styles.main}>
-        <h2>courseObj.course_name: {courseObj.course_name}</h2>
-        <h2>courseName: {courseName}</h2>
-        <p>This will be a dynamic page for course content</p>
+    <div id="course-page">
+      <h2>Course: {courseDetails}</h2>
+      <p>This is the dynamic page for course content</p>
     </div>
   );
 }
