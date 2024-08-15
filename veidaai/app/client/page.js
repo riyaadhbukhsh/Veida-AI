@@ -12,6 +12,13 @@ const ClientPage = () => {
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
+  useEffect(() => {
+    if (!isSignedIn) {
+      return;
+    }
+    // Add any side effects or data fetching logic here if needed
+  }, [isSignedIn]);
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -99,14 +106,21 @@ const ClientPage = () => {
             <h2>Your Courses</h2>
             <button id="add-course-btn-1" onClick={() => setShowCreateForm(true)} title="Add new course">+</button>
           </span>
+          
           <hr></hr>
-          {courses.map((course, i) => (
-            <div key={i} className="course-item">
-              <h3 onClick={() => setShowCreateForm(true)}>
-                {course.course_name}
-              </h3>
-            </div>
-          ))}
+
+          <div id="courses-list">
+            {courses.map((course, i) => (
+              // <div key={course.course_name} className="course-item">
+                <div key={i} className="course-item">
+                <h3 onClick={() => setShowCreateForm(true)}>
+                  {course.course_name}
+                </h3>
+                {/* <p>{course.description}</p> */}
+              </div>
+            ))}
+          </div>
+
         </div>
       ) : (
         <div style={{ textAlign: 'center' }}>

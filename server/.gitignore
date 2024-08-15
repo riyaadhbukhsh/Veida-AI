@@ -1,2 +1,12 @@
 venv
 .env
+
+
+
+__pycache__/
+*.pyc
+
+
+#Riyaadh's files
+ai.py
+test.py
