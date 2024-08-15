@@ -191,27 +191,51 @@ def extract_text():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/api/make_course', methods=['POST'])
-def route_make_course():
+
+@app.route('/api/create_course', methods=['POST'])
+def route_create_course():
     """
     Creates a new course for a user.
 
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and due_by date.
+    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
 
     Returns:
-        tuple: A JSON response indicating success and HTTP status code.
+        tuple: A JSON response indicating success and HTTP status code 201.
     """
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
-    notes = data.get('notes')
-    due_by = datetime.datetime.fromisoformat(data.get('due_by'))  # Parse due_by date
+    notes = data.get('notes', {})
 
-    if not all([clerk_id, course_name, notes, due_by]):
+    if not all([clerk_id, course_name]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    make_course(clerk_id, course_name, notes, due_by)
+    make_course(clerk_id, course_name, notes)
     return jsonify({"message": "Course created successfully"}), 201
+
+
+#!This was the issue to making courses
+# @app.route('/api/make_course', methods=['POST'])
+# def route_make_course():
+#     """
+#     Creates a new course for a user.
+
+#     This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and due_by date.
+
+#     Returns:
+#         tuple: A JSON response indicating success and HTTP status code.
+#     """
+#     data = request.json
+#     clerk_id = data.get('clerk_id')
+#     course_name = data.get('course_name')
+#     notes = data.get('notes')
+#     due_by = datetime.datetime.fromisoformat(data.get('due_by'))  # Parse due_by date
+
+#     if not all([clerk_id, course_name, notes, due_by]):
+#         return jsonify({"error": "Missing required fields"}), 400
+
+#     make_course(clerk_id, course_name, notes, due_by)
+#     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
 def route_create_or_update_notes():
