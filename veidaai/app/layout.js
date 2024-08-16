@@ -19,6 +19,9 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
       <html lang="en">
+        <head>
+          <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
+        </head>
         <body className={inter.className}>
           <ClerkLoading>
             <div className="loading">Loading...</div>

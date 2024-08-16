@@ -1,9 +1,17 @@
 "use client"; // This is a client component
 
-import React from "react";
+import React, { useState } from "react";
+import "./premium.css";
 
 const CancelButton = ({ clerkId }) => {
-  const handleCancelSubscription = async () => {
+  const [confirmation, setConfirmation] = useState("");
+
+  const handleCancel = async () => {
+    if (confirmation !== "cancel my subscription") {
+      alert("Please type the confirmation text correctly.");
+      return;
+    }
+
     const response = await fetch('http://localhost:8080/api/cancel-subscription', {
       method: 'POST',
       headers: {
@@ -13,16 +21,23 @@ const CancelButton = ({ clerkId }) => {
     });
 
     if (response.ok) {
-      // Subscription canceled successfully, redirect to a confirmation page
       window.location.href = '/';
     } else {
-      // Handle error case
-      console.error('Failed to cancel subscription');
+      alert("Failed to cancel subscription.");
     }
   };
 
   return (
-    <button onClick={handleCancelSubscription}>Cancel Subscription</button>
+    <div className="cancel-container">
+      <p>Type &quot;cancel my subscription&quot; to confirm:</p>
+      <input
+        type="text"
+        value={confirmation}
+        onChange={(e) => setConfirmation(e.target.value)}
+        className="confirmation-input"
+      />
+      <button onClick={handleCancel} className="cancel-button">Cancel Subscription</button>
+    </div>
   );
 };
 

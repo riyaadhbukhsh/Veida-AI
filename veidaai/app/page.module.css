@@ -30,3 +30,11 @@ button#home-cta {
 button#home-cta:hover {
   background-color: #6d9dc5; /* Lighter blue on hover */
 }
+
+.title {
+  font-family: 'Poppins', sans-serif;
+}
+
+button#home-cta {
+  font-family: 'Poppins', sans-serif;
+}

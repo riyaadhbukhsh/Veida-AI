@@ -1,6 +1,7 @@
 "use client"; // This is a client component
 
 import React from "react";
+import "./premium.css";
 
 const CheckoutButton = ({ clerkId }) => {
   const handleCheckout = async () => {
@@ -19,7 +20,7 @@ const CheckoutButton = ({ clerkId }) => {
   };
 
   return (
-    <button onClick={handleCheckout}>Subscribe Now</button>
+    <button onClick={handleCheckout} className="subscribe-button">Subscribe Now</button>
   );
 };
 

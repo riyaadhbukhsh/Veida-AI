@@ -32,7 +32,7 @@ const FlashcardPage = ({ courseName }) => {
     if (userId) {
       fetchFlashcards();
     }
-  }, [userId]);
+  }, [userId, fetchFlashcards]);
 
   return (
     <div>
