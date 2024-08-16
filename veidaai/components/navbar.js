@@ -25,6 +25,7 @@ const Navbar = async () => {
                         </>
                     ) : (
                         <>
+                            <Link href="/profile"><li>Profile</li></Link>
                             <li className="userButton">
                                 <UserButton />
                             </li>
