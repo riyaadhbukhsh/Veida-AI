@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import CreateCourse from "../../components/CreateCourse";
+import CourseList from "../../components/CourseList";
+import Link from "next/link";
 import "./client.css";
 
 const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
-  const [file, setFile] = useState(null);
-  const [error, setError] = useState('');
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
 

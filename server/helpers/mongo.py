@@ -128,7 +128,7 @@ def delete_user(user_data):
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
 
-def make_course(clerk_id, course_name, description, notes):
+def make_course(clerk_id, course_name, description, exam_date, notes, flashcards):
     """
     Create a new course for a user.
 
@@ -137,6 +137,9 @@ def make_course(clerk_id, course_name, description, notes):
         course_name (str): The name of the course.
         description (str): The description of the course.
         notes (dict): A dictionary of notes for the course.
+        description (str): The description of the course.
+        exam_date (datetime): The due date for the course.
+        flashcards (list): A list of flashcards for the course.
 
     Returns:
         None
@@ -145,7 +148,9 @@ def make_course(clerk_id, course_name, description, notes):
         "course_name": course_name,
         "description": description,
         "notes": notes,
-        "flashcards": [],
+        "description": description,
+        "exam_date": exam_date,
+        "flashcards": flashcards,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now()
     }
