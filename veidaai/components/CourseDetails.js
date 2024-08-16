@@ -4,7 +4,7 @@ import Link from "next/link";
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {
-  const [courseObj, setCourseObj] = useState({});
+  //const [courseObj, setCourseObj] = useState({});
   const { userId } = useAuth();
 
   const fetchCourseObj = async () => {
