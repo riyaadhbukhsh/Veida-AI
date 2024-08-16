@@ -1,10 +1,11 @@
 "use client"; // This is a client component
 
 import React from "react";
+import "./premium.css";
 
 const CheckoutButton = ({ clerkId }) => {
   const handleCheckout = async () => {
-    const response = await fetch('http://localhost:8080/api/create-checkout-session', {
+    const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +20,7 @@ const CheckoutButton = ({ clerkId }) => {
   };
 
   return (
-    <button onClick={handleCheckout}>Subscribe Now</button>
+    <button onClick={handleCheckout} className="subscribe-button">Subscribe Now</button>
   );
 };
 

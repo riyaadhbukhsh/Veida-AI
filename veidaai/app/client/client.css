@@ -38,3 +38,11 @@ h4.course {
 h4.course:hover {
   color: #bbbbbb;
 }
+
+.client-page {
+  font-family: 'Poppins', sans-serif;
+}
+
+h4.course {
+  font-family: 'Poppins', sans-serif;
+}
