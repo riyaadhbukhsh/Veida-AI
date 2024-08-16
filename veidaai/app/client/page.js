@@ -4,15 +4,11 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import CourseList from "../../components/CourseList";
 import Link from "next/link";
-import CourseList from "../../components/CourseList";
-import Link from "next/link";
 import "./client.css";
 
 const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [courses, setCourses] = useState([]);
-
-  const fetchCourses = async () => {
 
   const fetchCourses = async () => {
     try {
@@ -34,14 +30,6 @@ const ClientPage = () => {
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchAndSetCourses();
-    if (isSignedIn && userId) {
-      fetchCourses();
-    }
-  }, [userId, fetchAndSetCourses]);
-
-  useEffect(() => {
     if (isSignedIn && userId) {
       fetchCourses();
     }
@@ -54,12 +42,7 @@ const ClientPage = () => {
         <button>+ New Course</button>
       </Link>
       <CourseList courses={courses} />
-      <Link href="/create-course">
-        <button>+ New Course</button>
-      </Link>
-      <CourseList courses={courses} />
     </div>
-  );
   );
 };
 
