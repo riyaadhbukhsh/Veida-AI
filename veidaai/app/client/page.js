@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import CourseList from "../../components/CourseList";
 import Link from "next/link";
@@ -10,6 +10,8 @@ const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
