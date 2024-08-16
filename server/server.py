@@ -24,7 +24,8 @@ from helpers.mongo import (
     create_or_update_next_study_date,
     update_times_seen,
     check_premium_status, 
-    update_premium_status
+    update_premium_status,
+    update_subscription_id
 )
 from helpers.ai import (
     generate_flashcards,
@@ -93,16 +94,54 @@ def create_checkout_session():
         mode='subscription',
         success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
         cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
-        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
+        subscription_data={
+            'metadata': {
+                'clerk_id': clerk_id  # Store clerk_id in metadata
+            }
+        }
     )
 
     return jsonify({'url': session.url})
 
+@app.route('/api/cancel-subscription', methods=['POST'])
+def cancel_subscription():
+       data = request.json
+       clerk_id = data.get('clerk_id')
+
+       if not clerk_id:
+           print("Missing clerk_id")
+           return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+       print(f"Received clerk_id: {clerk_id}")
+
+       # Retrieve the user's subscription from the database
+       user = db.users.find_one({'clerk_id': clerk_id})
+       subscription_id = user.get('subscription_id')
+
+       if not subscription_id:
+           print("No active subscription found")
+           return jsonify({"error": "No active subscription found"}), 400
+
+       try:
+           # Cancel the subscription using the Stripe API
+           stripe.Subscription.delete(subscription_id)
+
+           # Update the user's premium status in the database
+           update_subscription_id(clerk_id, None)
+           update_premium_status(clerk_id, False)
+
+           return jsonify({"message": "Subscription canceled successfully"}), 200
+       except stripe.error.StripeError as e:
+           return jsonify({"error": str(e)}), 500
+    
+    
 @app.route('/webhook', methods=['POST'])
 def webhook():
     event = None
     payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
+    if not sig_header:
+        return jsonify({"error": "Missing Stripe signature header"}), 400
 
     try:
         event = stripe.Webhook.construct_event(
@@ -110,22 +149,26 @@ def webhook():
         )
     except ValueError as e:
         # Invalid payload
-        raise e
+        print(f"Invalid payload: {e}")
+        return jsonify({"error": "Invalid payload"}), 400
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise e
+        return jsonify({"error": "Invalid signature"}), 400
 
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        clerk_id = payment_intent['metadata']['clerk_id']
-        update_premium_status(clerk_id, True)
-        print(f"Updated premium status for clerk_id: {clerk_id}")
-    else:
-      print('Unhandled event type {}'.format(event['type']))
+    if event['type'] == 'invoice.payment_succeeded':
+        invoice = event['data']['object']
+        subscription_id = invoice['subscription']
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        clerk_id = subscription['metadata'].get('clerk_id')
+        if clerk_id:
+            update_premium_status(clerk_id, True)
+            update_subscription_id(clerk_id, subscription_id)
+            print(f"Updated premium status and subscription ID for clerk_id: {clerk_id}")
+        else:
+            print("clerk_id not found in metadata")
+        print("Invoice payment succeeded event received")
 
     return jsonify(success=True)
-            
+
 
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
@@ -190,15 +233,7 @@ def extract_text():
 
 
 @app.route('/api/create_course', methods=['POST'])
-def route_create_course():
-    """
-    Creates a new course for a user.
-
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 201.
-    """
+def create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
@@ -358,21 +393,14 @@ def route_get_flashcards():
     return jsonify({"flashcards": flashcards}), 200
 
 @app.route('/api/get_courses', methods=['GET'])
-def route_get_courses():
-    """
-    Retrieves all courses for a user.
-
-    This endpoint accepts a GET request with query parameter clerk_id. It returns a list of courses for the specified user.
-
-    Returns:
-        tuple: A JSON response containing the list of courses and HTTP status code 200.
-    """
+def get_courses_route():
     clerk_id = request.args.get('clerk_id')
 
     if not clerk_id:
         return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
     courses = get_courses(clerk_id)
+    return jsonify({"courses": courses}), 200
     return jsonify({"courses": courses}), 200
 
 @app.route('/api/delete_course', methods=['DELETE'])

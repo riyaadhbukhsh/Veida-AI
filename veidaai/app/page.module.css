@@ -1,40 +1,99 @@
+.vantaContainer {
+  position: absolute; /* Ensure it covers the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Ensure it is behind all other elements */
+  pointer-events: none; /* Prevent it from intercepting pointer events */
+}
+
+.contentContainer {
+  margin: 0 15%; /* Add 15% margin on the left and right */
+  width: 70%; /* Ensure the content container does not exceed the viewport width */
+  position: relative; /* Ensure it is positioned above the Vanta.js container */
+  z-index: 1; /* Higher z-index to be above the Vanta.js container */
+  pointer-events: auto; /* Allow pointer events */
+}
+
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 6rem;
+  padding: 0;
+  background-color: transparent; /* Make background transparent to see Vanta effect */
+  color: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  z-index: 2; /* Ensure it is above the Vanta.js container */
+  width: 100%;
   min-height: 100vh;
-  color: #ffffff; /* White text */
+  overflow-y: auto; /* Ensure the main container can scroll */
+  pointer-events: auto; /* Allow pointer events */
 }
 
-.title {
-  font-size: 3rem;
+.hookSection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  position: relative;
+  z-index: 3; /* Ensure it is above the Vanta.js container */
+  pointer-events: auto; /* Allow pointer events */
+}
+
+.hookText {
+  z-index: 3; /* Ensure it is above the Vanta.js container */
+  text-align: left;
+  max-width: 600px;
+}
+
+.hookText h1 {
+  margin: 0;
+  font-size: 2rem;
   font-weight: 700;
-  text-align: center;
-  color: #c5f4e0; /* Light greenish text */
-  margin-bottom: 2rem;
+  color: #C5F4E0;
 }
 
-button#home-cta {
-  background-color: #0037ff; /* Bright blue button */
-  color: #ffffff; /* White text */
+.hookText p {
+  margin: 1rem 0;
+  font-size: 1.25rem;
+  color: #f0f0f0;
+}
+
+.hookText button {
+  padding: 1rem 2rem;
+  background-color: #007bff; /* Render's CTA button color */
+  color: #ffffff;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  font-size: 1.2rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  z-index: 10; /* Ensure it is above other elements */
+  position: relative; /* Ensure z-index works */
+  pointer-events: auto; /* Allow pointer events */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
 }
 
-button#home-cta:hover {
-  background-color: #6d9dc5; /* Lighter blue on hover */
+.hookText button:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
-.title {
-  font-family: 'Poppins', sans-serif;
+.featuresSection, .howItWorksSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 4rem 2rem;
+  background-color: transparent; /* Make background transparent to see Vanta effect */
 }
 
-button#home-cta {
-  font-family: 'Poppins', sans-serif;
+.featuresText, .howItWorksText {
+  flex: 1;
+  padding: 1rem;
 }
