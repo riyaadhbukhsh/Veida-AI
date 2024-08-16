@@ -1,13 +1,39 @@
 import React from "react";
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {
-    const formatCourseName = (courseName) => {
-        let hyphenated = courseName.replace(/\s+/g, '-');
-        return encodeURIComponent(hyphenated);
-    };
-    
+  //const [courseObj, setCourseObj] = useState({});
+  const { userId } = useAuth();
+
+  const fetchCourseObj = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}` , {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // TODO: extract specific course from data.courses[] & set it to courseObj state
+        // setCourseObj( data.courses(courseName) )
+      }
+      else {
+        console.error('Failed to fetch course. Response error: ', response.ok);
+      }
+    }
+    catch (error) {
+      console.error('Error fetching course details:', error);
+    }
+  }
+
+  const formatCourseName = (courseName) => {
+    let hyphenated = courseName.replace(/\s+/g, '-');
+    return encodeURIComponent(hyphenated);
+  };
+
   return (
 
     <div id="course-page">
