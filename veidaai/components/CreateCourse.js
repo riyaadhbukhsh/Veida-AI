@@ -1,14 +1,20 @@
 "use client";
 
+"use client";
+
 import React, { useState } from 'react';
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 const CreateCourse = ({ onCourseCreated }) => {
     const { userId } = useAuth();
     const router = useRouter();
+    const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [examDate, setExamDate] = useState('');
+    const [file, setFile] = useState(null);
     const [examDate, setExamDate] = useState('');
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');
