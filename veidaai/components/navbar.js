@@ -1,37 +1,44 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import "./navbar.css";
 import { UserButton } from "@clerk/nextjs";
+import Image from 'next/image';
+import "./navbar.css";
 
-// ... rest of the code remains unchanged ...
 const Navbar = async () => {
     const { userId } = await auth();
     return (
         <div className="Navbar">
-            <ul className="links">
+            <div className="links">
                 <div className="left">
-                    <Link href="/"><li>Home</li></Link>
-                </div>
-                <div className="center">
-                    <Link href="/client"><li>Client Page</li></Link>
+                    <Link href="/">
+                        <Image src="/veida-logo-wide-no-pad.png" alt="VeidaAI Logo" width={100} height={40} />
+                    </Link>
                 </div>
                 <div className="right">
+                    <Link href="/client"><span>Courses</span></Link>
+                    <Link href="/about"><span>About Us</span></Link>
                     {!userId ? (
                         <>
-                            <Link href="/sign-in"><li>Sign-In</li></Link>
-                            <Link href="/sign-up"><li>Sign-Up</li></Link>
+                            <Link href="/sign-in">
+                                <button className="login-button">Login</button>
+                            </Link>
+                            <Link href="/sign-up">
+                                <button className="signup-button">Sign Up</button>
+                            </Link>
                         </>
                     ) : (
                         <>
-                            <Link href="/profile"><li>Profile</li></Link>
-                            <li className="userButton">
+                            <Link href="/premium">
+                                <button className="premium-button">Premium</button>
+                            </Link>
+                            <div className="userButton">
                                 <UserButton />
-                            </li>
+                            </div>
                         </>
                     )}
                 </div>
-            </ul>
+            </div>
         </div>
     );
 };

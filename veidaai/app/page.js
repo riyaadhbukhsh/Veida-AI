@@ -12,7 +12,7 @@ export default function Home() {
         Welcome to VeidaAI
       </div>
       <div>
-        <button id="home-cta" onClick={()=>router.push('./client')}>
+        <button id="home-cta" onClick={()=>router.push('./client')} style={{marginTop: '2rem', padding: '0.3rem 1rem'}}>
           Get Started
         </button>
       </div>

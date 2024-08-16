@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-import requests
 from helpers.mongo import (
     create_user,
     delete_user,
@@ -22,14 +21,22 @@ from helpers.mongo import (
     update_lastseen,
     get_next_study_date,
     get_flashcards_with_today_study_date,
-    create_or_update_next_study_date
+    create_or_update_next_study_date,
+    update_times_seen,
+    check_premium_status, 
+    update_premium_status
+)
+from helpers.ai import (
+    generate_flashcards,
+    generate_notes
 )
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
 import io
-import openai
+import datetime
+import stripe
 
 load_dotenv()
 
@@ -41,9 +48,95 @@ mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 
-# Groq API setup
-openai_api_key = os.getenv('OPENAI_API_KEY')
-openai_client = openai.OpenAI(api_key=openai_api_key)
+# Set your Stripe API key
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+
+@app.route('/webhook/clerk', methods=['POST'])
+def clerk_webhook():
+    event = request.json
+    event_type = event.get('type')
+    user_data = event.get('data')
+
+    if event_type == 'user.created':
+        create_user(user_data)
+        check_premium_status(user_data['id'])  # Check premium status on user creation
+    elif event_type == 'user.updated':
+        update_user(user_data)
+        check_premium_status(user_data['id'])  # Check premium status on user update
+    elif event_type == 'user.deleted':
+        delete_user(user_data)
+
+    return jsonify({"success": True}), 200
+
+
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+@app.route('/api/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    data = request.json
+    clerk_id = data.get('clerk_id')
+
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price': 'price_1PnXLSGxUp9wQ6awUitR5t0v', 
+                'quantity': 1,
+            },
+        ],
+        mode='subscription',
+        success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
+        cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
+        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
+    )
+
+    return jsonify({'url': session.url})
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+    sig_header = request.headers['STRIPE_SIGNATURE']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        raise e
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        clerk_id = payment_intent['metadata']['clerk_id']
+        update_premium_status(clerk_id, True)
+        print(f"Updated premium status for clerk_id: {clerk_id}")
+    else:
+      print('Unhandled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
+            
+
+@app.route('/api/check_premium_status', methods=['GET'])
+def route_check_premium_status():
+    clerk_id = request.args.get('clerk_id')
+
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    is_premium = check_premium_status(clerk_id)
+    return jsonify({"premium": is_premium}), 200
+
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -88,37 +181,13 @@ def extract_text():
         notes = generate_notes(extracted_text)
         flashcards = generate_flashcards(notes)
 
-        print(notes)
-        print(flashcards)
-
-        return jsonify({"extracted_text": extracted_text, "summary_notes": notes, "flashcards": flashcards}), 200
+        return jsonify({"notes": notes, "flashcards": flashcards}), 200
     except UnidentifiedImageError:
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/webhook/clerk', methods=['POST'])
-def clerk_webhook():
-    """
-    Handles Clerk webhook events for user management.
 
-    This endpoint processes POST requests from Clerk webhook, managing user creation, updates, and deletion in the database.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 200.
-    """
-    event = request.json
-    event_type = event.get('type')
-    user_data = event.get('data')
-
-    if event_type == 'user.created':
-        create_user(user_data)
-    elif event_type == 'user.updated':
-        update_user(user_data)
-    elif event_type == 'user.deleted':
-        delete_user(user_data)
-
-    return jsonify({"success": True}), 200
 
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
@@ -133,12 +202,15 @@ def route_create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
+    description = data.get('description', '')
+    exam_date = data.get('exam_date', '')
     notes = data.get('notes', {})
+    flashcards = data.get('flashcards', [])
 
-    if not all([clerk_id, course_name]):
+    if not all([clerk_id, course_name, description, exam_date]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    make_course(clerk_id, course_name, notes)
+    make_course(clerk_id, course_name, description, exam_date, notes, flashcards)
     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
@@ -453,105 +525,28 @@ def route_get_flashcards_today():
     flashcards_today = get_flashcards_with_today_study_date(clerk_id)
     return jsonify({"flashcards": flashcards_today}), 200
 
-
-
-def generate_notes(extracted_text):
+@app.route('/api/update_times_seen', methods=['POST'])
+def route_update_times_seen():
     """
-    Generate notes using OpenAI API.
+    Updates the times_seen count for a specific flashcard.
 
-    This function generates notes from the provided text.
+    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and card_id.
     
-    Args:
-        extracted_text (str): The text extracted from the file.
-
     Returns:
-        str: Generated notes.
+        tuple: A JSON response indicating success and HTTP status code.
     """
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "As the perfect consistent educator, your task is to transform the provided text into well-structured, detailed lecture notes without leaving out any subject matter."
-                        "Omit all: course related information, administrative details, agendas, announcements, homework and other school related content."
-                        "Ensure that every single new and relevant information, definition, term, concept, and formula related to the course are included."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": extracted_text
-                }
-            ]
-        )
-        notes = response.choices[0].message.content
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    card_id = data.get('card_id')
 
-        # Store the generated notes in MongoDB
-        # create_or_update_notes(clerk_id, course_name, notes, notes_name)
+    if not all([clerk_id, course_name, card_id]):
+        return jsonify({"error": "Missing required fields"}), 400
 
-        return notes
-    except Exception as e:
-        print(f"Error: {e}")
-        return 'Error generating notes.'
+    update_times_seen(clerk_id, course_name, card_id)
+    return jsonify({"message": "Times seen updated successfully"}), 200
 
-def generate_flashcards(notes):
-    """
-    Generate flashcards using OpenAI API.
-
-    This function generates flashcards from the provided text.
-    
-    Args:
-        notes (str): The summarized notes extracted from the lecture.
-
-    Returns:
-        list: Generated flashcards.
-    """
-    try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
-                        "Ensure that each question can be answered using **only** the information contained within the provided text."
-                        "Avoid generating questions that require any outside knowledge or inference."
-                        "Keep questions and answers clear, concise, and directly related to the provided material."
-                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
-                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
-                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
-                        "Example: Flashcard 1:"
-                        "Front: What is Dollar-Cost Averaging (DCA)? "
-                        "Back: Investing a fixed amount on a regular schedule"
-                        "..."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": notes
-                }
-            ]
-        )
-        flashcards_text = response.choices[0].message.content
-
-        # Parse the flashcards from the response
-        flashcards = []
-        for flashcard in flashcards_text.split("Flashcard")[1:]:
-            parts = flashcard.split("Front:")[1].split("Back:")
-            front = parts[0].strip()
-            back = parts[1].strip()
-            flashcards.append({"front": front, "back": back})
-        
-        return flashcards
-
-        # Store each flashcard in the database
-        # for card in flashcards:
-            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
 
 if __name__ == '__main__':
+    
     app.run(debug=True, port=8080)

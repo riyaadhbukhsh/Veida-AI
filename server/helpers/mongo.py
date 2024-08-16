@@ -12,15 +12,74 @@ client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
 
-def create_user(user_data):
+
+def update_subscription_id(clerk_id, subscription_id):
     """
-    Create a new user in the database.
+    Update the subscription ID for a user.
 
     Args:
-        user_data (dict): A dictionary containing user information from Clerk.
+        clerk_id (str): The Clerk ID of the user.
+        subscription_id (str): The new subscription ID.
 
     Returns:
         None
+    """
+    users_collection = db.users
+    result = users_collection.update_one(
+        {'clerk_id': clerk_id},
+        {'$set': {'subscription_id': subscription_id}}
+    )
+    if result.modified_count == 0:
+        print(f"No document found with clerk_id: {clerk_id}")
+    else:
+        print(f"Updated subscription ID for clerk_id: {clerk_id}")
+        print(f"Update result: {result.raw_result}")
+        
+        
+def update_premium_status(clerk_id, premium):
+    """
+    Update the premium status for a user.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        premium (bool): The new premium status.
+
+    Returns:
+        None
+    """
+    users_collection = db.users
+    result = users_collection.update_one(
+        {'clerk_id': clerk_id},
+        {'$set': {'premium': premium}}
+    )
+    if result.modified_count == 0:
+        print(f"No document found with clerk_id: {clerk_id}")
+    else:
+        print(f"Updated premium status for clerk_id: {clerk_id}")
+        print(f"Update result: {result.raw_result}")
+        
+        
+def check_premium_status(clerk_id):
+    """
+    Check the premium status of a user and update it if expired.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+
+    Returns:
+        bool: True if the user is premium, False otherwise.
+    """
+    users_collection = db.users
+    user = users_collection.find_one({'clerk_id': clerk_id})
+
+    if user:
+        if user['premium'] == True:
+            return True
+    return False
+
+def create_user(user_data):
+    """
+    Create a new user in the database.
     """
     users_collection = db.users
     users_collection.insert_one({
@@ -29,7 +88,10 @@ def create_user(user_data):
         'username': user_data.get('username'),
         'first_name': user_data.get('first_name'),
         'last_name': user_data.get('last_name'),
-        'created_at': user_data['created_at']
+        'created_at': user_data['created_at'],
+        'updated_at': user_data['created_at'],
+        'premium': False,  # Set premium to False by default
+        'premium_expiry': None  # Initialize premium expiry as None
     })
 
 def update_user(user_data):
@@ -66,22 +128,29 @@ def delete_user(user_data):
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
 
-def make_course(clerk_id, course_name, notes):
+def make_course(clerk_id, course_name, description, exam_date, notes, flashcards):
     """
     Create a new course for a user.
 
     Args:
         clerk_id (str): The Clerk ID of the user.
         course_name (str): The name of the course.
+        description (str): The description of the course.
         notes (dict): A dictionary of notes for the course.
+        description (str): The description of the course.
+        exam_date (datetime): The due date for the course.
+        flashcards (list): A list of flashcards for the course.
 
     Returns:
         None
     """
     new_course = {
         "course_name": course_name,
+        "description": description,
         "notes": notes,
-        "flashcards": [],
+        "description": description,
+        "exam_date": exam_date,
+        "flashcards": flashcards,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now()
     }
@@ -90,7 +159,8 @@ def make_course(clerk_id, course_name, notes):
         {"$addToSet": {"courses": new_course}},
         upsert=True
     )
-
+    
+    
 def create_or_update_notes(clerk_id, course_name, notes, notes_name):
     """
     Create or update notes for a specific course.
@@ -378,3 +448,43 @@ def get_flashcards_with_today_study_date(clerk_id):
                     flashcards_today.append(card)
 
     return flashcards_today
+
+def update_times_seen(clerk_id, course_name, card_id):
+    """
+    Increments the times_seen field for a specific flashcard.
+
+    Args:
+        clerk_id (str): The ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+
+    Returns:
+        None
+    """
+    courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name, "courses.flashcards.id": card_id},
+        {"$inc": {"courses.$[course].flashcards.$[card].times_seen": 1}},
+        array_filters=[{"course.course_name": course_name}, {"card.id": card_id}]
+    )
+
+
+def get_times_seen(clerk_id, course_name, card_id):
+    """
+    Retrieves the times_seen field for a specific flashcard.
+
+    Args:
+        clerk_id (str): The ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+
+    Returns:
+        int: The number of times the flashcard has been seen.
+    """
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            if course['course_name'] == course_name:
+                for card in course['flashcards']:
+                    if card['id'] == card_id:
+                        return card.get('times_seen', 0)  # Return 0 if not found
+    return 0
