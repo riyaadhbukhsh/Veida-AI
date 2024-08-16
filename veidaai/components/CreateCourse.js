@@ -48,33 +48,6 @@ const CreateCourse = ({ onCourseCreated }) => {
         formData.append('exam_date', examDate);
 
         try {
-<<<<<<< HEAD
-            const response = await fetch('http://localhost:8080/api/create_course', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    clerk_id: userId,
-                    course_name: name,
-                    description: description,
-                }),
-            });
-
-            if (response.ok) {
-                onCourseCreated({clerk_id: userId, course_name: name, description: description});
-                setName('');
-                setDescription('');
-                setError('');
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
-
-        } catch (fetchError) {
-            console.error('Fetch error:', fetchError);
-            setError('An error occurred while communicating with the server.');
-=======
             const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
                 method: 'POST',
                 body: formData,
@@ -129,7 +102,6 @@ const CreateCourse = ({ onCourseCreated }) => {
             setError('An unexpected error occurred.');
         } finally {
             setLoading(false); // Reset loading state
->>>>>>> front-end
         }
     };
 
@@ -141,20 +113,13 @@ const CreateCourse = ({ onCourseCreated }) => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Course Name"
                 required
-<<<<<<< HEAD
-=======
                 disabled={loading}
->>>>>>> front-end
             />
             <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Course Description"
                 required
-<<<<<<< HEAD
-            />
-            <button type="submit">Create Course</button>
-=======
                 disabled={loading}
             />
             <input
@@ -173,7 +138,6 @@ const CreateCourse = ({ onCourseCreated }) => {
             <button type="submit" disabled={loading}>
                 {loading ? 'Creating Course...' : 'Create Course'}
             </button>
->>>>>>> front-end
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
     );
