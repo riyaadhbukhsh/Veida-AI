@@ -98,7 +98,7 @@ const CreateCourse = ({ onCourseCreated }) => {
                 setError(errorData.message || 'An error occurred while creating the course.');
             }
         } catch (err) {
-            console.error('Error:', err);
+            console.error('Outer error:', err);
             setError('An unexpected error occurred.');
         } finally {
             setLoading(false); // Reset loading state
@@ -113,13 +113,20 @@ const CreateCourse = ({ onCourseCreated }) => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Course Name"
                 required
+<<<<<<< HEAD
+=======
                 disabled={loading}
+>>>>>>> front-end
             />
             <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Course Description"
                 required
+<<<<<<< HEAD
+            />
+            <button type="submit">Create Course</button>
+=======
                 disabled={loading}
             />
             <input
@@ -138,6 +145,7 @@ const CreateCourse = ({ onCourseCreated }) => {
             <button type="submit" disabled={loading}>
                 {loading ? 'Creating Course...' : 'Create Course'}
             </button>
+>>>>>>> front-end
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
     );

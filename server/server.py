@@ -93,7 +93,11 @@ def create_checkout_session():
         mode='subscription',
         success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
         cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
-        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
+        subscription_data={
+            'metadata': {
+                'clerk_id': clerk_id  # Store clerk_id in metadata
+            }
+        }
     )
 
     return jsonify({'url': session.url})
@@ -102,7 +106,9 @@ def create_checkout_session():
 def webhook():
     event = None
     payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
+    if not sig_header:
+        return jsonify({"error": "Missing Stripe signature header"}), 400
 
     try:
         event = stripe.Webhook.construct_event(
@@ -110,22 +116,22 @@ def webhook():
         )
     except ValueError as e:
         # Invalid payload
-        raise e
+        print(f"Invalid payload: {e}")
+        return jsonify({"error": "Invalid payload"}), 400
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise e
+        return jsonify({"error": "Invalid signature"}), 400
 
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        clerk_id = payment_intent['metadata']['clerk_id']
+    if event['type'] == 'invoice.payment_succeeded':
+        invoice = event['data']['object']
+        subscription_id = invoice['subscription']
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        clerk_id = subscription['metadata'].get('clerk_id')
         update_premium_status(clerk_id, True)
         print(f"Updated premium status for clerk_id: {clerk_id}")
-    else:
-      print('Unhandled event type {}'.format(event['type']))
+
 
     return jsonify(success=True)
-            
+
 
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
@@ -190,15 +196,7 @@ def extract_text():
 
 
 @app.route('/api/create_course', methods=['POST'])
-def route_create_course():
-    """
-    Creates a new course for a user.
-
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 201.
-    """
+def create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
@@ -358,21 +356,14 @@ def route_get_flashcards():
     return jsonify({"flashcards": flashcards}), 200
 
 @app.route('/api/get_courses', methods=['GET'])
-def route_get_courses():
-    """
-    Retrieves all courses for a user.
-
-    This endpoint accepts a GET request with query parameter clerk_id. It returns a list of courses for the specified user.
-
-    Returns:
-        tuple: A JSON response containing the list of courses and HTTP status code 200.
-    """
+def get_courses_route():
     clerk_id = request.args.get('clerk_id')
 
     if not clerk_id:
         return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
     courses = get_courses(clerk_id)
+    return jsonify({"courses": courses}), 200
     return jsonify({"courses": courses}), 200
 
 @app.route('/api/delete_course', methods=['DELETE'])
