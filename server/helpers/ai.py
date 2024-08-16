@@ -1,5 +1,4 @@
 import os
-from .util import parse_mc_questions
 import openai
 import datetime
 from .mongo import (
@@ -118,10 +117,6 @@ def generate_mc_questions(notes):
     except Exception as e:
         print(f"Error: {e}")
         return 'Error generating multiple choice questions.'
-
-
-
-
 
 
 

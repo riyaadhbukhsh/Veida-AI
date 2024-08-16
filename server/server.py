@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -51,6 +51,10 @@ db = client['VeidaAI']
 # Set your Stripe API key
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+@app.route('/')
+def index():
+  return render_template('index.html')
 
 
 @app.route('/webhook/clerk', methods=['POST'])
