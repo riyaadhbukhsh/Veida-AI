@@ -24,7 +24,8 @@ from helpers.mongo import (
     create_or_update_next_study_date,
     update_times_seen,
     check_premium_status, 
-    update_premium_status
+    update_premium_status,
+    update_subscription_id
 )
 from helpers.ai import (
     generate_flashcards,
@@ -102,6 +103,38 @@ def create_checkout_session():
 
     return jsonify({'url': session.url})
 
+@app.route('/api/cancel-subscription', methods=['POST'])
+def cancel_subscription():
+       data = request.json
+       clerk_id = data.get('clerk_id')
+
+       if not clerk_id:
+           print("Missing clerk_id")
+           return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+       print(f"Received clerk_id: {clerk_id}")
+
+       # Retrieve the user's subscription from the database
+       user = db.users.find_one({'clerk_id': clerk_id})
+       subscription_id = user.get('subscription_id')
+
+       if not subscription_id:
+           print("No active subscription found")
+           return jsonify({"error": "No active subscription found"}), 400
+
+       try:
+           # Cancel the subscription using the Stripe API
+           stripe.Subscription.delete(subscription_id)
+
+           # Update the user's premium status in the database
+           update_subscription_id(clerk_id, None)
+           update_premium_status(clerk_id, False)
+
+           return jsonify({"message": "Subscription canceled successfully"}), 200
+       except stripe.error.StripeError as e:
+           return jsonify({"error": str(e)}), 500
+    
+    
 @app.route('/webhook', methods=['POST'])
 def webhook():
     event = None
@@ -126,9 +159,13 @@ def webhook():
         subscription_id = invoice['subscription']
         subscription = stripe.Subscription.retrieve(subscription_id)
         clerk_id = subscription['metadata'].get('clerk_id')
-        update_premium_status(clerk_id, True)
-        print(f"Updated premium status for clerk_id: {clerk_id}")
-
+        if clerk_id:
+            update_premium_status(clerk_id, True)
+            update_subscription_id(clerk_id, subscription_id)
+            print(f"Updated premium status and subscription ID for clerk_id: {clerk_id}")
+        else:
+            print("clerk_id not found in metadata")
+        print("Invoice payment succeeded event received")
 
     return jsonify(success=True)
 

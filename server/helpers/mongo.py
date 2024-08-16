@@ -12,6 +12,30 @@ client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
 
+
+def update_subscription_id(clerk_id, subscription_id):
+    """
+    Update the subscription ID for a user.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        subscription_id (str): The new subscription ID.
+
+    Returns:
+        None
+    """
+    users_collection = db.users
+    result = users_collection.update_one(
+        {'clerk_id': clerk_id},
+        {'$set': {'subscription_id': subscription_id}}
+    )
+    if result.modified_count == 0:
+        print(f"No document found with clerk_id: {clerk_id}")
+    else:
+        print(f"Updated subscription ID for clerk_id: {clerk_id}")
+        print(f"Update result: {result.raw_result}")
+        
+        
 def update_premium_status(clerk_id, premium):
     """
     Update the premium status for a user.
@@ -49,11 +73,7 @@ def check_premium_status(clerk_id):
     user = users_collection.find_one({'clerk_id': clerk_id})
 
     if user:
-        if user['premium'] and user['premium_expiry']:
-            if user['premium_expiry'] < datetime.datetime.now():
-                # If the premium has expired, set it to False
-                update_premium_status(clerk_id, False)
-                return False
+        if user['premium'] == True:
             return True
     return False
 
