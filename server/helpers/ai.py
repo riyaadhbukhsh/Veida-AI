@@ -1,5 +1,4 @@
 import os
-from .util import parse_mc_questions
 import openai
 import datetime
 from .mongo import (
@@ -103,20 +102,21 @@ def generate_mc_questions(notes):
 
     Please make sure to follow this structure exactly for each question generated.
     """
-    multiple_choice_questions = openai_client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": initial_content},
-            {"role": "user", "content": notes}
-        ]
-    )
-    json_mc_questions = parse_mc_questions(multiple_choice_questions)
 
-    return json_mc_questions
+    try:
+        multiple_choice_questions = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": initial_content},
+                {"role": "user", "content": notes}
+            ]
+        )
+        json_mc_questions = parse_mc_questions(multiple_choice_questions)
 
-
-
-
+        return json_mc_questions
+    except Exception as e:
+        print(f"Error: {e}")
+        return 'Error generating multiple choice questions.'
 
 
 

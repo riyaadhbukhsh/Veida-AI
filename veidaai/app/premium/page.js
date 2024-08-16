@@ -11,7 +11,7 @@ const PremiumPage = async () => {
     redirect('/sign-in');
   }
 
-  const res = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
+  const res = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
   const data = await res.json();
   const isPremium = data.premium;
 
