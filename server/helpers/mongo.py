@@ -115,6 +115,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
     Args:
         clerk_id (str): The Clerk ID of the user.
         course_name (str): The name of the course.
+        description (str): The description of the course.
         notes (dict): A dictionary of notes for the course.
         description (str): The description of the course.
         exam_date (datetime): The due date for the course.
@@ -125,6 +126,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
     """
     new_course = {
         "course_name": course_name,
+        "description": description,
         "notes": notes,
         "description": description,
         "exam_date": exam_date,
@@ -137,6 +139,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         {"$addToSet": {"courses": new_course}},
         upsert=True
     )
+    
     
 def create_or_update_notes(clerk_id, course_name, notes, notes_name):
     """
