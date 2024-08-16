@@ -44,40 +44,25 @@ const ClientPage = () => {
     }
   };
 
-  if (!isSignedIn) {
-    return (
-      <div className="client-page">
-        <h1>Please sign in to access this page</h1>
-      </div>
-    );
-  }
+  const fetchAndSetCourses = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    // updates courses state with user's courses
-    const fetchAndSetCourses = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          setCourses(data.courses);
-        } else {
-          console.error('Failed to fetch courses');
-        }
-      } catch (error) {
-        console.error('Error fetching courses:', error);
+      if (response.ok) {
+        const data = await response.json();
+        setCourses(data.courses);
+      } else {
+        console.error('Failed to fetch courses');
       }
-    };
-  
-    useEffect(() => {
-      if (userId) {
-        fetchAndSetCourses();
-      }
-    }, [userId, fetchAndSetCourses]);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
@@ -85,30 +70,30 @@ const ClientPage = () => {
     }
   }, [userId, fetchAndSetCourses]);
 
+  useEffect(() => {
+    if (isSignedIn && userId) {
+      fetchAndSetCourses();
+    }
+  }, [isSignedIn, userId, fetchAndSetCourses]);
+
   const handleCourseCreated = (newCourse) => {
     setCourses([...courses, newCourse]);
     setShowCreateForm(false);
   };
 
-  // format course names to be url friendly
-  // replace white spaces with hyphens and encodes special characters
   function formatCourseName(courseName) {
-    // replace white spaces with hyphens
     let hyphenated = courseName.replace(/\s+/g, '-');
-    // encode special characters
     let encoded = encodeURIComponent(hyphenated);
     return encoded;
   }
 
-  // load courses upon mounting
-  useEffect(() => {
-    if (!isSignedIn) {
-      return;
-    }
-    if(userId) {
-      fetchAndSetCourses();
-    }
-  }, [isSignedIn, userId]);
+  if (!isSignedIn) {
+    return (
+      <div className="client-page">
+        <h1>Please sign in to access this page</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="client-page">
@@ -120,7 +105,6 @@ const ClientPage = () => {
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* display user's courses */}
       {courses.length > 0 ? (
         <div id="courses-container">
           <span id="courses-header">
@@ -132,27 +116,23 @@ const ClientPage = () => {
 
           <div id="courses-list">
             {courses.map((course, i) => (
-              // <div key={course.course_name} className="course-item">
               <div key={i} className="course-item">
-                <Link  href={`/${formatCourseName(course.course_name)}`}>
+                <Link href={`/${formatCourseName(course.course_name)}`}>
                   <h4 className="course">{course.course_name}</h4>
                 </Link>
-                {/* <p>{course.description}</p> */}
               </div>
             ))}
           </div>
         </div>
-        ) : (
+      ) : (
         <div style={{textAlign: 'center'}}>
           <h3>No courses yet</h3>
-          {/* <p>Your courses will appear here</p> */}
           <button onClick={() => setShowCreateForm(true)}>
             Create a new course
           </button>
         </div>
       )}
       
-      {/* create course form */}
       {showCreateForm && (
         <CreateCourse onCourseCreated={handleCourseCreated} />
       )}
