@@ -1,4 +1,5 @@
 import os
+from .util import parse_mc_questions
 import openai
 import datetime
 from .mongo import (
@@ -58,6 +59,71 @@ def generate_notes(extracted_text):
     except Exception as e:
         print(f"Error: {e}")
         return 'Error generating notes.'
+
+
+
+
+def generate_mc_questions(notes):
+    """
+    Generate multiple choice questions using OpenAI API.
+    !Currently only supports 1 question per call.
+    """
+    initial_content = """
+    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. The questions should be conceptually similar to the following examples:
+
+    1. **Synthesis:** Combining different pieces of information to create a new understanding.
+        Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
+
+    2. **Reorganization:** Arranging information in a systematic way to aid understanding.
+        Example: Which of the following best represents a reorganized view of Newton's Law of Gravity?
+
+    3. **Context:** Applying a concept in various situations or scenarios.
+        Example: In which context would you apply the Law of Gravity differently than on Earth?
+
+    4. **Comparison:** Examining similarities and differences between concepts.
+        Example: How does Newton's Law of Gravity differ from Einstein's Theory of General Relativity?
+
+    5. **Application:** Using concepts or formulas to solve problems or perform calculations.
+        Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
+
+    Please generate a multiple-choice question based on the provided concept and principles and follow the JSON format below.
+    {
+        "concept": "Concept Name",
+        "question_type": "Synthesis/Comparison/Context/Etc.",
+        "question": "Your question here?",
+        "possible_answers": [
+            "Option A",
+            "Option B",
+            "Option C",
+            "Option D"
+        ],
+        "correct_answer": "Correct Option",
+        "why": "Explanation of why this answer is correct."
+    }
+
+    Please make sure to follow this structure exactly for each question generated.
+    """
+    multiple_choice_questions = openai_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": initial_content},
+            {"role": "user", "content": notes}
+        ]
+    )
+    json_mc_questions = parse_mc_questions(multiple_choice_questions)
+
+    return json_mc_questions
+
+
+
+
+
+
+
+
+
+
+
 
 def generate_flashcards(notes):
     """
