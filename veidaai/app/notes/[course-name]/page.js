@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useParams } from 'next/navigation';
+import { unformatURL } from '../../helpers';
 
 // this file has been reworked to get notes by first fetching the whole course object
 // and assumes that note is a single string instead of an array of strings
@@ -15,15 +16,7 @@ const NotesPage = () => {
 
   const params = useParams();
   const urlCourseName = params['course-name'];
-  
-  // unhyphenate & decode the course name
-  function unformatCourseName(urlCourseName) {
-    let decoded = decodeURIComponent(urlCourseName);
-    let unhyphenated = decoded.replace(/-/g, ' ');
-    return unhyphenated;
-  }
-
-  const courseName = unformatCourseName(urlCourseName);
+  const courseName = unformatURL(urlCourseName);
 
   const fetchNotes = async () => {
     try {
