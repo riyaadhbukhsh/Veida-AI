@@ -23,16 +23,30 @@ html, body {
   height: 100vh;
 }
 
+/* non-flexbox wrapper that doesn't overlap with the nav bar */
+.main-inline {
+  margin-top: 60px;
+}
+
 .title {
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
+  margin: 2rem auto;
 }
 
 .container {
   max-width: 72rem; 
   margin-left: auto;
   margin-right: auto;
+}
+
+.center-flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
 .c2 {
@@ -60,4 +74,16 @@ h1, h2, h3, h4, h5, h6 {
 button {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
+  border-radius: 5px;
+}
+
+.basic-button {
+  cursor: pointer;
+  padding: 0.2rem 1rem;
+  background-color: white;
+}
+
+.basic-button:hover {
+  transform: translate(1.5px, 1.5px);
+  background-color: #EAEAEA;
 }

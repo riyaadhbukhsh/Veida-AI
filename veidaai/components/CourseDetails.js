@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
+import { formatURL } from "@/app/helpers";
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {
-  //const [courseObj, setCourseObj] = useState({});
+  const [courseObj, setCourseObj] = useState({});
   const { userId } = useAuth();
 
   const fetchCourseObj = async () => {
@@ -17,8 +18,12 @@ const CourseDetails = ({ courseName }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        // TODO: extract specific course from data.courses[] & set it to courseObj state
-        // setCourseObj( data.courses(courseName) )
+        console.log('Fetch successful. Response: ', data);
+        //comparison might have to be rewritten in case url en/decoding goes awry
+        let courseIndex = data.courses.findIndex( course => courseName.localeCompare(course.course_name) == 0);
+        let courseObj = data.courses[courseIndex];
+        //console.log('This course\'s obj: ', data.courses[courseObj]);
+        setCourseObj(courseObj);
       }
       else {
         console.error('Failed to fetch course. Response error: ', response.ok);
@@ -29,10 +34,11 @@ const CourseDetails = ({ courseName }) => {
     }
   }
 
-  const formatCourseName = (courseName) => {
-    let hyphenated = courseName.replace(/\s+/g, '-');
-    return encodeURIComponent(hyphenated);
-  };
+  useEffect(()=>{
+    if(userId) {
+      fetchCourseObj();
+    }
+  }, [userId]);
 
   return (
 
@@ -43,13 +49,13 @@ const CourseDetails = ({ courseName }) => {
         add content
      </button>
       <div id="course-content">
-            <Link id="flash-cards-container" className="study-container" href={`/flashcards/${formatCourseName(courseName)}`}>
+            <Link id="flash-cards-container" className="study-container" href={`/flashcards/${formatURL(courseName)}`}>
                 <button>Study Flashcards</button>
             </Link>
-            <Link id="notes-container" className="study-container" href={`/notes/${formatCourseName(courseName)}`}>
+            <Link id="notes-container" className="study-container" href={`/notes/${formatURL(courseName)}`}>
                 <button>Study Notes</button>
             </Link>
-            <Link id="mcqs-container" className="study-container" href={`/mcqs/${formatCourseName(courseName)}`}>
+            <Link id="mcqs-container" className="study-container" href={`/mcqs/${formatURL(courseName)}`}>
                 <button>Study Multiple Choice Questions</button>
             </Link>
       </div>
