@@ -35,6 +35,14 @@ body {
   margin-right: auto;
 }
 
+.center-flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
 .c2 {
   display: flex;
   flex-direction: column;
@@ -60,4 +68,16 @@ h1, h2, h3, h4, h5, h6 {
 button {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
+  border-radius: 5px;
+}
+
+.basic-button {
+  cursor: pointer;
+  padding: 0.2rem 1rem;
+  background-color: white;
+}
+
+.basic-button:hover {
+  transform: translate(1.5px, 1.5px);
+  background-color: #EAEAEA;
 }

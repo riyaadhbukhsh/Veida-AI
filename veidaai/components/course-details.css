@@ -8,7 +8,7 @@
     overflow-y: visible;
 }
 
-#add-content-btn {
+#add-content-btn, button {
     cursor: pointer;
     padding: 0.2rem 1rem 0.2rem 1rem;
     margin-top: 2rem;

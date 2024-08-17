@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useParams } from 'next/navigation';
-import { unformatURL } from '../../helpers';
+import { unformatURL } from '@/app/helpers';
 
 // this file has been reworked to get notes by first fetching the whole course object
 // and assumes that note is a single string instead of an array of strings
