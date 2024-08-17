@@ -36,12 +36,12 @@ const NotesPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetch successful. Response: ", data);
+        // console.log("Fetch successful. Response: ", data);
         //comparison might have to be rewritten in case url en/decoding goes awry
         let courseIndex = data.courses.findIndex( course => courseName.localeCompare(course.course_name) == 0);
         let courseObj = data.courses[courseIndex];
-        console.log('Course: ', courseObj);
-        console.log('Course notes: ', courseObj.notes);
+        // console.log('Course: ', courseObj);
+        // console.log('Course notes: ', courseObj.notes);
         setNotes(courseObj.notes);
       } else {
         setError('Failed to fetch notes');
