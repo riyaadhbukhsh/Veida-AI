@@ -9,7 +9,7 @@ const CourseDetails = ({ courseName }) => {
 
   const fetchCourseObj = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}` , {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}` , {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
