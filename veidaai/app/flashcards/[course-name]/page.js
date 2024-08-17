@@ -10,7 +10,7 @@ const FlashcardPage = ({ courseName }) => {
 
   const fetchFlashcards = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
