@@ -17,10 +17,16 @@ body {
   height: 100vh;
 }
 
+/* non-flexbox wrapper that doesn't overlap with the nav bar */
+.main-inline {
+  margin-top: 60px;
+}
+
 .title {
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
+  margin: 2rem auto;
 }
 
 .container {

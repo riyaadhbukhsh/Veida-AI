@@ -58,24 +58,26 @@ const NotesPage = () => {
   }, [userId, fetchNotes]);
 
   return (
-    <div id="notes-page-wrapper" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
-      <h1>Your Notes for {courseName}</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div id="notes-content" style={{height: 'min(500px, 50%)', overflowY: 'scroll', padding: '1em 2em', margin: '1em 3em', border: '1px solid gray'}}>
-        {/* {notes.length > 0 ? (
-          notes.map((note) => (
-            <div key={note.id} className="note">
-              <h3>{note.title}</h3>
-              <p>{note.content}</p>
-            </div>
-          )) */}
-        { notes ? (
-            <p style={{whiteSpace: 'pre-wrap'}}>
-              {notes}
-            </p>
-        ) : (
-          <p>No notes available.</p>
-        )}
+    <div className="main-inline">
+      <div className="container">
+        <h1 className="title">Your Notes for {courseName}</h1>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div id="notes-content" style={{padding: '2em', margin: '1em 3em', borderTop: '1px solid gray'}}>
+          {/* {notes.length > 0 ? (
+            notes.map((note) => (
+              <div key={note.id} className="note">
+                <h3>{note.title}</h3>
+                <p>{note.content}</p>
+              </div>
+            )) */}
+          { notes ? (
+              <p style={{whiteSpace: 'pre-wrap'}}>
+                {notes}
+              </p>
+          ) : (
+            <p id="unavailable">No notes available.</p>
+          )}
+        </div>
       </div>
     </div>
   );
