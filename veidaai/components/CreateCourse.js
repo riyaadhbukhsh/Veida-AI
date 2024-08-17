@@ -12,6 +12,15 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [courseSchedule,setCourseSchedule] = useState({
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+    });
 
     const validateCourseName = (name) => {
         const invalidChars = /[.!~*'()]/;
@@ -20,6 +29,13 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+    };
+
+    const handleCourseScheduleChange = (day,time) => {
+        setCourseSchedule((prevSchedule) => ({
+            ...prevSchedule,
+            [day]: time,
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -53,7 +69,8 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         formData.append('course_name', name);
         formData.append('description', description);
         formData.append('exam_date', examDate);
-    
+        
+
         try {
             const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
                 method: 'POST',
@@ -69,7 +86,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             const extractedData = await extractResponse.json();
             const notes = extractedData.notes || {};
             const flashcards = extractedData.flashcards || [];
-    
+            const mc_questions = extractedData.mc_questions || [];
             const createResponse = await fetch('http://localhost:8080/api/create_course', {
                 method: 'POST',
                 headers: {
@@ -82,6 +99,8 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     exam_date: examDate,
                     notes: notes,
                     flashcards: flashcards,
+                    mc_questions: mc_questions,
+                    course_schedule: courseSchedule,
                 }),
             });
     
@@ -93,12 +112,24 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     exam_date: examDate,
                     notes: notes,
                     flashcards: flashcards,
+                    mc_questions: mc_questions,
+                    course_schedule: courseSchedule,
                 });
                 setName('');
                 setDescription('');
                 setExamDate('');
                 setFile(null);
                 setError('');
+                setCourseSchedule({
+                    Monday: "",
+                    Tuesday: "",
+                    Wednesday: "",
+                    Thursday: "",
+                    Friday: "",
+                    Saturday: "",
+                    Sunday: "",
+                });
+                router.push('/client'); // Redirect to the course list page
                 router.push('/client');
             } else {
                 const errorData = await createResponse.json();
@@ -117,47 +148,64 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     };
 
     return (
-        <div className="create-course-overlay">
-          <form onSubmit={handleSubmit} className="create-course-form">
-            <h2>Create a New Course</h2>
-            <input
-              type="text"
-              placeholder="Course Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            <textarea
-              placeholder="Course Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-            <input
-              type="date"
-              value={examDate}
-              onChange={(e) => setExamDate(e.target.value)}
-              required
-            />
-            <div className="file-input-wrapper">
-              <div className="file-input-button">Choose Course Content (PDF, PNG, JPEG)</div>
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                required
-              />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div className="create-course-modal">
+            <form className="create-course-form" onSubmit={handleSubmit}>
+            <div>
+                <h1>Course Details</h1>
             </div>
-            {error && <p className="error">{error}</p>}
-            <div className="form-buttons">
-              <button type="submit" disabled={loading}>
-                {loading ? 'Submitting...' : 'Submit'}
-              </button>
-              <button type="button" onClick={onClose}>Cancel</button>
+                <h2>Create New Course</h2>
+                <label htmlFor="courseName">Course Name</label>
+                <input
+                    type="text"
+                    id="courseName"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+                <label htmlFor="description">Description</label>
+                <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows="3"
+                ></textarea>
+                <label htmlFor="examDate">Exam Date</label>
+                <input
+                    type="date"
+                    id="examDate"
+                    value={examDate}
+                    onChange={(e) => setExamDate(e.target.value)}
+                />
+
+            <div>
+                <h3>Course Schedule</h3>
+                {Object.keys(courseSchedule).map((day) => (
+                    <div key={day}>
+                        <label>{day}: </label>
+                        <input type="time" value={courseSchedule[day]} onChange={(e) => handleCourseScheduleChange(day, e.target.value)} />
+                    </div>
+                ))}
             </div>
-            <button className="close-button" onClick={onClose}>×</button>
-          </form>
+
+                <label htmlFor="courseContent">Course Content - PDF, PNG, JPEG</label>
+                <input
+                    type="file"
+                    id="courseContent"
+                    onChange={handleFileChange}
+                    required
+                />
+                {error && <p className="error-message">{error}</p>}
+                <div className="form-buttons">
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Creating...' : 'Submit'}
+                    </button>
+                        <button type="button" onClick={onClose}>Cancel</button>
+                </div>
+                </form>
         </div>
-      );
+        </div>
+    );
 };
 
 export default CreateCourse;
