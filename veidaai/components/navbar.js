@@ -1,12 +1,13 @@
+"use client";
+
 import React from "react";
-import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { useAuth, UserButton } from "@clerk/nextjs";
 import Image from 'next/image';
 import "./navbar.css";
 
-const Navbar = async () => {
-    const { userId } = await auth();
+const Navbar = () => {
+    const { userId } = useAuth();
     return (
         <div className="Navbar">
             <div className="links">
