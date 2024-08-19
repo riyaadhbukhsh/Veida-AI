@@ -1,5 +1,5 @@
 .Navbar {
-    background-color: rgba(39, 39, 42, 0.8);
+    background-color: #252528;
     padding: 10px 20px;
     width: 100%;
     position: fixed;
@@ -21,9 +21,50 @@
     width: 170px;
 }
 
+.left {
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+}
+
+.right-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Aligns the hamburger and userButton to the right */
+    flex-grow: 1;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.hamburger .line {
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.hamburger .line.open:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+
+.hamburger .line.open:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger .line.open:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
 .right {
     display: flex;
-    gap: 20px;
+    gap: 30px;
     align-items: center;
 }
 
@@ -47,7 +88,7 @@
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 16px; /* Same font size for buttons */
     font-weight: 500;
     text-transform: uppercase;
     transition: background-color 0.3s;
@@ -57,8 +98,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 36px; /* Set a fixed height for all buttons */
-    margin: 0; /* Remove any default margins */
+    height: 36px;
+    margin: 0;
 }
 
 .login-button {
@@ -89,7 +130,53 @@
 }
 
 .userButton {
-    margin-left: 20px;
+    margin-left: 10px;
     display: flex;
     align-items: center;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+        margin-left: auto;
+    }
+
+    .right-group {
+        flex-grow: 0; 
+        z-index: 1001;
+    }
+
+    #burger-user {
+        margin-right: 25px; 
+    }
+
+    .right {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        background-color: #252528;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease;
+        z-index: 1000;
+    }
+
+    .right.open {
+        height: calc(100vh);
+    }
+
+    .right a,
+    .login-button,
+    .signup-button,
+    .premium-button {
+        font-size: 18px;
+        padding: 12px;
+        text-align: center;
+        margin: 10px 0;
+    }
 }
