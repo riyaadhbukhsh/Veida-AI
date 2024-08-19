@@ -36,6 +36,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             setError('Please select a file to upload.');
             return;
         }
+        
         const today = new Date();
         const selectedDate = new Date(examDate);
         if (selectedDate < today) {
@@ -43,7 +44,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             setLoading(false);
             return;
         }
-
 
         setLoading(true); // Set loading state to true
 
