@@ -1,6 +1,7 @@
 from bson import ObjectId
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from .util import generate_review_dates
 import os
 import datetime
 
@@ -140,6 +141,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         description (str): The description of the course.
         exam_date (datetime): The due date for the course.
         flashcards (list): A list of flashcards for the course.
+        review_dates (list): A list of review dates for the course.
 
     Returns:
         None
@@ -151,6 +153,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         "description": description,
         "exam_date": exam_date,
         "flashcards": flashcards,
+        "review_dates": generate_review_dates(datetime.datetime.now(),exam_date), #for spaced intervals of the content
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now()
     }
