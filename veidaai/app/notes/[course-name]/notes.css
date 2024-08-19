@@ -1,0 +1,23 @@
+div#markdown h1 {
+    text-align: center;
+    margin: 1em auto 2.5em auto;
+}
+
+div#markdown h2, h3 {
+    margin: 2em auto 0.5em auto;
+}
+
+div#markdown p, ol, ul, li {
+    color: #DDD;
+    margin: 0.5em auto;
+}
+
+/* indents lists */
+div#markdown ol, ul {
+    margin-left: 4ch;
+}
+
+/* custom spacing after list marker (num or bullet point) */
+div#markdown li {
+    padding-left: 0.7ch;
+}
