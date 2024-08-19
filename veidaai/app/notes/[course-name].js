@@ -1,14 +1,10 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { useParams } from 'next/navigation';
 
 const NotesPage = ({ courseName }) => {
   const { userId } = useAuth();
   const [notes, setNotes] = useState([]);
   const [error, setError] = useState('');
-
   const fetchNotes = async () => {
     try {
       const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_notes?clerk_id=${userId}&course_name=${courseName}`, {

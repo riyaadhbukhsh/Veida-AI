@@ -1,11 +1,14 @@
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
 import { redirect } from 'next/navigation';
 import CheckoutButton from './checkoutbutton';
 import CancelButton from './cancelbutton';
 import './premium.css';
+import { useAuth } from '@clerk/nextjs';
+
 
 const PremiumPage = async () => {
-  const { userId } = auth();
+  const { userId } = useAuth();
 
   if (!userId) {
     redirect('/sign-in');

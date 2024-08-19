@@ -1,0 +1,29 @@
+#card-container {
+    width: 280px;
+    height: 300px;
+    padding: 1rem;
+    
+    cursor: pointer;
+
+    border-radius: 6px;
+    border: 1px solid gray;
+}
+
+@media only screen and (max-width: 781px) {
+    #card-container {
+        width: 40vw;
+        height: auto;
+        min-height: 200px;
+        font-size: 0.9rem;
+        padding: 0.7rem 0.5rem;
+    }
+}
+
+#card-container:hover {
+    border: 1px solid white;
+    transform: translate(3px, 3px);
+}
+
+#card-container p {
+    cursor: auto;
+}

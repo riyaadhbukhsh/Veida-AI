@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@clerk/nextjs";
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();
+
     const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');

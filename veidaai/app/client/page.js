@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CreateCourse from "../../components/CreateCourse";
 import "./client.css";
+import { useRouter } from 'next/navigation';
+import { useAuth, useUser } from "@clerk/nextjs";
 
 const ClientPage = () => {
-  const { isSignedIn, user, userId } = useAuth();
+  const { isSignedIn, userId } = useAuth();
+  const { user } = useUser();
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const router = useRouter();
