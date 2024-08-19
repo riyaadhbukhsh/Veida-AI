@@ -148,7 +148,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 {error && <p className="error-message">{error}</p>}
                 <div className="form-buttons">
                     <button type="submit" disabled={loading}>
-                        {loading ? 'Creating...' : 'Create'}
+                        {loading ? 'Creating...' : 'Submit'}
                     </button>
                     <button type="button" onClick={onClose}>Cancel</button>
                 </div>

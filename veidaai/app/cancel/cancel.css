@@ -21,8 +21,26 @@
   .cancel-description {
     font-size: 1.2rem;
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     color: #d1d5db;
+  }
+
+  .return-button {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #6d9dc5;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .return-button:hover {
+    background-color: #478fca;
+    transform: translateY(-2px);
   }
   
   .home-button {

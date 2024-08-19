@@ -5,7 +5,7 @@
     justify-content: center;
     height: 100vh;
     text-align: center;
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif !important;
     background-color: #1e1e1e;
   }
   
@@ -17,12 +17,32 @@
   
   .subtitle {
     font-size: 2rem;
-    margin: 0;
+    margin-bottom: 1rem;
     color: #EEE;
   }
   
   .message {
     font-size: 1.2rem;
-    margin-top: 1rem;
-    color: #DDD;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #d1d5db;
+    font-style: normal;
+  }
+
+  .returnButton {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #6d9dc5;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .returnButton:hover {
+    background-color: #478fca;
+    transform: translateY(-2px);
   }
