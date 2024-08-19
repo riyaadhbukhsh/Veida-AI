@@ -38,7 +38,7 @@ const NotesPage = ({ courseName }) => {
       <div className="container">
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div id="notes-content" style={{padding: '2em', margin: '1em 3em', borderTop: '1px solid gray'}}>
+        <div id="notes-content" style={{fontFamily: "'Poppins', sans-serif", padding: '2em', margin: '1em 3em', borderTop: '1px solid gray'}}>
           {notes ? (
             <p style={{whiteSpace: 'pre-wrap'}}>
               {typeof notes === 'string' ? notes : JSON.stringify(notes, null, 2)}
