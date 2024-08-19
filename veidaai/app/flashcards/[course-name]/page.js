@@ -57,6 +57,7 @@ function FlashcardPage() {
   const fetchFlashcards = async () => {
     try {
       const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -82,48 +83,59 @@ function FlashcardPage() {
   }, [userId]);
 
   return (
-    <div className="flashcard-page">
-      <h1 className="flashcard-title">
-        {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
-      </h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      {reviewing ? (
-        <div id="review-container">
-          <div className="review-flashcard">
-            <FlashCard ref={flashcardRef} card={currentCard.card} size="large" />
-          </div>
-          <div className="review-buttons">
-            <button className="review-button" onClick={() => setReviewing(false)}>
-              End Review
-            </button>
-            <button className="review-button" onClick={handlePrevCard}>
-              Previous Card
-            </button>
-            <button className="review-button" onClick={handleNextCard}>
-              Next Card
-            </button>
-          </div>
-          <p className="card-counter">{`Card ${currentCard.index+1}/${flashcards.length}`}</p>
-        </div>
-      ) : (
-        <div id="cards-available">
-          {flashcards.length > 0 ? (
-            <>
-              <button className="start-review-button" onClick={() => setReviewing(true)}>
-                Start Reviewing
+    <div className="main-inline">
+      <div className="center-flex-container">
+        <h1 className="title">
+          {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards Generated for ${courseName}`}
+        </h1>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        
+        {reviewing ? (
+          <>
+            <div id="review-container" className="center-flex-container">
+              <span>
+                <button id="review-button" className="basic-button" onClick={() => setReviewing(false)}>
+                  End review
+                </button>
+                <button id="review-button" className="basic-button" onClick={handleNextCard}>
+                  Next Card
+                </button>
+              </span>
+              <FlashCard card={currentCard.card} />
+              <p>{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
+            </div>
+            <div className="review-buttons">
+              <button className="review-button" onClick={() => setReviewing(false)}>
+                End Review
               </button>
-              <div id="cards-preview">
-                {flashcards.map((card, index) => (
-                  <FlashCard key={index} card={card} />
-                ))}
-              </div>
-            </>
-          ) : (
-            <p>No flashcards available.</p>
-          )}
-        </div>
-      )}
+              <button className="review-button" onClick={handlePrevCard}>
+                Previous Card
+              </button>
+              <button className="review-button" onClick={handleNextCard}>
+                Next Card
+              </button>
+            </div>
+            <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
+          </>
+        ) : (
+          <div id="cards-available">
+            {flashcards.length > 0 ? (
+              <>
+                <button className="start-review-button" onClick={() => setReviewing(true)}>
+                  Start Reviewing
+                </button>
+                <div id="cards-preview">
+                  {flashcards.map((card, index) => (
+                    <FlashCard key={index} card={card} />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>No flashcards available.</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
