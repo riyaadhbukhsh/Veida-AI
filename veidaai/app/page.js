@@ -67,7 +67,7 @@ export default function Home() {
         <section className={styles.hookSection}>
           <div className={styles.hookText}>
             <h1>Professors Hate Us. Skip Classes. Ace Finals.</h1>
-            <p>Meet Veida AI — your all-in-one secret academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion. Sign-Up now and revolutionize your learning experience!</p>
+            <p>Meet Veida AI — your all-in-one secret academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion. Register now and revolutionize your learning experience!</p>
             <button onClick={() => router.push('/client')} className={styles.ctaButton}>Get Started for Free</button>
           </div>
         </section>
