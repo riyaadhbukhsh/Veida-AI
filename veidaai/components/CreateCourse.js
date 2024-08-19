@@ -4,6 +4,7 @@ import { useAuth } from "@clerk/nextjs";
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();
+
     const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -12,88 +13,94 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const validateCourseName = (name) => {
+        const invalidChars = /[.!~*'()]/;
+        return !invalidChars.test(name);
+    };
+
     const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
-            const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-            
-            if (allowedExtensions.includes(fileExtension)) {
-                setFile(selectedFile);
-                setError('');
-            } else {
-                setFile(null);
-                setError('Please upload a PDF, JPEG, or PNG file.');
-            }
-        }
+        setFile(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-    
-        if (!userId) {
-            setError('User not authenticated');
-            setLoading(false);
-            return;
-        }
-    
-        if (!file) {
-            setError('Please upload course content (PDF, JPEG, or PNG)');
-            setLoading(false);
-            return;
-        }
-    
-        const invalidChars = /[.!~*'()]/;
-        if (invalidChars.test(name)) {
+        if (!validateCourseName(name)) {
             setError('Please enter a valid course name without special characters: [.!~*\'()]');
-            setLoading(false);
             return;
         }
-    
+        if (!name || !description || !examDate) {
+            setError('Please fill in all fields.');
+            return;
+        }
+        if (!file) {
+            setError('Please select a file to upload.');
+            return;
+        }
+
+        setLoading(true); // Set loading state to true
+
         const formData = new FormData();
+        formData.append('file', file);
         formData.append('clerk_id', userId);
         formData.append('course_name', name);
         formData.append('description', description);
         formData.append('exam_date', examDate);
-        formData.append('file', file);
-    
+
         try {
-            const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course', {
+            const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {
                 method: 'POST',
                 body: formData,
-                // Remove the Content-Type header, let the browser set it automatically
-                // headers: {
-                //     'Content-Type': 'multipart/form-data',
-                // },
             });
-    
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-    
-            const responseText = await response.text();
-            console.log('Response text:', responseText);
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+            if (!extractResponse.ok) {
+                const errorData = await extractResponse.json();
+                setError(errorData.error || 'An error occurred while extracting text.');
+                return;
             }
-    
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (e) {
-                console.error('Error parsing JSON:', e);
-                throw new Error('Invalid JSON response from server');
+
+            const extractedData = await extractResponse.json();
+            const notes = extractedData.notes || {};
+            const flashcards = extractedData.flashcards || [];
+
+            const createResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    clerk_id: userId,
+                    course_name: name,
+                    description: description,
+                    exam_date: examDate,
+                    notes: notes,
+                    flashcards: flashcards,
+                }),
+            });
+
+            if (createResponse.ok) {
+                onCourseCreated({
+                    clerk_id: userId,
+                    course_name: name,
+                    description: description,
+                    exam_date: examDate,
+                    notes: notes,
+                    flashcards: flashcards,
+                });
+                setName('');
+                setDescription('');
+                setExamDate('');
+                setFile(null);
+                setError('');
+                router.push('/client'); // Redirect to the course list page
+            } else {
+                const errorData = await createResponse.json();
+                setError(errorData.message || 'An error occurred while creating the course.');
             }
-    
-            onCourseCreated(data);
-            onClose();
-        } catch (error) {
-            console.error('Error creating course:', error);
-            setError(`Error creating course: ${error.message}`);
+        } catch (err) {
+            console.error('Error:', err);
+            setError('An unexpected error occurred.');
         } finally {
-            setLoading(false);
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -133,7 +140,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 {error && <p className="error-message">{error}</p>}
                 <div className="form-buttons">
                     <button type="submit" disabled={loading}>
-                        {loading ? 'Creating...' : 'Create Course'}
+                        {loading ? 'Creating...' : 'Create'}
                     </button>
                     <button type="button" onClick={onClose}>Cancel</button>
                 </div>
