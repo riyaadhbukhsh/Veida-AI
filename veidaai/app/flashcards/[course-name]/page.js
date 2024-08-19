@@ -1,29 +1,58 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
 import './flashcards-page.css';
 
-// const FlashcardPage = ({ courseName }) => {
 function FlashcardPage() {
   const [flashcards, setFlashcards] = useState([]);
   const [reviewing, setReviewing] = useState(false);
   const [currentCard, setCurrentCard] = useState({card: null, index: null});
   const [error, setError] = useState('');
   const { userId } = useAuth();
+  const flashcardRef = useRef(); // Add this line
 
   const params = useParams();
   const urlCourseName = params['course-name'];
   const courseName = unformatURL(urlCourseName); 
 
-  function  handleClick_NextCard() {
-    // let isLastCard = currentCard.index == (flashcards.length-1);
-    let newIndex = (currentCard.index+1) % flashcards.length;
+  const handleNextCard = useCallback(() => {
+    let newIndex = (currentCard.index + 1) % flashcards.length;
     setCurrentCard({card: flashcards[newIndex], index: newIndex});
-  }
+  }, [currentCard, flashcards]);
+
+  const handlePrevCard = useCallback(() => {
+    let newIndex = (currentCard.index - 1 + flashcards.length) % flashcards.length;
+    setCurrentCard({card: flashcards[newIndex], index: newIndex});
+  }, [currentCard, flashcards]);
+
+  const handleKeyDown = useCallback((event) => {
+    if (reviewing) {
+      switch(event.key) {
+        case 'ArrowRight':
+          handleNextCard();
+          break;
+        case 'ArrowLeft':
+          handlePrevCard();
+          break;
+        case 'ArrowUp':
+        case 'ArrowDown':
+          flashcardRef.current.flip();
+          break;
+      }
+    }
+  }, [reviewing, handleNextCard, handlePrevCard]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
 
   const fetchFlashcards = async () => {
     try {
@@ -36,7 +65,6 @@ function FlashcardPage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetch Success! Response: ', data);
         setFlashcards(data.flashcards);
         setCurrentCard({card: data.flashcards[0], index: 0});
       } else {
@@ -54,55 +82,50 @@ function FlashcardPage() {
   }, [userId]);
 
   return (
-    <div className="main-inline">
-      <div className="center-flex-container">
-        <h1 className="title">
-          {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
-        </h1>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        
-        { reviewing ? (
-          //reviewing
-          <div id="review-container" className="center-flex-container">
-            <span>
-              <button id="review-button" className="basic-button" onClick={()=>setReviewing(false)}>
-                End review
-              </button>
-              <button id="review-button" className="basic-button" onClick={()=>handleClick_NextCard()}>
-                Next Card
-              </button>
-            </span>
-            <FlashCard card={currentCard.card} />
-            <p>{`Card ${currentCard.index+1}/${flashcards.length}`}</p>
+    <div className="flashcard-page">
+      <h1 className="flashcard-title">
+        {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
+      </h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      
+      {reviewing ? (
+        <div id="review-container">
+          <div className="review-flashcard">
+            <FlashCard ref={flashcardRef} card={currentCard.card} size="large" />
           </div>
-        
+          <div className="review-buttons">
+            <button className="review-button" onClick={() => setReviewing(false)}>
+              End Review
+            </button>
+            <button className="review-button" onClick={handlePrevCard}>
+              Previous Card
+            </button>
+            <button className="review-button" onClick={handleNextCard}>
+              Next Card
+            </button>
+          </div>
+          <p className="card-counter">{`Card ${currentCard.index+1}/${flashcards.length}`}</p>
+        </div>
       ) : (
-          //!reviewing
-          <div>
-            {flashcards.length > 0 ? (
-              //flashcards loaded
-              <div id="cards-available" className="center-flex-container">
-                <button id="review-button" className="basic-button" onClick={()=>setReviewing(true)}>
-                  Start reviewing
-                </button>
-              
-                <div id="cards-preview">
-                  {flashcards.map( card => {
-                    return <FlashCard key={card.front} card={card}/>
-                  })}
-                </div>
+        <div id="cards-available">
+          {flashcards.length > 0 ? (
+            <>
+              <button className="start-review-button" onClick={() => setReviewing(true)}>
+                Start Reviewing
+              </button>
+              <div id="cards-preview">
+                {flashcards.map((card, index) => (
+                  <FlashCard key={index} card={card} />
+                ))}
               </div>
-
-            ) : (
-              //flashcards NOT loaded
-              <p>No flashcards available.</p>
-            )}
-          </div>
-        )}
-
-      </div>
+            </>
+          ) : (
+            <p>No flashcards available.</p>
+          )}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default FlashcardPage;

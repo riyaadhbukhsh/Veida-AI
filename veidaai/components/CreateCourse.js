@@ -44,32 +44,32 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             setLoading(false);
             return;
         }
-
-        setLoading(true); // Set loading state to true
-
+    
+        setLoading(true);
+    
         const formData = new FormData();
         formData.append('file', file);
         formData.append('clerk_id', userId);
         formData.append('course_name', name);
         formData.append('description', description);
         formData.append('exam_date', examDate);
-
+    
         try {
             const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
                 method: 'POST',
                 body: formData,
             });
-
+    
             if (!extractResponse.ok) {
                 const errorData = await extractResponse.json();
                 setError(errorData.error || 'An error occurred while extracting text.');
                 return;
             }
-
+    
             const extractedData = await extractResponse.json();
             const notes = extractedData.notes || {};
             const flashcards = extractedData.flashcards || [];
-
+    
             const createResponse = await fetch('http://localhost:8080/api/create_course', {
                 method: 'POST',
                 headers: {
@@ -84,7 +84,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     flashcards: flashcards,
                 }),
             });
-
+    
             if (createResponse.ok) {
                 onCourseCreated({
                     clerk_id: userId,
@@ -99,62 +99,65 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 setExamDate('');
                 setFile(null);
                 setError('');
-                router.push('/client'); // Redirect to the course list page
+                router.push('/client');
             } else {
                 const errorData = await createResponse.json();
-                setError(errorData.message || 'An error occurred while creating the course.');
+                if (createResponse.status === 403) {
+                    setError("You've reached the maximum number of courses for free users. Please upgrade to premium for unlimited courses.");
+                } else {
+                    setError(errorData.message || 'An error occurred while creating the course.');
+                }
             }
         } catch (err) {
             console.error('Error:', err);
             setError('An unexpected error occurred.');
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false);
         }
     };
 
     return (
-        <div className="create-course-modal">
-            <form className="create-course-form" onSubmit={handleSubmit}>
-                <h2>Create New Course</h2>
-                <label htmlFor="courseName">Course Name</label>
-                <input
-                    type="text"
-                    id="courseName"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <label htmlFor="description">Description</label>
-                <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows="3"
-                ></textarea>
-                <label htmlFor="examDate">Exam Date</label>
-                <input
-                    type="date"
-                    id="examDate"
-                    value={examDate}
-                    onChange={(e) => setExamDate(e.target.value)}
-                />
-                <label htmlFor="courseContent">Course Content - PDF, PNG, JPEG</label>
-                <input
-                    type="file"
-                    id="courseContent"
-                    onChange={handleFileChange}
-                    required
-                />
-                {error && <p className="error-message">{error}</p>}
-                <div className="form-buttons">
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Creating...' : 'Submit'}
-                    </button>
-                    <button type="button" onClick={onClose}>Cancel</button>
-                </div>
-            </form>
+        <div className="create-course-overlay">
+          <form onSubmit={handleSubmit} className="create-course-form">
+            <h2>Create a New Course</h2>
+            <input
+              type="text"
+              placeholder="Course Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <textarea
+              placeholder="Course Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <input
+              type="date"
+              value={examDate}
+              onChange={(e) => setExamDate(e.target.value)}
+              required
+            />
+            <div className="file-input-wrapper">
+              <div className="file-input-button">Choose Course Content (PDF, PNG, JPEG)</div>
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+                required
+              />
+            </div>
+            {error && <p className="error">{error}</p>}
+            <div className="form-buttons">
+              <button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Course'}
+              </button>
+              <button type="button" onClick={onClose}>Cancel</button>
+            </div>
+            <button className="close-button" onClick={onClose}>×</button>
+          </form>
         </div>
-    );
+      );
 };
 
 export default CreateCourse;

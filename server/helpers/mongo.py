@@ -147,6 +147,8 @@ def update_subscription_id(clerk_id, subscription_id):
         print(f"Updated subscription ID for clerk_id: {clerk_id}")
         print(f"Update result: {result.raw_result}")
         
+
+        
         
 def update_premium_status(clerk_id, premium):
     """
@@ -405,17 +407,10 @@ def get_flashcards(clerk_id, course_name):
     return None
 
 def get_courses(clerk_id):
-    """
-    Retrieve all courses for a user.
-
-    Args:
-        clerk_id (str): The Clerk ID of the user.
-
-    Returns:
-        list: A list of courses, or None if not found.
-    """
-    user_courses = courses_collection.find_one({"clerk_id": clerk_id}, {"courses": 1, "_id": 0})
-    return user_courses['courses'] if user_courses and 'courses' in user_courses else []
+    user = courses_collection.find_one({"clerk_id": clerk_id})
+    if user:
+        return user.get('courses', [])
+    return []
 
 import traceback
 

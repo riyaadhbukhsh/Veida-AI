@@ -1,25 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import './flashcard-component.css';
 
-export default function FlashCard({card}) {
+const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
     const [flipped, setFlipped] = useState(false);
 
     function handleClick() {
         setFlipped(!flipped);
     }
 
-    // useEffect will set flipped to false if the card is changed
-    useEffect(()=>{setFlipped(false)}, [card]);
+    useImperativeHandle(ref, () => ({
+        flip: () => setFlipped(!flipped)
+    }));
+
+    useEffect(() => {
+        setFlipped(false);
+    }, [card]);
+
+    const removeAsterisks = (text) => {
+        return text.replace(/^\*\*(.*)\*\*$/, '$1').trim();
+    };
+
+    const sizeClass = size === 'large' ? 'card-large' : '';
 
     return (
-        <div id="card-container" onClick={()=>handleClick()}>
-            <div id="card-front" style={{display: flipped ? 'none' : 'inline'}}>
-                <p>{card.front}</p>
+        <div id="card-container" className={`${flipped ? 'flipped' : ''} ${sizeClass}`} onClick={handleClick}>
+            <div id="card-front">
+                <p>{removeAsterisks(card.front)}</p>
             </div>
-
-            <div id="card-back" style={{display: flipped ? 'inline' : 'none'}}>
-                <p>{card.back}</p>
+            <div id="card-back">
+                <p>{removeAsterisks(card.back)}</p>
             </div>
         </div>
-    )
-}
+    );
+});
+
+FlashCard.displayName = 'FlashCard';
+
+export default FlashCard;

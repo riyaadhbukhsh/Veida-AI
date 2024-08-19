@@ -89,7 +89,7 @@ const ClientPage = () => {
       <h1>Course Dashboard</h1>
       <div className="course-cards">
         <div className="course-card new-course" onClick={() => setShowCreateForm(true)}>
-          <h2>+ Create New Course</h2>
+          <h2>Create New Course</h2>
         </div>
         {courses.map((course, index) => (
           <div key={index} className="course-card">
@@ -110,10 +110,15 @@ const ClientPage = () => {
       </div>
       
       {showCreateForm && (
-        <CreateCourse 
-          onCourseCreated={handleCourseCreated} 
-          onClose={handleCloseForm}
-        />
+        <div className="create-course-overlay">
+          <div className="create-course-form">
+            <button className="close-button" onClick={() => setShowCreateForm(false)}>×</button>
+            <CreateCourse 
+              onCourseCreated={handleCourseCreated} 
+              onClose={handleCloseForm}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

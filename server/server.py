@@ -25,7 +25,8 @@ from helpers.mongo import (
     update_times_seen,
     check_premium_status, 
     update_premium_status,
-    add_course_content
+    add_course_content,
+    update_subscription_id
 )
 from helpers.ai import (
     generate_flashcards,
@@ -84,50 +85,91 @@ def create_checkout_session():
     if not clerk_id:
         return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[
-            {
-                'price': 'price_1PnXLSGxUp9wQ6awUitR5t0v', 
-                'quantity': 1,
-            },
-        ],
-        mode='subscription',
-        success_url=os.getenv('STRIPE_SUCCESS_URL'),  # Use environment variable
-        cancel_url=os.getenv('STRIPE_CANCEL_URL'),    # Use environment variable
-        metadata={"clerk_id": clerk_id}  # Store clerk_id in metadata
-    )
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price': 'price_1PnXLSGxUp9wQ6awUitR5t0v', 
+                    'quantity': 1,
+                },
+            ],
+            mode='subscription',
+            success_url=os.getenv('STRIPE_SUCCESS_URL'),
+            cancel_url=os.getenv('STRIPE_CANCEL_URL'),
+            client_reference_id=clerk_id,
+            subscription_data={
+                'metadata': {
+                    'clerk_id': clerk_id
+                }
+            }
+        )
+        return jsonify({'url': session.url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route('/api/cancel-subscription', methods=['POST'])
+def cancel_subscription():
+    data = request.json
+    clerk_id = data.get('clerk_id')
 
-    return jsonify({'url': session.url})
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    try:
+        # Fetch the user's subscription ID from your database
+        user = db.users.find_one({'clerk_id': clerk_id})
+        subscription_id = user.get('subscription_id')
+
+        if not subscription_id:
+            return jsonify({"error": "No active subscription found"}), 404
+
+        # Cancel the subscription in Stripe
+        stripe.Subscription.delete(subscription_id)
+
+        # Update the user's premium status in your database
+        update_premium_status(clerk_id, False)
+        update_subscription_id(clerk_id, None)
+        
+        return jsonify({"message": "Subscription cancelled successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    event = None
     payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
 
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, endpoint_secret
         )
     except ValueError as e:
-        # Invalid payload
-        raise e
+        return jsonify({"error": "Invalid payload"}), 400
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise e
+        return jsonify({"error": "Invalid signature"}), 400
 
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        clerk_id = payment_intent['metadata']['clerk_id']
-        update_premium_status(clerk_id, True)
-        print(f"Updated premium status for clerk_id: {clerk_id}")
-    else:
-      print('Unhandled event type {}'.format(event['type']))
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        clerk_id = session.get('client_reference_id')
+        subscription_id = session.get('subscription')
+        if clerk_id and subscription_id:
+            update_subscription_id(clerk_id, subscription_id)
+            update_premium_status(clerk_id, True)
+            print(f"Updated subscription ID and premium status for clerk_id: {clerk_id}")
+        else:
+            print("Missing clerk_id or subscription_id in the session")
+    elif event['type'] == 'customer.subscription.deleted':
+        subscription = event['data']['object']
+        clerk_id = subscription.get('metadata', {}).get('clerk_id')
+        if clerk_id:
+            update_subscription_id(clerk_id, None)
+            update_premium_status(clerk_id, False)
+            print(f"Removed subscription ID and premium status for clerk_id: {clerk_id}")
+        else:
+            print("Missing clerk_id in the subscription metadata")
 
     return jsonify(success=True)
-            
 
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
@@ -192,14 +234,6 @@ def extract_text():
 
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
-    """
-    Creates a new course for a user.
-
-    This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, and optional notes. It creates a new course for the specified user with the provided details.
-
-    Returns:
-        tuple: A JSON response indicating success and HTTP status code 201.
-    """
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
@@ -210,6 +244,21 @@ def route_create_course():
 
     if not all([clerk_id, course_name, description, exam_date]):
         return jsonify({"error": "Missing required fields"}), 400
+    
+    is_premium = check_premium_status(clerk_id)
+
+    # Get the user's current course count
+    user_courses = get_courses(clerk_id)
+    course_count = len(user_courses)  # user_courses is already a list
+    
+    
+    # If not premium and already has 2 or more courses, return an error
+    if not is_premium and course_count >= 2:
+        return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
+    # Check if the user is premium
+
+
+   
 
     make_course(clerk_id, course_name, description, exam_date, notes, flashcards)
     return jsonify({"message": "Course created successfully"}), 201

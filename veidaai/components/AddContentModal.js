@@ -73,18 +73,21 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="create-course-overlay">
+      <div className="create-course-form">
         <h2>Add Content to {courseName}</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            required
-            disabled={isUploading}
-          />
+          <div className="file-input-wrapper">
+            <div className="file-input-button">Choose Content File (PDF, PNG, JPEG)</div>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              required
+              disabled={isUploading}
+            />
+          </div>
           {error && <p className="error">{error}</p>}
-          <div className="button-group">
+          <div className="form-buttons">
             <button type="submit" disabled={isUploading}>
               {isUploading ? 'Uploading...' : 'Upload Content'}
             </button>
@@ -93,6 +96,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
             </button>
           </div>
         </form>
+        <button className="close-button" onClick={onClose}>×</button>
       </div>
     </div>
   );

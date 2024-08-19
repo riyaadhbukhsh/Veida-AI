@@ -1,29 +1,113 @@
-/* div#cards-available {
-}
-
-button#review-button {
-} */
-
-div#cards-preview {
+.flashcard-page {
+    padding: 2rem;
+    background-color: #1e1e1e;
+    min-height: 100vh;
+    color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .flashcard-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    margin-top: 4rem;
+    color: #6d9dc5;
+  }
+  
+  #review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .review-flashcard {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  
+  .review-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .review-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #6d9dc5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .review-button:hover {
+    background-color: #478fca;
+    transform: translateY(-2px);
+  }
+  
+  .card-counter {
+    font-size: 1.2rem;
+    color: #d1d5db;
+    margin-top: 1rem;
+  }
+  
+  #cards-available {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  #cards-preview {
     display: flex;
     flex-flow: row wrap;
-    /* justify-content: start; */
     justify-content: center;
-    gap: 1.5rem;
-
-    margin-top: 1.5rem;
-    padding: 2rem;
-}
-
-@media only screen and (max-width: 781px) {
-    div#cards-preview {
-        padding: 0.5rem;
-        gap: 6vw;
+    gap: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+  
+  .start-review-button {
+    width: 100%;
+    max-width: 1200px;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #1f2937;
+    background-color: #6d9dc5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-bottom: 2rem;
+  }
+  
+  .start-review-button:hover {
+    background-color: #478fca;
+    transform: translateY(-2px);
+  }
+  
+  @media only screen and (max-width: 781px) {
+    #cards-preview {
+      gap: 1rem;
     }
-}
-
-#review-container {
-    /* border: 1px solid red; */
-    padding: 2rem;
-    row-gap: 2rem;
-}
+    
+    .review-buttons {
+      flex-direction: column;
+    }
+  }

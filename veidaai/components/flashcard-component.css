@@ -1,29 +1,67 @@
-#card-container {
-    width: 280px;
-    height: 300px;
-    padding: 1rem;
-    
-    cursor: pointer;
 
-    border-radius: 6px;
-    border: 1px solid gray;
+
+#card-front, #card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #6d9dc5, #3c6e9e);
+    color: white;
+    font-weight: bold;
+    text-align: center;
 }
+
+#card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #3c6e9e, #6d9dc5);
+}
+
+#card-container.flipped {
+    transform: rotateY(180deg);
+}
+
 
 @media only screen and (max-width: 781px) {
     #card-container {
         width: 40vw;
         height: auto;
         min-height: 200px;
-        font-size: 0.9rem;
-        padding: 0.7rem 0.5rem;
+    }
+
+    #card-front p, #card-back p {
+        font-size: 1.2rem; /* Slightly smaller font size for mobile */
     }
 }
 
-#card-container:hover {
-    border: 1px solid white;
-    transform: translate(3px, 3px);
+#card-container {
+    width: 280px;
+    height: 300px;
+    perspective: 1000px;
+    cursor: pointer;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
 }
 
-#card-container p {
-    cursor: auto;
+#card-container.card-large {
+    width: 100%;
+    max-width: 840px;
+    height: 500px;
 }
+
+#card-front p, #card-back p {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+#card-container.card-large #card-front p,
+#card-container.card-large #card-back p {
+    font-size: 2.5rem;
+}
+
