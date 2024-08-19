@@ -26,11 +26,12 @@ const FlashcardPage = ({ courseName }) => {
     }
   };
 
+
   useEffect(() => {
     if (userId) {
       fetchFlashcards();
     }
-  }, [userId, fetchFlashcards]);
+  }, [userId, courseName]);
 
   return (
     <div>

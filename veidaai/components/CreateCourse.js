@@ -55,7 +55,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         formData.append('exam_date', examDate);
 
         try {
-            const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {
+            const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
                 method: 'POST',
                 body: formData,
             });
@@ -70,7 +70,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             const notes = extractedData.notes || {};
             const flashcards = extractedData.flashcards || [];
 
-            const createResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course', {
+            const createResponse = await fetch('http://localhost:8080/api/create_course', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

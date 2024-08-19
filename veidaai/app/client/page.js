@@ -51,6 +51,28 @@ const ClientPage = () => {
     setShowCreateForm(false);
   };
 
+  const handleDeleteCourse = async (courseName) => {
+    if (window.confirm(`Are you sure you want to delete the course "${courseName}"?`)) {
+      try {
+        const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/delete_course', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ clerk_id: userId, course_name: courseName }),
+        });
+
+        if (response.ok) {
+          await fetchAndSetCourses(); // Refresh the course list
+        } else {
+          console.error('Failed to delete course');
+        }
+      } catch (error) {
+        console.error('Error deleting course:', error);
+      }
+    }
+  };
+
   function formatCourseName(courseName) {
     if (!courseName) return ''; 
     let hyphenated = courseName.replace(/\s+/g, '-');
@@ -70,9 +92,20 @@ const ClientPage = () => {
           <h2>+ Create New Course</h2>
         </div>
         {courses.map((course, index) => (
-          <Link href={`/${formatCourseName(course.course_name)}`} key={index} className="course-card">
-            <h2>{course.course_name || 'Unnamed Course'}</h2>
-          </Link>
+          <div key={index} className="course-card">
+            <Link href={`/${formatCourseName(course.course_name)}`} className="course-link">
+              <h2>{course.course_name || 'Unnamed Course'}</h2>
+            </Link>
+            <button
+              className="delete-course-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteCourse(course.course_name);
+              }}
+            >
+              Delete
+            </button>
+          </div>
         ))}
       </div>
       

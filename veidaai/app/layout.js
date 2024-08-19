@@ -9,7 +9,6 @@ import Navbar from '../components/navbar';
 import { dark } from "@clerk/themes";
 import Script from 'next/script';
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {

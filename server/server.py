@@ -24,7 +24,8 @@ from helpers.mongo import (
     create_or_update_next_study_date,
     update_times_seen,
     check_premium_status, 
-    update_premium_status
+    update_premium_status,
+    add_course_content
 )
 from helpers.ai import (
     generate_flashcards,
@@ -546,7 +547,44 @@ def route_update_times_seen():
     update_times_seen(clerk_id, course_name, card_id)
     return jsonify({"message": "Times seen updated successfully"}), 200
 
+import traceback
+@app.route('/api/add_course_content', methods=['POST'])
+def route_add_course_content():
+    try:
+        data = request.json
+        print("Received data:", data)  # Log received data
+        
+        clerk_id = data.get('clerk_id')
+        course_name = data.get('course_name')
+        new_notes = data.get('notes')
+        new_flashcards = data.get('flashcards')
+
+        missing_fields = []
+        if not clerk_id:
+            missing_fields.append('clerk_id')
+        if not course_name:
+            missing_fields.append('course_name')
+        if not new_notes:
+            missing_fields.append('notes')
+        if not new_flashcards:
+            missing_fields.append('flashcards')
+
+        if missing_fields:
+            return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards)
+        
+        if result:
+            return jsonify({"success": True, "message": "Content added successfully"}), 200
+        else:
+            return jsonify({"success": False, "message": "Failed to add content. Check server logs for details."}), 500
+    except Exception as e:
+        print(f"Unexpected error in route_add_course_content: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 if __name__ == '__main__':
     
     app.run(debug=True, port=8080)
+    
+    

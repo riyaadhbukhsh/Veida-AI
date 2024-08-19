@@ -21,45 +21,30 @@ def parse_mc_questions(multiple_choice_questions):
     return json_str
 
 
-def generate_review_dates(learned_date, exam_date):
-    
-    given_dates_list = [learned_date]
+def generate_review_dates(start_date, exam_date):
+    if isinstance(exam_date, str):
+        # Try parsing with time first
+        try:
+            exam_date = datetime.datetime.strptime(exam_date, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            # If that fails, try parsing as date only
+            try:
+                exam_date = datetime.datetime.strptime(exam_date, '%Y-%m-%d')
+            except ValueError:
+                raise ValueError("Invalid exam_date format. Expected 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'")
 
-    # Create a list of days to add Goal to long term memory 
-    days_to_add = [1,3,7,21,30,45,60]
+    if isinstance(start_date, str):
+        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
 
-    # Convert exam date to datetime object
-    exam_date = datetime.datetime.strptime(exam_date, '%Y-%m-%d %H:%M:%S')
+    # Rest of the function remains the same
+    study_duration = (exam_date - start_date).days
+    review_dates = []
 
-    # Calculate new dates for each given date
-    new_dates_list = []
-    review_dates = {}
+    intervals = [1, 3, 7, 14, 30]  # Review intervals in days
+    for interval in intervals:
+        review_date = start_date + datetime.timedelta(days=interval)
+        if review_date < exam_date:
+            review_dates.append(review_date.strftime('%Y-%m-%d %H:%M:%S'))
 
-    for given_date_str in given_dates_list:
-        # converts given date to mm/dd/yyyy and adds to dictionary
-        given_date = datetime.datetime.strptime(given_date_str, '%Y-%m-%d %H:%M:%S')
-        new_dates = []
-        # calculates list of review dates
-        for days in days_to_add:
-            new_date = given_date + timedelta(days=days)
-            # If the exam date is before the 6th review date, alter the algorithm to ensure reviews are not after the exam date
-            if new_date > exam_date:
-                break
-            new_date_str = new_date.strftime('%Y-%m-%d')
-            new_dates.append(new_date_str)
-        new_dates_list.extend(new_dates)  # Extend the list with new dates
-
-    # If the exam date is within 21 days of the learned date, add the exam date as a review date
-    if (exam_date - given_date).days <= 21:
-        exam_date_str = exam_date.strftime('%Y-%m-%d')
-        new_dates_list.append(exam_date_str)
-
-    for i in range(len(new_dates_list)):
-        review_dates[f'review_{i+1}'] = {
-            'reviewDate': new_dates_list[i],
-            'status': False  # True or False
-        }
-
-    
     return review_dates
 

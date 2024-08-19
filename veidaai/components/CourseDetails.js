@@ -1,18 +1,19 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import Link from "next/link";
-import { formatURL } from "@/app/helpers";
+import { formatURL } from '@/app/helpers';
+import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle } from 'react-icons/fa';
+import AddContentModal from './AddContentModal';
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {
   const [courseObj, setCourseObj] = useState({});
+  const [showAddContentModal, setShowAddContentModal] = useState(false);
   const { userId } = useAuth();
 
   const fetchCourseObj = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}` , {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -20,47 +21,70 @@ const CourseDetails = ({ courseName }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetch successful. Response: ', data);
-        //comparison might have to be rewritten in case url en/decoding goes awry
-        let courseIndex = data.courses.findIndex( course => courseName.localeCompare(course.course_name) == 0);
+        let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) == 0);
         let courseObj = data.courses[courseIndex];
-        //console.log('This course\'s obj: ', data.courses[courseObj]);
         setCourseObj(courseObj);
-      }
-      else {
+      } else {
         console.error('Failed to fetch course. Response error: ', response.ok);
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching course details:', error);
     }
-  }
+  };
 
-  useEffect(()=>{
-    if(userId) {
+  useEffect(() => {
+    if (userId) {
       fetchCourseObj();
     }
   }, [userId]);
 
-  return (
+  const handleAddContent = () => {
+    setShowAddContentModal(true);
+  };
 
-    <div id="course-page">
-      
-      <h2>{courseName}</h2>
-      <button id="add-content-btn" onClick={()=>alert('add content')}>
-        add content
-     </button>
-      <div id="course-content">
-            <Link id="flash-cards-container" className="study-container" href={`/flashcards/${formatURL(courseName)}`}>
-                <button>Study Flashcards</button>
-            </Link>
-            <Link id="notes-container" className="study-container" href={`/notes/${formatURL(courseName)}`}>
-                <button>Study Notes</button>
-            </Link>
-            <Link id="mcqs-container" className="study-container" href={`/mcqs/${formatURL(courseName)}`}>
-                <button>Study Multiple Choice Questions</button>
-            </Link>
+  const handleContentAdded = () => {
+    fetchCourseObj(); // Refresh the course data after adding content
+  };
+
+  return (
+    <div className="course-details-container">
+      <h2 className="course-title">{courseName}</h2>
+      {courseObj.description && (
+        <p className="course-description">{courseObj.description}</p>
+      )}
+      <button id="add-content-btn" onClick={handleAddContent}>
+        Add Content
+      </button>
+      <div className="course-content">
+        <Link href={`/flashcards/${formatURL(courseName)}`} className="study-container">
+          <div>
+            <FaRegLightbulb className="study-icon" />
+            <h3>Flashcards</h3>
+          </div>
+          <p>Study with interactive flashcards to reinforce key concepts</p>
+        </Link>
+        <Link href={`/notes/${formatURL(courseName)}`} className="study-container">
+          <div>
+            <FaRegStickyNote className="study-icon" />
+            <h3>Notes</h3>
+          </div>
+          <p>Review and organize your course notes efficiently</p>
+        </Link>
+        <Link href={`/mcqs/${formatURL(courseName)}`} className="study-container">
+          <div>
+            <FaRegQuestionCircle className="study-icon" />
+            <h3>MCQs</h3>
+          </div>
+          <p>Test your knowledge with multiple choice questions</p>
+        </Link>
       </div>
+      {showAddContentModal && (
+        <AddContentModal
+          courseName={courseName}
+          onClose={() => setShowAddContentModal(false)}
+          onContentAdded={handleContentAdded}
+        />
+      )}
     </div>
   );
 };

@@ -1,12 +1,8 @@
 import os
 import openai
 import datetime
-from .mongo import (
-    get_times_seen,
-    create_or_update_next_study_date
-)
 from pymongo import MongoClient
-
+from .mongo import create_or_update_next_study_date, get_times_seen
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
@@ -60,6 +56,64 @@ def generate_notes(extracted_text):
         return 'Error generating notes.'
 
 
+
+def generate_flashcards(notes):
+    """
+    Generate flashcards using OpenAI API.
+
+    This function generates flashcards from the provided text.
+    
+    Args:
+        notes (str): The summarized notes extracted from the lecture.
+
+    Returns:
+        list: Generated flashcards.
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
+                        "Ensure that each question can be answered using **only** the information contained within the provided text."
+                        "Avoid generating questions that require any outside knowledge or inference."
+                        "Keep questions and answers clear, concise, and directly related to the provided material."
+                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
+                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
+                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
+                        "Example: Flashcard 1:"
+                        "Front: What is Dollar-Cost Averaging (DCA)? "
+                        "Back: Investing a fixed amount on a regular schedule"
+                        "..."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": notes
+                }
+            ]
+        )
+        flashcards_text = response.choices[0].message.content
+
+        # Parse the flashcards from the response
+        flashcards = []
+        for flashcard in flashcards_text.split("Flashcard")[1:]:
+            parts = flashcard.split("Front:")[1].split("Back:")
+            front = parts[0].strip()
+            back = parts[1].strip()
+            flashcards.append({"front": front, "back": back})
+        
+        return flashcards
+
+        # Store each flashcard in the database
+        # for card in flashcards:
+            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
 
 
 def generate_mc_questions(notes):

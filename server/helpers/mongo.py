@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from .util import generate_review_dates
 import os
 import datetime
+import openai
 
 load_dotenv()
 
@@ -12,6 +13,116 @@ mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
+
+openai_api_key = os.getenv('OPENAI_API_KEY')
+openai_client = openai.OpenAI(api_key=openai_api_key)
+
+
+def generate_notes(extracted_text):
+    """
+    Generate notes using OpenAI API.
+
+    This function generates notes from the provided text.
+    
+    Args:
+        extracted_text (str): The text extracted from the file.
+
+    Returns:
+        str: Generated notes.
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "As the perfect consistent educator, your task is to transform the provided text into well-structured, detailed lecture notes without leaving out any subject matter."
+                        "Omit all: course related information, administrative details, agendas, announcements, homework and other school related content."
+                        "Ensure that every single new and relevant information, definition, term, concept, and formula related to the course are included."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": extracted_text
+                }
+            ]
+        )
+        notes = response.choices[0].message.content
+
+        # Store the generated notes in MongoDB
+        # create_or_update_notes(clerk_id, course_name, notes, notes_name)
+
+        return notes
+    except Exception as e:
+        print(f"Error: {e}")
+        return 'Error generating notes.'
+
+
+
+def generate_flashcards(notes):
+    """
+    Generate flashcards using OpenAI API.
+
+    This function generates flashcards from the provided text.
+    
+    Args:
+        notes (str): The summarized notes extracted from the lecture.
+
+    Returns:
+        list: Generated flashcards.
+    """
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
+                        "Ensure that each question can be answered using **only** the information contained within the provided text."
+                        "Avoid generating questions that require any outside knowledge or inference."
+                        "Keep questions and answers clear, concise, and directly related to the provided material."
+                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
+                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
+                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
+                        "Example: Flashcard 1:"
+                        "Front: What is Dollar-Cost Averaging (DCA)? "
+                        "Back: Investing a fixed amount on a regular schedule"
+                        "..."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": notes
+                }
+            ]
+        )
+        flashcards_text = response.choices[0].message.content
+
+        # Parse the flashcards from the response
+        flashcards = []
+        for flashcard in flashcards_text.split("Flashcard")[1:]:
+            parts = flashcard.split("Front:")[1].split("Back:")
+            front = parts[0].strip()
+            back = parts[1].strip()
+            flashcards.append({"front": front, "back": back})
+        
+        return flashcards
+
+        # Store each flashcard in the database
+        # for card in flashcards:
+            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
+
+
+
+
+
 
 
 def update_subscription_id(clerk_id, subscription_id):
@@ -306,6 +417,67 @@ def get_courses(clerk_id):
     user_courses = courses_collection.find_one({"clerk_id": clerk_id}, {"courses": 1, "_id": 0})
     return user_courses['courses'] if user_courses and 'courses' in user_courses else []
 
+import traceback
+
+def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
+    try:
+        # First, let's find the existing course
+        course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+        
+        if not course:
+            print(f"Course not found for clerk_id: {clerk_id} and course_name: {course_name}")
+            return False
+
+        # Find the specific course in the courses array
+        target_course = next((c for c in course['courses'] if c['course_name'] == course_name), None)
+        
+        if not target_course:
+            print(f"Course {course_name} not found in user's courses")
+            return False
+
+        # Check if notes is a string or an array
+        if isinstance(target_course.get('notes'), str):
+            # If it's a string, we'll append the new notes to the existing string
+            update_operation = {
+                "$set": {
+                    "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
+                }
+            }
+        else:
+            # If it's an array (or doesn't exist), we'll push the new notes
+            update_operation = {
+                "$push": {
+                    "courses.$.notes": new_notes
+                }
+            }
+
+        # If there are new flashcards, add them to the update operation
+        if new_flashcards:
+            if "$push" not in update_operation:
+                update_operation["$push"] = {}
+            update_operation["$push"]["courses.$.flashcards"] = {"$each": new_flashcards}
+
+        print(f"Update operation: {update_operation}")  # Log the update operation
+
+        result = courses_collection.update_one(
+            {"clerk_id": clerk_id, "courses.course_name": course_name},
+            update_operation
+        )
+
+        print(f"Update result: {result.raw_result}")  # Log the raw result
+
+        if result.modified_count > 0:
+            print(f"Successfully added new content to course: {course_name}")
+            return True
+        else:
+            print(f"No changes made to course: {course_name}")
+            return False
+
+    except Exception as e:
+        print(f"Error adding course content: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return False
+    
 def delete_course(clerk_id, course_name):
     """
     Delete a course for a user.
@@ -452,6 +624,7 @@ def get_flashcards_with_today_study_date(clerk_id):
                     flashcards_today.append(card)
 
     return flashcards_today
+
 
 def update_times_seen(clerk_id, course_name, card_id):
     """
