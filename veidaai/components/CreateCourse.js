@@ -51,7 +51,14 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             setLoading(false);
             return;
         }
-    
+        const today = new Date();
+        const selectedDate = new Date(examDate);
+        if (selectedDate < today) {
+            setError('Please select a future date for the exam');
+            setLoading(false);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('clerk_id', userId);
         formData.append('course_name', name);
@@ -63,11 +70,11 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course', {
                 method: 'POST',
                 body: formData,
-                // Remove the Content-Type header, let the browser set it automatically
-                // headers: {
-                //     'Content-Type': 'multipart/form-data',
-                // },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
+         
     
             console.log('Response status:', response.status);
             console.log('Response headers:', response.headers);
