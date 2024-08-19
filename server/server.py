@@ -38,6 +38,7 @@ import fitz  # PyMuPDF
 import io
 import datetime
 import stripe
+import base64
 
 load_dotenv()
 
@@ -234,7 +235,6 @@ def extract_text():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/api/create_course', methods=['POST'])
 def create_course():
     data = request.json
@@ -242,13 +242,18 @@ def create_course():
     course_name = data.get('course_name')
     description = data.get('description', '')
     exam_date = data.get('exam_date', '')
-    notes = data.get('notes', {})
-    flashcards = data.get('flashcards', [])
+    file_data = data.get('file_data')
+    file_name = data.get('file_name')
+    file_type = data.get('file_type')
 
-    if not all([clerk_id, course_name, description, exam_date]):
+    if not all([clerk_id, course_name, file_data, file_name, file_type]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    make_course(clerk_id, course_name, description, exam_date, notes, flashcards)
+    # Decode the base64-encoded file data
+    file_data_decoded = base64.b64decode(file_data)
+
+    # Process the decoded file data and create the course
+    make_course(clerk_id, course_name, description, exam_date, file_data_decoded, file_name, file_type)
     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])

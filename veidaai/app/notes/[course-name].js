@@ -7,16 +7,18 @@ const NotesPage = ({ courseName }) => {
   const [error, setError] = useState('');
   const fetchNotes = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_notes?clerk_id=${userId}&course_name=${courseName}`, {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        setNotes(data.notes);
+        let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) == 0);
+        let courseObj = data.courses[courseIndex];
+        setNotes(courseObj.notes || ''); // Set to empty string if notes is null or undefined
       } else {
         setError('Failed to fetch notes');
       }
@@ -32,20 +34,19 @@ const NotesPage = ({ courseName }) => {
   }, [userId, fetchNotes]);
 
   return (
-    <div>
-      <h1>Your Notes for {courseName}</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div>
-        {notes.length > 0 ? (
-          notes.map((note) => (
-            <div key={note.id} className="note">
-              <h3>{note.title}</h3>
-              <p>{note.content}</p>
-            </div>
-          ))
-        ) : (
-          <p>No notes available.</p>
-        )}
+    <div className="main-inline">
+      <div className="container">
+        <h1 className="title">Your Notes for {courseName}</h1>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div id="notes-content" style={{padding: '2em', margin: '1em 3em', borderTop: '1px solid gray'}}>
+          {notes ? (
+            <p style={{whiteSpace: 'pre-wrap'}}>
+              {typeof notes === 'string' ? notes : JSON.stringify(notes, null, 2)}
+            </p>
+          ) : (
+            <p id="unavailable">No notes available.</p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -4,52 +4,89 @@ import { useAuth } from "@clerk/nextjs";
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();
-
     const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [examDate, setExamDate] = useState('');
+    const [file, setFile] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+            const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            
+            if (allowedExtensions.includes(fileExtension)) {
+                setFile(selectedFile);
+                setError('');
+            } else {
+                setFile(null);
+                setError('Please upload a PDF, JPEG, or PNG file.');
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
+    
         if (!userId) {
             setError('User not authenticated');
             setLoading(false);
             return;
         }
-
+    
+        if (!file) {
+            setError('Please upload course content (PDF, JPEG, or PNG)');
+            setLoading(false);
+            return;
+        }
+    
         const invalidChars = /[.!~*'()]/;
         if (invalidChars.test(name)) {
             setError('Please enter a valid course name without special characters: [.!~*\'()]');
             setLoading(false);
             return;
         }
-
+    
+        const formData = new FormData();
+        formData.append('clerk_id', userId);
+        formData.append('course_name', name);
+        formData.append('description', description);
+        formData.append('exam_date', examDate);
+        formData.append('file', file);
+    
         try {
             const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    clerk_id: userId,
-                    course_name: name,
-                    description: description,
-                    exam_date: examDate,
-                }),
+                body: formData,
+                // Remove the Content-Type header, let the browser set it automatically
+                // headers: {
+                //     'Content-Type': 'multipart/form-data',
+                // },
             });
-
+    
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+    
+            const responseText = await response.text();
+            console.log('Response text:', responseText);
+    
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to create course');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const data = await response.json();
+    
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                throw new Error('Invalid JSON response from server');
+            }
+    
             onCourseCreated(data);
             onClose();
         } catch (error) {
@@ -85,6 +122,13 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     id="examDate"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
+                />
+                <label htmlFor="courseContent">Course Content - PDF, PNG, JPEG</label>
+                <input
+                    type="file"
+                    id="courseContent"
+                    onChange={handleFileChange}
+                    required
                 />
                 {error && <p className="error-message">{error}</p>}
                 <div className="form-buttons">
