@@ -117,6 +117,8 @@ h1 {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
   font-family: 'Poppins', sans-serif;
+  max-height: 90vh; /* Limit the height to make the form scrollable */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 @keyframes slideUp {
