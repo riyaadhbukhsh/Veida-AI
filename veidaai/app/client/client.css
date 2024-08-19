@@ -116,6 +116,7 @@ h1 {
   color: #f0f0f0;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
+  font-family: 'Poppins', sans-serif;
 }
 
 @keyframes slideUp {
@@ -144,6 +145,7 @@ h1 {
   color: #f0f0f0;
   font-size: 1rem;
   transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .create-course-form input:focus,
@@ -154,7 +156,7 @@ h1 {
 
 .create-course-form textarea {
   height: 120px;
-  resize: vertical;
+  resize: none;
 }
 
 .create-course-form .error {

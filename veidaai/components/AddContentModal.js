@@ -75,7 +75,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   return (
     <div className="create-course-overlay">
       <div className="create-course-form">
-        <h2>Add Content to {courseName}</h2>
+        <h2>Add to {courseName}</h2>
         <form onSubmit={handleSubmit}>
           <div className="file-input-wrapper">
             <div className="file-input-button">Choose Content File (PDF, PNG, JPEG)</div>
