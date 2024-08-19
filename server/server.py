@@ -39,6 +39,7 @@ import io
 import datetime
 import stripe
 
+pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 load_dotenv()
 
 app = Flask(__name__)

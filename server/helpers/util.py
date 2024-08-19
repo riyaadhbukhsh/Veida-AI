@@ -44,7 +44,7 @@ def generate_review_dates(start_date, exam_date):
     for interval in intervals:
         review_date = start_date + datetime.timedelta(days=interval)
         if review_date < exam_date:
-            review_dates.append(review_date.strftime('%Y-%m-%d %H:%M:%S'))
+            review_dates.append(review_date.strftime('%Y-%m-%d'))
 
     return review_dates
 
