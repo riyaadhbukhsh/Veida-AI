@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import Markdown from 'markdown-to-jsx';
 import { useParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
+import './notes.css';
 
 // this file has been reworked to get notes by first fetching the whole course object
 // and assumes that note is a single string instead of an array of strings
@@ -11,7 +13,8 @@ import { unformatURL } from '@/app/helpers';
 //const NotesPage = ({ courseName }) => {
 const NotesPage = () => {
   const { userId } = useAuth();
-  const [notes, setNotes] = useState([]);
+  // const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(null);
   const [error, setError] = useState('');
 
   const params = useParams();
@@ -64,9 +67,10 @@ const NotesPage = () => {
               </div>
             )) */}
           { notes ? (
-              <p style={{whiteSpace: 'pre-wrap'}}>
-                {notes}
-              </p>
+              <div id='markdown'>
+                <Markdown>{notes}</Markdown>
+                {/* <p style={{whiteSpace: 'pre-wrap'}}>{notes}</p> */}
+              </div>
           ) : (
             <p id="unavailable">No notes available.</p>
           )}
