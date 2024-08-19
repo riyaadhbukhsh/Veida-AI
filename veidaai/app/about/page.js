@@ -58,7 +58,7 @@ const AboutUs = () => {
             <img src="/sancho.jpg" alt="Sancho Syquia" className="founder-image" />
             <h3 className="founder-name">
               Sancho Syquia
-              <a href="https://linkedin.com/in/ssyquia" className="founder-linkedin">
+              <a href="https://linkedin.com/in/ssyquia" target="_blank" className="founder-linkedin">
                 <FaLinkedin className="linkedin-icon" />
               </a>
             </h3>
@@ -68,7 +68,7 @@ const AboutUs = () => {
             <img src="/everett.jpg" alt="Everett Villiger" className="founder-image" />
             <h3 className="founder-name">
               Everett Villiger
-              <a href="https://www.linkedin.com/in/everett-villiger-622002295/" className="founder-linkedin">
+              <a href="https://www.linkedin.com/in/everett-villiger-622002295/" target="_blank" className="founder-linkedin">
                 <FaLinkedin className="linkedin-icon" />
               </a>
             </h3>
@@ -78,7 +78,7 @@ const AboutUs = () => {
             <img src="/derek.jpg" alt="Derek Gomez" className="founder-image" />
             <h3 className="founder-name">
               Derek Gomez
-              <a href="https://linkedin.com/in/derekgomez" className="founder-linkedin">
+              <a href="https://linkedin.com/in/derekgomez" target="_blank" className="founder-linkedin">
                 <FaLinkedin className="linkedin-icon" />
               </a>
             </h3>
@@ -88,7 +88,7 @@ const AboutUs = () => {
             <img src="/riyaadh.jpg" alt="Riyaadh Bukhsh" className="founder-image" />
             <h3 className="founder-name">
               Riyaadh Bukhsh
-              <a href="https://linkedin.com/in/riyaadhbukhsh" className="founder-linkedin">
+              <a href="https://linkedin.com/in/riyaadhbukhsh" target="_blank" className="founder-linkedin">
                 <FaLinkedin className="linkedin-icon" />
               </a>
             </h3>
