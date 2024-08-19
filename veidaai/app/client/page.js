@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CreateCourse from "../../components/CreateCourse";
 import "./client.css";
