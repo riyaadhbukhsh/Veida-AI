@@ -50,8 +50,8 @@
 
 #card-container.card-large {
     width: 100%;
-    max-width: 840px;
-    height: 500px;
+    max-width: 700px;
+    height: 400px;
 }
 
 #card-front p, #card-back p {
