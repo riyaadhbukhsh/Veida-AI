@@ -25,7 +25,7 @@ from helpers.mongo import (
     update_times_seen,
     check_premium_status, 
     update_premium_status,
-    update_subscription_id
+    update_subscription_id,
 )
 from helpers.ai import (
     generate_flashcards,
@@ -233,7 +233,6 @@ def extract_text():
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 
 @app.route('/api/create_course', methods=['POST'])

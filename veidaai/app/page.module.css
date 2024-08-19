@@ -1,35 +1,28 @@
 .vantaContainer {
-  position: absolute; /* Ensure it covers the entire viewport */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  z-index: -1; /* Ensure it is behind all other elements */
-  pointer-events: none; /* Prevent it from intercepting pointer events */
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
 }
 
+
+
 .contentContainer {
-  margin: 0 15%; /* Add 15% margin on the left and right */
-  width: 70%; /* Ensure the content container does not exceed the viewport width */
-  position: relative; /* Ensure it is positioned above the Vanta.js container */
-  z-index: 1; /* Higher z-index to be above the Vanta.js container */
-  pointer-events: auto; /* Allow pointer events */
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .main {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0;
-  background-color: transparent; /* Make background transparent to see Vanta effect */
-  color: #f0f0f0;
-  font-family: 'Poppins', sans-serif;
-  position: relative;
-  z-index: 2; /* Ensure it is above the Vanta.js container */
+  align-items: flex-start;
   width: 100%;
   min-height: 100vh;
-  overflow-y: auto; /* Ensure the main container can scroll */
-  pointer-events: auto; /* Allow pointer events */
+  
 }
 
 .hookSection {
@@ -37,24 +30,21 @@
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   padding: 2rem;
   position: relative;
-  z-index: 3; /* Ensure it is above the Vanta.js container */
-  pointer-events: auto; /* Allow pointer events */
 }
 
 .hookText {
-  z-index: 3; /* Ensure it is above the Vanta.js container */
   text-align: left;
   max-width: 600px;
 }
 
 .hookText h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #C5F4E0;
+  color: #f0f0f0;
 }
 
 .hookText p {
@@ -63,37 +53,126 @@
   color: #f0f0f0;
 }
 
-.hookText button {
+
+.ctaButton {
   padding: 1rem 2rem;
-  background-color: #007bff; /* Render's CTA button color */
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
+  background-color: black;
+  color: white;
+  border: 2px solid white;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 700;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  z-index: 10; /* Ensure it is above other elements */
-  position: relative; /* Ensure z-index works */
-  pointer-events: auto; /* Allow pointer events */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  position: relative;
+  margin-top: 1rem;
+  transition: color 0.3s ease, background-color 0.6s ease;
 }
 
-.hookText button:hover {
-  background-color: #0056b3; /* Darker shade for hover effect */
-  transform: translateY(-2px); /* Slight lift on hover */
+.ctaButton:hover {
+  background-color: white;
+  color: black;
 }
 
-.featuresSection, .howItWorksSection {
+.contentBelow {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: #000; /* Dark background */
+}
+
+
+.fullPageSection {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+.sectionInner {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
   width: 100%;
-  padding: 4rem 2rem;
-  background-color: transparent; /* Make background transparent to see Vanta effect */
+  padding: 0 2rem;
 }
 
-.featuresText, .howItWorksText {
+.textContent, .graphicContent {
   flex: 1;
   padding: 1rem;
+}
+.textContent h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.textContent p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.getStarted {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #4a00e0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.getStarted:hover {
+  background-color: #3c00b3;
+}
+
+.graphicContent {
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 300px;
+  border-radius: 8px;
+}
+
+/* Alternating layout and colors */
+.fullPageSection:nth-child(odd) {
+  flex-direction: row-reverse;
+  background-color: #e6f2ff; /* Light blue */
+}
+
+.fullPageSection:nth-child(even) {
+  background-color: #fff0f5; /* Light pink */
+}
+
+
+.fullPageSection:nth-child(even) .textContent {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .sectionInner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .fullPageSection:nth-child(odd) .sectionInner {
+    flex-direction: column-reverse;
+  }
+
+  .textContent, .graphicContent {
+    width: 100%;
+  }
+
+  .textContent h2 {
+    font-size: 2rem;
+  }
+
+  .textContent p {
+    font-size: 1rem;
+  }
 }

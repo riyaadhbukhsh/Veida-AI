@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+  }
+  
+  .title {
+    font-size: 8rem;
+    margin: 0;
+    color: #FFF;
+  }
+  
+  .subtitle {
+    font-size: 2rem;
+    margin: 0;
+    color: #EEE;
+  }
+  
+  .message {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    color: #DDD;
+  }

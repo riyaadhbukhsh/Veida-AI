@@ -2,15 +2,26 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import CourseList from "../../components/CourseList";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CreateCourse from "../../components/CreateCourse";
 import "./client.css";
 
 const ClientPage = () => {
   const { isSignedIn, user, userId } = useAuth();
   const [courses, setCourses] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const router = useRouter();
 
-  const fetchCourses = async () => {
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push('/sign-in');
+    } else if (userId) {
+      fetchAndSetCourses();
+    }
+  }, [isSignedIn, userId, router]);
+
+  const fetchAndSetCourses = async () => {
     try {
       const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
@@ -18,6 +29,7 @@ const ClientPage = () => {
           'Content-Type': 'application/json',
         },
       });
+      
       if (response.ok) {
         const data = await response.json();
         setCourses(data.courses);
@@ -27,23 +39,50 @@ const ClientPage = () => {
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
+  }
+
+  const handleCourseCreated = async (newCourse) => {
+    setShowCreateForm(false);
+    await fetchAndSetCourses(); // Fetch courses again after creating a new one
   };
 
-  useEffect(() => {
-    if (isSignedIn && userId) {
-      fetchCourses();
-    }
-  }, [isSignedIn, userId]);
+  const handleCloseForm = () => {
+    setShowCreateForm(false);
+  };
+
+  function formatCourseName(courseName) {
+    if (!courseName) return ''; 
+    let hyphenated = courseName.replace(/\s+/g, '-');
+    let encoded = encodeURIComponent(hyphenated);
+    return encoded;
+  }
+
+  if (!isSignedIn) {
+    return null; // Return null to avoid rendering anything while redirecting
+  }
 
   return (
     <div className="client-page">
-      <h1>Hello {user?.username || 'User'}, welcome to VeidaAI</h1>
-      <Link href="/create-course">
-        <button>+ New Course</button>
-      </Link>
-      <CourseList courses={courses} />
+      <h1>Course Dashboard</h1>
+      <div className="course-cards">
+        <div className="course-card new-course" onClick={() => setShowCreateForm(true)}>
+          <h2>+ Create New Course</h2>
+        </div>
+        {courses.map((course, index) => (
+          <Link href={`/${formatCourseName(course.course_name)}`} key={index} className="course-card">
+            <h2>{course.course_name || 'Unnamed Course'}</h2>
+          </Link>
+        ))}
+      </div>
+      
+      {showCreateForm && (
+        <CreateCourse 
+          onCourseCreated={handleCourseCreated} 
+          onClose={handleCloseForm}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default ClientPage;

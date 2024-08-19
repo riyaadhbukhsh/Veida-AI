@@ -320,6 +320,7 @@ def delete_course(clerk_id, course_name):
     )
     return result.modified_count > 0
 
+
 def update_lastseen(clerk_id, course_name, card_id):
     """
     Update the last seen date of a flashcard.

@@ -27,6 +27,10 @@
     align-items: center;
 }
 
+
+.right a:hover {
+    color: #d1d5db;
+}
 .right a {
     color: white;
     text-decoration: none;
@@ -34,10 +38,7 @@
     font-weight: 500;
     transition: color 0.3s;
     font-family: 'Poppins', sans-serif;
-}
-
-.right a:hover {
-    color: #d1d5db;
+    cursor: pointer; /* Add this line */
 }
 
 .login-button,
@@ -50,6 +51,7 @@
     text-transform: uppercase;
     transition: background-color 0.3s;
     font-family: 'Poppins', sans-serif;
+    cursor: pointer; /* Add this line */
 }
 
 .login-button {
@@ -72,7 +74,6 @@
 .userButton {
     margin-left: 20px;
 }
-
 .premium-button {
     background-color: #6d9dc5;
     color: #27272a;
@@ -82,10 +83,10 @@
     font-size: 14px;
     font-weight: 500;
     text-transform: uppercase;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
+    cursor: pointer; /* Add this line to show the hand cursor on hover */
 }
 
 .premium-button:hover {
     background-color: #478fca;
 }
-
