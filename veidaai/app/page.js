@@ -72,6 +72,10 @@ export default function Home() {
           </div>
         </section>
       </div>
+      {/*
+      
+      
+      
       <div className={styles.contentBelow}>
         <section className={styles.fullPageSection} data-section="0">
           <div className={styles.sectionInner}>
@@ -81,7 +85,6 @@ export default function Home() {
               <button className={styles.getStarted}>Get Started</button>
             </div>
             <div className={styles.graphicContent}>
-              {/* Add your graphic/image here */}
             </div>
           </div>
         </section>
@@ -95,7 +98,6 @@ export default function Home() {
               <button className={styles.getStarted}>Get Started</button>
             
             
-              {/* Add your graphic/image here */}
             </div>
           </div>
         </section>
@@ -108,11 +110,10 @@ export default function Home() {
               <button className={styles.getStarted}>Get Started</button>
             </div>
             <div className={styles.graphicContent}>
-              {/* Add your graphic/image here */}
             </div>
           </div>
         </section>
-      </div>
+      </div> */}
     </div>
   );
 }
