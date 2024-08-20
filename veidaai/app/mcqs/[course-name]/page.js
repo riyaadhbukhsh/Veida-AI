@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import { useParams } from 'next/navigation';
 //import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
+import { FaArrowLeft } from 'react-icons/fa';
 //import './mcqs-page.css';
 
 function McqsPage() {
@@ -48,6 +50,7 @@ function McqsPage() {
     
     return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
         <h1>Your MCQs for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div>
