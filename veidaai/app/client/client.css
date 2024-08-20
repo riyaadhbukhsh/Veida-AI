@@ -237,6 +237,15 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.form-buttons button:disabled,
+.form-buttons button:disabled:hover {
+  background-color: #a9a9a9;
+  color: #555555;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 .close-button {
   position: absolute;
   top: 15px;

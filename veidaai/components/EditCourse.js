@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
 
 const EditCourse = ({ course, onCourseUpdated, onClose }) => {
@@ -7,7 +7,23 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
   const [examDate, setExamDate] = useState(course.exam_date);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false); // State to track form validity
   const { userId } = useAuth();
+
+  useEffect(() => {
+    // Check if all fields are filled and if there are changes compared to the initial state
+    const isUnchanged =
+      name.trim() === course.course_name &&
+      description.trim() === course.description &&
+      examDate.trim() === course.exam_date;
+
+    setIsFormValid(
+      name.trim() !== '' &&
+      description.trim() !== '' &&
+      examDate.trim() !== '' &&
+      !isUnchanged // Ensure the form is only valid if there are changes
+    );
+  }, [name, description, examDate, course]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +37,7 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
       exam_date: examDate,
     };
 
-    console.log('Payload:', payload); // Add this line
+    console.log('Payload:', payload);
 
     try {
       const response = await fetch('http://localhost:8080/api/update_course', {
@@ -33,16 +49,16 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
       });
 
       if (response.ok) {
-        console.log('Course updated successfully'); // Add this line
+        console.log('Course updated successfully');
         onCourseUpdated();
         onClose();
       } else {
         const errorData = await response.json();
-        console.error('Error response:', errorData); // Add this line
+        console.error('Error response:', errorData);
         setError(errorData.error || 'An error occurred while updating the course.');
       }
     } catch (error) {
-      console.error('Error:', error); // Add this line
+      console.error('Error:', error);
       setError('An error occurred while updating the course.');
     } finally {
       setLoading(false);
@@ -74,7 +90,7 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
       />
       {error && <p className="error">{error}</p>}
       <div className="form-buttons">
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || !isFormValid}>
           {loading ? 'Updating...' : 'Update'}
         </button>
         <button type="button" onClick={onClose}>

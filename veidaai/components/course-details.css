@@ -1,4 +1,4 @@
-.course-details-container {
+  .course-details-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -258,6 +258,15 @@
     background-color: #6b7280;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .form-buttons button:disabled,
+  .form-buttons button:disabled:hover {
+    background-color: #a9a9a9;
+    color: #555555;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
   }
   
   .close-button {
