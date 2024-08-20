@@ -225,8 +225,8 @@ def extract_text():
         
         # Call the functions with extracted_text
         notes = generate_notes(extracted_text)
-        flashcards = generate_flashcards(notes)
         mc_questions = generate_mc_questions(notes)
+        flashcards = generate_flashcards(notes)
         
   
         return jsonify({"notes": notes, "flashcards": flashcards, "mc_questions": mc_questions}), 200
@@ -258,10 +258,10 @@ def route_create_course():
     course_count = len(user_courses)  # user_courses is already a list
     
     
-    
+    #!commenting out for testing purposes
     # If not premium and already has 2 or more courses, return an error
-    if not is_premium and course_count >= 2:
-        return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
+    # if not is_premium and course_count >= 2:
+    #     return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
     # Check if the user is premium
 
 
