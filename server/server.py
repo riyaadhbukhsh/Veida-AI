@@ -28,6 +28,7 @@ from helpers.mongo import (
     update_premium_status,
     add_course_content,
     update_subscription_id,
+    get_flashcards_with_today_study_date
 )
 from helpers.ai import (
     generate_flashcards,
@@ -60,6 +61,27 @@ db = client['VeidaAI']
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
+@app.route('/api/check_flashcards_due', methods=['GET'])
+def api_check_flashcards_due():
+    """
+    Check which flashcards are due for review today for a given user.
+    """
+    clerk_id = request.args.get('clerk_id')
+    
+    if not clerk_id:
+        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+
+    # Get flashcards due today
+    flashcards_today = get_flashcards_with_today_study_date(clerk_id)
+
+    if not flashcards_today:
+        return jsonify({"message": "No flashcards due for review today."}), 200
+
+    # Collect unique course names
+    unique_courses = {flashcard.get('course_name', 'No course name available') for flashcard in flashcards_today}
+
+    # Return the unique course names
+    return jsonify({"unique_courses": list(unique_courses)}), 200
 
 @app.route('/webhook/clerk', methods=['POST'])
 def clerk_webhook():

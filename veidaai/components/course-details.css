@@ -18,6 +18,13 @@
     text-align: center;
     color: #fff;
   }
+
+  .course-exam-date {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    color: #d1d5db;
+    text-align: center;
+  }  
   
   .course-description {
     font-size: 1.2rem;
