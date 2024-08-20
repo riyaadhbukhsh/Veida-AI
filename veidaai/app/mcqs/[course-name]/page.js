@@ -55,11 +55,12 @@ function McqsPage() {
             mcqs.map((question) => (
             <div key={question.concept} className="question">
                 <h3>{question.concept}</h3>
-                <p>{question.question_type}</p>
+                <h4>{question.question_type}</h4>
+                <p><b>{question.question}</b></p>
                 {question.possible_answers.map((answer, index) => (
-                <p key={index}>{answer}</p>
+                <p key={index}>{String.fromCharCode(97 + index)}. {answer}</p>
                 ))}
-                <p>{question.correct_answer}</p>
+                <p><b>Answer: {question.correct_answer}</b></p>
                 <p>{question.why}</p>
             </div>
             ))
