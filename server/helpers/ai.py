@@ -1,4 +1,5 @@
 import os
+import json
 import openai
 import datetime
 from pymongo import MongoClient
@@ -119,8 +120,15 @@ def generate_flashcards(notes):
 
 def generate_mc_questions(notes):
     """
-    Generate multiple choice questions using OpenAI API.
-    !Currently only supports 1 question per call.
+    Generate multiple-choice questions using OpenAI API.
+
+    This function generates multiple-choice questions from the provided text.
+    
+    Args:
+        notes (str): The summarized notes extracted from the lecture.
+
+    Returns:
+        list: Generated multiple-choice questions.
     """
     initial_content = """
     You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. The questions should be conceptually similar to the following examples:
@@ -140,7 +148,8 @@ def generate_mc_questions(notes):
     5. **Application:** Using concepts or formulas to solve problems or perform calculations.
         Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
-    Please generate 2 multiple-choice question based on the provided concept and principles and follow the JSON format below.
+    Please generate exactly 2 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
+
     [
         {
             "concept": "Concept Name",
@@ -157,29 +166,33 @@ def generate_mc_questions(notes):
         }
     ]
 
-    Please make sure to follow this structure exactly for each question generated.
+    Ensure the output is a valid JSON array with exactly 2 question objects.
+    Please ensure that no escape characters (such as backslashes) are used in the output, except for properly escaped quotes within strings.
     """
-    multiple_choice_questions = openai_client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": initial_content},
-            {"role": "user", "content": notes}
-        ]
-    )
-    output = multiple_choice_questions.choices[0].message.content
-    json_mc_questions = parse_mc_questions(output)
 
-    if json_mc_questions:
-        mc_questions = []
-        for question in json_mc_questions:
-            mc_questions.append(question)
-        return mc_questions
-    else:
-        return {"message": "No questions generated."}
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": initial_content},
+                {"role": "user", "content": notes}
+            ],
+            temperature=0.7,  # Lower temperature for more deterministic output
+              # Adjust max tokens to ensure sufficient length
+        )
+        output = response.choices[0].message.content
 
+        # Attempt to parse the JSON to validate it
+        try:
+            json_output = json.loads(output)
+            return json_output  # Return as Python dict (list of dicts)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON: {e}")
+            return None
 
-
-
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
 def generate_flashcards(notes):
