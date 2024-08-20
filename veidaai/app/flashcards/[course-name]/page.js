@@ -109,22 +109,33 @@ function FlashcardPage() {
   return (
     <div className="flashcard-page">
       {reviewing ? (
-        <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft onClick={() => setReviewing(false)}/></Link>
+        <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+          <FaArrowLeft onClick={() => { 
+            console.log('Back to flashcards link clicked');
+            setReviewing(false); 
+            fetchFlashcards(); 
+          }}/>
+        </Link>
       ) : (
-        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+          <FaArrowLeft onClick={() => { 
+            console.log('Back to course link clicked');
+            setReviewing(false); 
+          }}/>
+        </Link>
       )}
       <h1 className="flashcard-title">
         {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
       </h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-
+  
       {reviewing ? (
         <div id="review-container">
           <div className="review-flashcard">
             <FlashCard ref={flashcardRef} card={currentCard.card} size="large" />
           </div>
           <div className="review-buttons">
-            <button className="review-button" onClick={() => setReviewing(false)}>
+            <button className="review-button" onClick={() => { setReviewing(false); fetchFlashcards(); }}>
               End Review
             </button>
             <button className="review-button" onClick={handlePrevCard}>

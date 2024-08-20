@@ -3,17 +3,22 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import { useParams } from 'next/navigation';
-//import FlashCard from '@/components/FlashCard';
+import { useParams, useRouter } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
-//import './mcqs-page.css';
+import './mcqs-page.css';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
 
 function McqsPage() {
     const { userId } = useAuth();
     const [mcqs, setMcqs] = useState([]);
     const [error, setError] = useState(null);
-
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [submitted, setSubmitted] = useState(false);
+    const router = useRouter();
 
     const params = useParams();
     const urlCourseName = params['course-name'];
@@ -21,59 +26,129 @@ function McqsPage() {
 
     const fetchMcqs = async () => {
         try {
-            
             const response = await fetch(`http://localhost:8080/api/get_mcqs?clerk_id=${userId}&course_name=${courseName}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            setMcqs(data.mcqs);
-        } else {
-            setError('Failed to fetch flashcards');
-        } 
-        }catch (error) {
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setMcqs(data.mcqs);
+            } else {
+                setError('Failed to fetch flashcards');
+            }
+        } catch (error) {
             setError('Failed to fetch flashcards');
         }
-            
     };
-
 
     useEffect(() => {
         if (userId) {
-          fetchMcqs();
+            fetchMcqs();
         }
-      }, [userId, courseName]);
-    
+    }, [userId, courseName]);
+
+    const handleAnswerSelect = (index) => {
+        setSelectedAnswer(index);
+    };
+
+    const handleSubmit = () => {
+        setSubmitted(true);
+    };
+
+    const handleNextQuestion = () => {
+        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+        setSelectedAnswer(null);
+        setSubmitted(false);
+    };
+
+    const handleEndSession = () => {
+        router.push(`/${urlCourseName}`);
+    };
+
+    const parseTextWithLatex = (text) => {
+        const parts = text.split(/(\\\(.*?\\\)|\\\[.*?\\\])/g).filter(Boolean);
+ 
+        return parts.map((part, index) => {
+            if (part.startsWith('\\(') && part.endsWith('\\)')) {
+                return (
+                    <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2), { throwOnError: false }) }} />
+                );
+            } else if (part.startsWith('\\[') && part.endsWith('\\]')) {
+                return (
+                    <div key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2), { displayMode: true, throwOnError: false }) }} />
+                );
+            }
+            return <span key={index}>{part}</span>;
+        });
+    };
+
+    const currentQuestion = mcqs[currentQuestionIndex];
+
+    const isCorrect = currentQuestion && currentQuestion.possible_answers[selectedAnswer] === currentQuestion.correct_answer;
+
+
     return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
-        <h1>Your MCQs for {courseName}</h1>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div>
-        {mcqs.length > 0 ? (
-            mcqs.map((question) => (
-            <div key={question.concept} className="question">
-                <h3>{question.concept}</h3>
-                <h4>{question.question_type}</h4>
-                <p><b>{question.question}</b></p>
-                {question.possible_answers.map((answer, index) => (
-                <p key={index}>{String.fromCharCode(97 + index)}. {answer}</p>
-                ))}
-                <p><b>Answer: {question.correct_answer}</b></p>
-                <p>{question.why}</p>
+        <div className="mcqs-container">
+            <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+            <h1 className="mcqs-header">Your MCQs for {courseName}</h1>
+            {error && <p className="error-message">{error}</p>}
+            <div className="question-container">
+                {mcqs.length > 0 ? (
+                    <div>
+                        <h3 className="question-concept">{parseTextWithLatex(currentQuestion.concept)}</h3>
+                        <p className="question-text"><b>{parseTextWithLatex(currentQuestion.question)}</b></p>
+                        <div className="answers-grid">
+                            {currentQuestion.possible_answers.map((answer, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAnswerSelect(index)}
+                                    className={`answer-button ${selectedAnswer === index ? 'selected' : ''}`}
+                                    style={{
+                                        backgroundColor: submitted
+                                            ? answer === currentQuestion.correct_answer
+                                                ? 'green'
+                                                : index === selectedAnswer
+                                                    ? 'red'
+                                                    : 'white'
+                                            : selectedAnswer === index
+                                                ? '#a9a9a9'
+                                                : 'white',
+                                        color: 'black'
+                                    }}
+                                >
+                                    {String.fromCharCode(97 + index)}. {parseTextWithLatex(answer)}
+                                </button>
+                            ))}
+                        </div>
+                        {!submitted ? (
+                            <button onClick={handleSubmit} className="submit-button">Submit</button>
+                        ) : (
+                            <div>
+                                {isCorrect ? (
+                                    <p className="feedback-message correct-answer">Congrats! You got it right.</p>
+                                ) : (
+                                    <p className="feedback-message incorrect-answer">Sorry, that's incorrect.</p>
+                                )}
+                                <p className="answer-description"><b>Answer: {parseTextWithLatex(currentQuestion.correct_answer)}</b></p>
+                                <p className="answer-description">{parseTextWithLatex(currentQuestion.why)}</p>
+                                {currentQuestionIndex < mcqs.length - 1 ? (
+                                    <button onClick={handleNextQuestion} className="next-button">Next Question</button>
+                                ) : (
+                                    <button onClick={handleEndSession} className="end-session-button">End Session</button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <p>No MCQs available.</p>
+                )}
             </div>
-            ))
-        ) : (
-            <p>No MCS available.</p>
-        )}
         </div>
-    </div>
     );
-};
+}
+
 export default McqsPage;
-
-

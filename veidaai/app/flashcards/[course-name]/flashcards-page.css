@@ -25,7 +25,21 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-
+.back-arrow-link {
+    position: absolute;
+    left: 1rem;
+    top: 80px;
+    color: #6d9dc5;
+    font-size: 2.6rem;
+  }
+  
+  @media screen and (max-width: 781px) {
+    .back-arrow-link {
+      top: 75px;
+      font-size: 1.8rem;
+    }
+  }
+  
 .review-flashcard {
   width: 100%;
   display: flex;

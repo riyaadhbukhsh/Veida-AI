@@ -326,7 +326,7 @@ def route_create_course():
     user_courses = get_courses(clerk_id)
     course_count = len(user_courses)
     
-    if not is_premium and course_count >= 10:
+    if not is_premium and course_count >= 2:
         return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
 
     try:

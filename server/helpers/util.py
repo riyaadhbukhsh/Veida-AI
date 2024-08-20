@@ -2,6 +2,8 @@ import datetime
 from datetime import datetime, timedelta
 import json
 import re
+
+
 def parse_mc_questions(multiple_choice_questions):
     # Extract the JSON string (ignoring surrounding text)
     start_index = multiple_choice_questions.find('```json') + len('```json')
