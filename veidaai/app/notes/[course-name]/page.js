@@ -6,7 +6,9 @@ import { useAuth } from "@clerk/nextjs";
 import Markdown from 'markdown-to-jsx';
 import { useParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
-import { FaArrowLeft } from 'react-icons/fa'
+import { FaArrowLeft } from 'react-icons/fa';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 import './notes.css';
 
 const NotesPage = () => {
@@ -29,7 +31,7 @@ const NotesPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        let courseIndex = data.courses.findIndex( course => courseName.localeCompare(course.course_name) == 0);
+        let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) === 0);
         let courseObj = data.courses[courseIndex];
         setNotes(courseObj.notes);
       } else {
@@ -40,23 +42,45 @@ const NotesPage = () => {
     }
   };
 
+  const parseTextWithLatex = (text) => {
+    if (typeof text !== 'string') return text;
+
+    const parts = text.split(/(\\\(.*?\\\))/g).filter(Boolean);
+
+    return parts.map((part) => {
+      if (part.startsWith('\\(') && part.endsWith('\\)')) {
+        let latexRendered = katex.renderToString(part.slice(2, -2), { throwOnError: false });
+
+        // Extract the MathML content from the rendered output
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(latexRendered, 'text/html');
+        const mathMl = doc.querySelector('.katex-mathml');
+
+        return mathMl ? mathMl.outerHTML : latexRendered;
+      }
+      return part;
+    }).join('');
+  };
+
   useEffect(() => {
     if (userId) {
       fetchNotes();
     }
-  }, [userId, fetchNotes]);
+  }, [userId]);
 
   return (
     <div className="main-inline">
       <div className="container">
-        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft /></Link>
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div id="notes-content">
           {notes ? (
-              <div id='markdown'>
-                <Markdown>{notes}</Markdown>
-              </div>
+            <div id='markdown'>
+              <Markdown options={{ forceBlock: true }}>
+                {parseTextWithLatex(notes)}
+              </Markdown>
+            </div>
           ) : (
             <p id="unavailable">No notes available.</p>
           )}
