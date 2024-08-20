@@ -395,11 +395,26 @@ def remove_flashcard(clerk_id, course_name, card_id):
     
     
 def get_mcqs(clerk_id, course_name):
-    user_course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name}, {"courses.$": 1})
-    if user_course and 'courses' in user_course:
-        course = user_course['courses'][0]
-        return course.get('multiple_choice_questions', [])
-    return []
+    user = courses_collection.find_one({"clerk_id": clerk_id})
+    if not user:
+        print(f"User not found for clerk_id: {clerk_id}")
+        return []
+
+    # Check if the user is premium
+    is_premium = user.get('premium', False)
+
+    user_course = next((course for course in user.get('courses', []) if course['course_name'] == course_name), None)
+    if not user_course:
+        print(f"Course {course_name} not found for user {clerk_id}")
+        return []
+
+    mcqs = user_course.get('multiple_choice_questions', [])
+
+    # If the user is not premium, return only the first 3 MCQs
+    if not is_premium:
+        mcqs = mcqs[:3]
+
+    return mcqs
 
 
 
@@ -429,7 +444,8 @@ def get_courses(clerk_id):
 
 import traceback
 
-def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
+
+def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
     try:
         # First, let's find the existing course
         course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
@@ -445,27 +461,42 @@ def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
             print(f"Course {course_name} not found in user's courses")
             return False
 
-        # Check if notes is a string or an array
+        # Prepare the update operation
+        update_operation = {}
+
+        # Handle notes
         if isinstance(target_course.get('notes'), str):
-            # If it's a string, we'll append the new notes to the existing string
-            update_operation = {
-                "$set": {
-                    "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
-                }
+            update_operation["$set"] = {
+                "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
             }
         else:
-            # If it's an array (or doesn't exist), we'll push the new notes
-            update_operation = {
-                "$push": {
-                    "courses.$.notes": new_notes
-                }
+            update_operation["$push"] = {
+                "courses.$.notes": new_notes
             }
 
-        # If there are new flashcards, add them to the update operation
+        # Handle flashcards
         if new_flashcards:
             if "$push" not in update_operation:
                 update_operation["$push"] = {}
             update_operation["$push"]["courses.$.flashcards"] = {"$each": new_flashcards}
+
+        # Handle MCQs
+        if new_mcqs:
+            # Ensure each MCQ has a correct_answer_index
+            for mcq in new_mcqs:
+                if 'correct_answer' in mcq and 'possible_answers' in mcq:
+                    try:
+                        mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+                    except ValueError:
+                        print(f"Warning: Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'. Skipping this MCQ.")
+                        continue
+                else:
+                    print(f"Warning: MCQ is missing 'correct_answer' or 'possible_answers'. Skipping this MCQ.")
+                    continue
+
+            if "$push" not in update_operation:
+                update_operation["$push"] = {}
+            update_operation["$push"]["courses.$.multiple_choice_questions"] = {"$each": new_mcqs}
 
         print(f"Update operation: {update_operation}")  # Log the update operation
 
@@ -487,7 +518,7 @@ def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
         print(f"Error adding course content: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return False
-    
+
 def delete_course(clerk_id, course_name):
     """
     Delete a course for a user.

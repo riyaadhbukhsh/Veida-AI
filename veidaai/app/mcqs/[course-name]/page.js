@@ -17,6 +17,7 @@ function McqsPage() {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [submitted, setSubmitted] = useState(false);
+    const [isPremium, setIsPremium] = useState(false);
     const router = useRouter();
 
     const params = useParams();
@@ -34,7 +35,7 @@ function McqsPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Fetched MCQs:', data.mcqs); // Debugging log
+                console.log('Fetched MCQs:', data.mcqs);
                 setMcqs(data.mcqs);
             } else {
                 setError('Failed to fetch MCQs');
@@ -44,9 +45,22 @@ function McqsPage() {
         }
     };
 
+    const fetchPremiumStatus = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/user_premium_status?clerk_id=${userId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setIsPremium(data.isPremium);
+            }
+        } catch (error) {
+            console.error('Error fetching premium status:', error);
+        }
+    };
+
     useEffect(() => {
         if (userId) {
             fetchMcqs();
+            fetchPremiumStatus();
         }
     }, [userId, courseName]);
 
@@ -59,19 +73,25 @@ function McqsPage() {
     };
 
     const handleNextQuestion = () => {
-        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-        setSelectedAnswer(null);
-        setSubmitted(false);
+        if (currentQuestionIndex < mcqs.length - 1) {
+            setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+            setSelectedAnswer(null);
+            setSubmitted(false);
+        } else {
+            handleEndSession();
+        }
     };
 
     const handleEndSession = () => {
+        if (!isPremium && currentQuestionIndex >= 2) { // 0-based index, so 2 is the 3rd question
+            alert("You have reached your limit on the number of MCQs you can create/study. Upgrade to premium for unlimited access to creating MCQs!");
+        }
         router.push(`/${urlCourseName}`);
     };
 
     const parseTextWithLatex = (text) => {
         if (!text) return null;
         const parts = text.split(/(\$.*?\$)/g).filter(Boolean);
-        console.log('Parsed LaTeX parts:', parts); // Debugging log
         return parts.map((part, index) => {
             if (part.startsWith('$') && part.endsWith('$')) {
                 return (
@@ -83,12 +103,7 @@ function McqsPage() {
     };
 
     const currentQuestion = mcqs[currentQuestionIndex];
-
-    // Check if the selected answer index matches the correct answer index
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
-    console.log('Selected Answer:', selectedAnswer); // Debugging log
-    console.log('Correct Answer Index:', currentQuestion ? currentQuestion.correct_answer_index : null); // Debugging log
-    console.log('Is Correct:', isCorrect); // Debugging log
 
     return (
         <div className="mcqs-container">

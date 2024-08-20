@@ -165,7 +165,7 @@ def generate_mc_questions(notes):
     5. **Application:** Using concepts or formulas to solve problems or perform calculations.
         Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
-    Please generate exactly 3 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
+    Please generate exactly 7 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
 
  
          

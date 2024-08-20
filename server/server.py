@@ -699,6 +699,8 @@ def route_update_times_seen():
     return jsonify({"message": "Times seen updated successfully"}), 200
 
 import traceback
+from helpers.ai import generate_mc_questions
+
 @app.route('/api/add_course_content', methods=['POST'])
 def route_add_course_content():
     try:
@@ -723,16 +725,20 @@ def route_add_course_content():
         if missing_fields:
             return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
-        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards)
+        # Generate new MCQs based on the new notes
+        new_mcqs = generate_mc_questions(new_notes)
+
+        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs)
         
         if result:
-            return jsonify({"success": True, "message": "Content added successfully"}), 200
+            return jsonify({"success": True, "message": "Content and MCQs added successfully"}), 200
         else:
-            return jsonify({"success": False, "message": "Failed to add content. Check server logs for details."}), 500
+            return jsonify({"success": False, "message": "Failed to add content and MCQs. Check server logs for details."}), 500
     except Exception as e:
         print(f"Unexpected error in route_add_course_content: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 
 if __name__ == '__main__':
     
