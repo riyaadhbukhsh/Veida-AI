@@ -291,6 +291,8 @@ def extract_text():
         elif file_type in ['jpg', 'jpeg', 'png']:
             image = Image.open(file)
             extracted_text = pytesseract.image_to_string(image)
+        elif file_type == 'txt':
+            extracted_text = file.read().decode('utf-8')
         else:
             return jsonify({"error": "Unsupported file type"}), 400
         
