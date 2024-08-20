@@ -108,7 +108,11 @@ function FlashcardPage() {
 
   return (
     <div className="flashcard-page">
-      <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+      {reviewing ? (
+        <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft onClick={() => setReviewing(false)}/></Link>
+      ) : (
+        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+      )}
       <h1 className="flashcard-title">
         {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
       </h1>

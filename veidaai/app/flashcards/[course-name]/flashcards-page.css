@@ -1,213 +1,133 @@
 .flashcard-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: calc(100vh - 60px); /* Adjust for navbar height */
-    padding: 2rem;
-    background-color: #1e1e1e;
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
+  padding: 2rem;
+  background-color: #1e1e1e;
+  min-height: 100vh;
+  color: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .flashcard-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    margin-top: 4rem;
-    text-align: center;
-    color: #fff;
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  margin-top: 4rem;
+  color: #f0f0f0;
 }
 
-.flashcard-description {
-    font-size: 1.2rem;
-    color: #d1d5db;
-    text-align: center;
-    max-width: 800px;
-    margin-bottom: 2rem;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.start-review-button {
-    flex: 1;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #1f2937;
-    background-color: #6d9dc5;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-align: center;
-}
-
-.start-review-button:hover {
-    background-color: #478fca;
-    transform: translateY(-2px);
-}
-
-#cards-preview {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 1200px;
-    margin-bottom: 2rem;
-    flex-wrap: wrap; /* Ensure the cards wrap to the next line */
-}
-
-.flashcard {
-    background-color: #27272a;
-    border-radius: 12px;
-    padding: 3rem;
-    width: calc(100% - 1rem); /* Much wider */
-    height: auto;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.flashcard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.flashcard h3 {
-    font-size: 2rem;
-    color: #6d9dc5;
-    margin-bottom: 0.25rem;
-}
-
-.flashcard p {
-    font-size: 1.3rem;
-    padding-top: 1rem;
-    color: #d1d5db;
-    margin-bottom: 1rem;
-    max-height: 3.6em;
-    overflow: hidden;
-}
-
-.review-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin-bottom: 2rem;
+#review-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .review-flashcard {
-    background-color: #27272a;
-    border-radius: 12px;
-    padding: 3rem;
-    width: 100%;
-    height: auto;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.review-flashcard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
 }
 
 .review-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .review-button {
-    flex: 1;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #1f2937;
-    background-color: #6d9dc5;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    margin: 0 0.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  background-color: #6d9dc5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .review-button:hover {
-    background-color: #478fca;
-    transform: translateY(-2px);
+  background-color: #478fca;
+  transform: translateY(-2px);
 }
 
 .card-counter {
-    font-size: 1.2rem;
-    color: #d1d5db;
-    margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #d1d5db;
+  margin-top: 1rem;
 }
 
-@media (max-width: 1200px) {
-    #cards-preview {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .flashcard {
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .button-container {
-        max-width: 500px;
-    }
-
-    .review-container {
-        max-width: 500px;
-    }
-
-    .review-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .review-button {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
+#cards-available {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-    .flashcard {
-        width: 100%;
-        max-width: 320px;
-    }
+#cards-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 2rem;
+}
 
-    .button-container {
-        max-width: 320px;
-    }
+.button-container {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 964px;
+  margin-bottom: 2rem;
+}
 
-    .review-container {
-        max-width: 320px;
-    }
+.start-review-button {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #1f2937;
+  background-color: #6d9dc5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.start-review-button:hover {
+  background-color: #478fca;
+  transform: translateY(-2px);
+}
+
+@media only screen and (max-width: 1200px) {
+  #cards-preview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .button-container {
+    max-width: 632px;
+  }
+}
+
+@media only screen and (max-width: 781px) {
+  #cards-preview {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .button-container {
+    flex-direction: column;
+    max-width: 300px;
+  }
+
+  .review-buttons {
+    flex-direction: column;
+  }
 }
