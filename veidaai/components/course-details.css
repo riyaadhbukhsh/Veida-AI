@@ -62,7 +62,7 @@
   .study-container h3 {
     font-size: 2rem;
     color: #6d9dc5;
-    margin-bottom: 0.25rem;
+    margin: 0 auto 0.25rem auto;
   }
 
   .study-container p {
