@@ -5,7 +5,6 @@ from .util import generate_review_dates
 import os
 import datetime
 import openai
-
 load_dotenv()
 
 # MongoDB setup
@@ -242,7 +241,7 @@ def delete_user(user_data):
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
 
-def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule,multiple_choice_questions):
+def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
     """
     Create a new course for a user.
 
@@ -261,6 +260,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
     """
 
     #!mock course schedule
+    
     
 
     new_course = {

@@ -227,8 +227,8 @@ def extract_text():
         notes = generate_notes(extracted_text)
         flashcards = generate_flashcards(notes)
         mc_questions = generate_mc_questions(notes)
+        
   
-
         return jsonify({"notes": notes, "flashcards": flashcards, "mc_questions": mc_questions}), 200
     except UnidentifiedImageError:
         return jsonify({"error": "Unsupported image type"}), 400
@@ -256,6 +256,7 @@ def route_create_course():
     # Get the user's current course count
     user_courses = get_courses(clerk_id)
     course_count = len(user_courses)  # user_courses is already a list
+    
     
     
     # If not premium and already has 2 or more courses, return an error

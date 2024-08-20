@@ -175,7 +175,8 @@ def generate_mc_questions(notes):
             mc_questions.append(question)
         return mc_questions
     else:
-        return []
+        return {"message": "No questions generated."}
+
 
 
 

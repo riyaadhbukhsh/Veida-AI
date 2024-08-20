@@ -20,14 +20,12 @@ def parse_mc_questions(multiple_choice_questions):
     if not json_str.endswith(']') and not json_str.endswith('}'):
         json_str += ']'
 
-    parsed_json = None  # Initialize parsed_json
     try: 
         parsed_json = json.loads(json_str)
-        return parsed_json  # Pretty-print the parsed JSON
+        return parsed_json  # Return the parsed JSON
     except json.JSONDecodeError as e:
         print(f"Failed to decode JSON: {e}")
-
-    return parsed_json  # This will return None if parsing fails
+        return None  # Return None if parsing fails
 
 def generate_review_dates(start_date, exam_date):
     if isinstance(exam_date, str):
