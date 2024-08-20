@@ -235,7 +235,6 @@ def delete_user(user_data):
     """
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
-
 def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
     """
     Create a new course for a user.
@@ -245,40 +244,43 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         course_name (str): The name of the course.
         description (str): The description of the course.
         notes (dict): A dictionary of notes for the course.
-        description (str): The description of the course.
         exam_date (datetime): The due date for the course.
         flashcards (list): A list of flashcards for the course.
-        review_dates (list): A list of review dates for the course.
+        course_schedule (list): A list of course schedules.
+        multiple_choice_questions (list): A list of MCQs for the course.
 
     Returns:
         None
     """
 
-    #!mock course schedule
-    
-    
+    # Ensure each MCQ has a correct_answer_index
+    for mcq in multiple_choice_questions:
+        if 'correct_answer' in mcq and 'possible_answers' in mcq:
+            try:
+                mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+            except ValueError:
+                raise ValueError(f"Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'")
+        else:
+            raise ValueError("Each MCQ must have 'correct_answer' and 'possible_answers' fields.")
 
     new_course = {
         "course_name": course_name,
         "description": description,
         "notes": notes,
-        "description": description,
         "exam_date": exam_date,
         "course_schedule": course_schedule,
         "flashcards": flashcards,
-        "review_dates": generate_review_dates(datetime.datetime.now(),exam_date), #for spaced intervals of the content
+        "review_dates": generate_review_dates(datetime.datetime.now(), exam_date),  # for spaced intervals of the content
         "multiple_choice_questions": multiple_choice_questions,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now(),
         "push_notifications": False
-
     }
     courses_collection.update_one(
         {"clerk_id": clerk_id},
         {"$addToSet": {"courses": new_course}},
         upsert=True
     )
-    
     
 def create_or_update_notes(clerk_id, course_name, notes, notes_name):
     """
@@ -390,18 +392,14 @@ def remove_flashcard(clerk_id, course_name, card_id):
         {"clerk_id": clerk_id, "courses.course_name": course_name},
         {"$pull": {"courses.$.flashcards": {"id": card_id}}}
     )
-
-def get_mcqs(clerk_id,course_name):
-
-
     
-    user_course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    
+def get_mcqs(clerk_id, course_name):
+    user_course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name}, {"courses.$": 1})
     if user_course and 'courses' in user_course:
-        for course in user_course['courses']:
-            if course['course_name'] == course_name:
-                return course['multiple_choice_questions']
-    return None
-
+        course = user_course['courses'][0]
+        return course.get('multiple_choice_questions', [])
+    return []
 
 
 

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
@@ -9,7 +9,6 @@ import { FaArrowLeft } from 'react-icons/fa';
 import './mcqs-page.css';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-
 
 function McqsPage() {
     const { userId } = useAuth();
@@ -35,13 +34,13 @@ function McqsPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
+                console.log('Fetched MCQs:', data.mcqs); // Debugging log
                 setMcqs(data.mcqs);
             } else {
-                setError('Failed to fetch flashcards');
+                setError('Failed to fetch MCQs');
             }
         } catch (error) {
-            setError('Failed to fetch flashcards');
+            setError('Failed to fetch MCQs');
         }
     };
 
@@ -70,16 +69,13 @@ function McqsPage() {
     };
 
     const parseTextWithLatex = (text) => {
-        const parts = text.split(/(\\\(.*?\\\)|\\\[.*?\\\])/g).filter(Boolean);
- 
+        if (!text) return null;
+        const parts = text.split(/(\$.*?\$)/g).filter(Boolean);
+        console.log('Parsed LaTeX parts:', parts); // Debugging log
         return parts.map((part, index) => {
-            if (part.startsWith('\\(') && part.endsWith('\\)')) {
+            if (part.startsWith('$') && part.endsWith('$')) {
                 return (
-                    <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2), { throwOnError: false }) }} />
-                );
-            } else if (part.startsWith('\\[') && part.endsWith('\\]')) {
-                return (
-                    <div key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2), { displayMode: true, throwOnError: false }) }} />
+                    <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(1, -1), { throwOnError: false }) }} />
                 );
             }
             return <span key={index}>{part}</span>;
@@ -88,8 +84,11 @@ function McqsPage() {
 
     const currentQuestion = mcqs[currentQuestionIndex];
 
-    const isCorrect = currentQuestion && currentQuestion.possible_answers[selectedAnswer] === currentQuestion.correct_answer;
-
+    // Check if the selected answer index matches the correct answer index
+    const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
+    console.log('Selected Answer:', selectedAnswer); // Debugging log
+    console.log('Correct Answer Index:', currentQuestion ? currentQuestion.correct_answer_index : null); // Debugging log
+    console.log('Is Correct:', isCorrect); // Debugging log
 
     return (
         <div className="mcqs-container">
@@ -109,7 +108,7 @@ function McqsPage() {
                                     className={`answer-button ${selectedAnswer === index ? 'selected' : ''}`}
                                     style={{
                                         backgroundColor: submitted
-                                            ? answer === currentQuestion.correct_answer
+                                            ? index === currentQuestion.correct_answer_index
                                                 ? 'green'
                                                 : index === selectedAnswer
                                                     ? 'red'
@@ -133,7 +132,7 @@ function McqsPage() {
                                 ) : (
                                     <p className="feedback-message incorrect-answer">Sorry, that's incorrect.</p>
                                 )}
-                                <p className="answer-description"><b>Answer: {parseTextWithLatex(currentQuestion.correct_answer)}</b></p>
+                                <p className="answer-description"><b>Answer: {parseTextWithLatex(currentQuestion.possible_answers[currentQuestion.correct_answer_index])}</b></p>
                                 <p className="answer-description">{parseTextWithLatex(currentQuestion.why)}</p>
                                 {currentQuestionIndex < mcqs.length - 1 ? (
                                     <button onClick={handleNextQuestion} className="next-button">Next Question</button>

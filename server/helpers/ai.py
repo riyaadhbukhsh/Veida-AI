@@ -148,7 +148,7 @@ def generate_mc_questions(notes):
         generated_questions: List[Question]
 
     initial_content = """
-    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. You are also to generate any math equations in LaTeX, including possible answers, enclse each LaTeX expression in \( \). The questions should be conceptually similar to the following examples:
+    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. You are also to generate any math equations in LaTeX, including possible answers, encolse each LaTeX expression in $. The questions should be conceptually similar to the following examples:
 
     1. **Synthesis:** Combining different pieces of information to create a new understanding.
         Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
@@ -165,7 +165,7 @@ def generate_mc_questions(notes):
     5. **Application:** Using concepts or formulas to solve problems or perform calculations.
         Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
-    Please generate exactly 10 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
+    Please generate exactly 3 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
 
  
          

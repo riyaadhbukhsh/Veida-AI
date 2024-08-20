@@ -14,6 +14,7 @@
 }
 
 #notes-content h1 {
+    font-size: 2.5rem;
     text-align: center;
     margin: 1em auto 2.5em auto;
 }
@@ -35,4 +36,9 @@
 /* Custom spacing after list marker (number or bullet point) */
 #notes-content li {
     padding-left: 0.7ch;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: #f0f0f0;
 }
