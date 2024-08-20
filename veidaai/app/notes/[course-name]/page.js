@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import Markdown from 'markdown-to-jsx';
 import { useParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
+import { FaArrowLeft } from 'react-icons/fa'
 import './notes.css';
 
 const NotesPage = () => {
@@ -47,6 +49,7 @@ const NotesPage = () => {
   return (
     <div className="main-inline">
       <div className="container">
+        <Link href={`/${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div id="notes-content">

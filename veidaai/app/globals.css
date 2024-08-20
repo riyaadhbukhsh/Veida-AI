@@ -88,3 +88,19 @@ button {
   transform: translate(1.5px, 1.5px);
   background-color: #EAEAEA;
 }
+
+.back-arrow-link {
+  position: absolute;
+  left: 1rem;;
+  top: 80px;
+
+  color: #6d9dc5;
+  font-size: 2.6rem;
+}
+
+@media screen and (max-width: 781px) {
+  .back-arrow-link {
+    top: 75px;
+    font-size: 1.8rem;
+  }
+}

@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
+import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import { useParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
+import { FaArrowLeft } from 'react-icons/fa';
 import './flashcards-page.css';
 
 function FlashcardPage() {
@@ -85,6 +87,7 @@ function FlashcardPage() {
   return (
     <div className="main-inline">
       <div className="center-flex-container">
+        <Link href={`/${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
         <h1 className="title">
           {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards Generated for ${courseName}`}
         </h1>
