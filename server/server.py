@@ -326,7 +326,7 @@ def route_create_course():
     user_courses = get_courses(clerk_id)
     course_count = len(user_courses)
     
-    if not is_premium and course_count >= 2:
+    if not is_premium and course_count >= 10:
         return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
 
     try:
@@ -337,7 +337,7 @@ def route_create_course():
     start_date = datetime.now()
     review_dates = generate_review_dates(start_date, exam_date)
 
-    # Add review_dates and times_seen to each flashcard
+    #Add review_dates and times_seen to each flashcard
     for flashcard in flashcards:
         flashcard['review_dates'] = review_dates
         flashcard['times_seen'] = 0
@@ -348,7 +348,7 @@ def route_create_course():
 @app.route('/api/create_or_update_notes', methods=['POST'])
 def route_create_or_update_notes():
     """
-    Creates or updates notes for a specific course.
+    Creates or updates notes for a` specific course.
 
     This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and notes_name. It creates or updates the specified notes for the given course.
 

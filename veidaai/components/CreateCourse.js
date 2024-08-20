@@ -112,6 +112,9 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
 
             const extractedData = await extractResponse.json();
             const { notes = {}, flashcards = [], mc_questions = [] } = extractedData;
+            console.log('Notes:', notes);
+            console.log('Flashcards:', flashcards);
+            console.log('MC Questions:', mc_questions);
 
             const createResponse = await fetch("http://localhost:8080/api/create_course", {
                 method: "POST",
