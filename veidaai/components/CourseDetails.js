@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import { formatURL } from '@/app/helpers';
-import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle } from 'react-icons/fa';
+import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
 import AddContentModal from './AddContentModal';
 import "./course-details.css";
 
@@ -48,6 +48,7 @@ const CourseDetails = ({ courseName }) => {
 
   return (
     <div className="course-details-container">
+      <Link href={`/client`} title={'back to your courses'} className="back-arrow-link"><FaArrowLeft/></Link>
       <h2 className="course-title">{courseName}</h2>
       {courseObj.description && (
         <p className="course-description">{courseObj.description}</p>
