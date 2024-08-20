@@ -274,7 +274,8 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         "review_dates": generate_review_dates(datetime.datetime.now(),exam_date), #for spaced intervals of the content
         "multiple_choice_questions": multiple_choice_questions,
         "created_at": datetime.datetime.now(),
-        "updated_at": datetime.datetime.now()
+        "updated_at": datetime.datetime.now(),
+        "push_notifications": False
 
     }
     courses_collection.update_one(
