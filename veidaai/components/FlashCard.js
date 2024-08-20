@@ -19,6 +19,7 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
     }, [card]);
 
     const cleanText = (text) => {
+        if (!text) return ''; // Return empty string if text is undefined or null
         return text
             .replace(/[*_~`#>!-]/g, '') // Remove common markdown symbols
             .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove Markdown links but keep the link text
@@ -30,6 +31,7 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
     };
 
     const parseTextWithLatex = (text) => {
+        if (!text) return []; // Return empty array if text is undefined or null
         const parts = text.split(/(\\\(.*?\\\))/g).filter(Boolean);
     
         return parts.map((part, index) => {
@@ -58,10 +60,10 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
     return (
         <div id="card-container" className={`${flipped ? 'flipped' : ''} ${sizeClass}`} onClick={handleClick}>
             <div id="card-front">
-                <p>{parseTextWithLatex(card.front)}</p>
+                <p>{card && card.front ? parseTextWithLatex(card.front) : 'No content'}</p>
             </div>
             <div id="card-back">
-                <p>{parseTextWithLatex(card.back)}</p>
+                <p>{card && card.back ? parseTextWithLatex(card.back) : 'No content'}</p>
             </div>
         </div>
     );

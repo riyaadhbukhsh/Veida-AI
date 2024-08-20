@@ -79,13 +79,13 @@ function FlashcardPage() {
 
   const fetchFlashcardsDueToday = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`, {
+      const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched flashcards due today:', data.flashcards); // Debugging log
@@ -99,7 +99,7 @@ function FlashcardPage() {
       setError('An error occurred while fetching flashcards due today');
     }
   };
-  
+
   useEffect(() => {
     if (userId) {
       fetchFlashcards();
@@ -149,7 +149,7 @@ function FlashcardPage() {
         </div>
       ) : (
         <div id="cards-available">
-          {flashcards.length > 0 ? (
+          {flashcards && flashcards.length > 0 ? (
             <>
               <div className="button-container">
                 <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>

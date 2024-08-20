@@ -92,6 +92,7 @@ function McqsPage() {
     const parseTextWithLatex = (text) => {
         if (!text) return null;
         const parts = text.split(/(\$.*?\$)/g).filter(Boolean);
+        console.log('Parsed LaTeX parts:', parts); // Debugging log
         return parts.map((part, index) => {
             if (part.startsWith('$') && part.endsWith('$')) {
                 return (
@@ -104,7 +105,9 @@ function McqsPage() {
 
     const currentQuestion = mcqs[currentQuestionIndex];
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
-
+    console.log('Selected Answer:', selectedAnswer); // Debugging log
+    console.log('Correct Answer Index:', currentQuestion ? currentQuestion.correct_answer_index : null); // Debugging log
+    console.log('Is Correct:', isCorrect); // Debugging log
     return (
         <div className="mcqs-container">
             <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>

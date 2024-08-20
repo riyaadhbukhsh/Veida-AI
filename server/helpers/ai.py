@@ -148,7 +148,7 @@ def generate_mc_questions(notes):
         generated_questions: List[Question]
 
     initial_content = """
-    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. You are also to generate any math equations in LaTeX, including possible answers, encolse each LaTeX expression in $. The questions should be conceptually similar to the following examples:
+    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. THIS PART IS VERY IMPORTANT You MUST generate any math equations in LaTeX, including possible answers, encolse each LaTeX expression in $. The questions should be conceptually similar to the following examples:
 
     1. **Synthesis:** Combining different pieces of information to create a new understanding.
         Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?

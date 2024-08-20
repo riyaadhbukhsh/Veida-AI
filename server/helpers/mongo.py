@@ -6,7 +6,6 @@ import os
 import datetime
 import openai
 load_dotenv()
-import pytz
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
@@ -647,30 +646,36 @@ def get_next_study_date(clerk_id, course_name, card_id):
     return None
 
 
-def get_flashcards_with_today_study_date(clerk_id):
+def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     """
     Retrieve all flashcards with a next study date of today.
 
     Args:
         clerk_id (str): The Clerk ID of the user.
+        course_name (str, optional): The name of the course. If provided, only flashcards from this course will be retrieved.
 
     Returns:
         list: A list of flashcards with today's next study date.
     """
     today = datetime.datetime.now().date()
     print(f"Today's date: {today}")  # Debugging log
-    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    query = {"clerk_id": clerk_id}
+    if course_name:
+        query["courses.course_name"] = course_name
+
+    user_courses = courses_collection.find_one(query)
     flashcards_today = []
 
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
-            for card in course['flashcards']:
-                print(f"Checking card: {card}")  # Debugging log
-                if 'review_dates' in card:
-                    for review_date in card['review_dates']:
-                        if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
-                            flashcards_today.append(card)
-                            break
+            if course_name is None or course['course_name'] == course_name:
+                for card in course['flashcards']:
+                    print(f"Checking card: {card}")  # Debugging log
+                    if 'review_dates' in card:
+                        for review_date in card['review_dates']:
+                            if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
+                                flashcards_today.append(card)
+                                break
 
     print(f"Flashcards due today: {flashcards_today}")  # Debugging log
     return flashcards_today
@@ -714,31 +719,3 @@ def get_times_seen(clerk_id, course_name, card_id):
                     if card['id'] == card_id:
                         return card.get('times_seen', 0)  # Return 0 if not found
     return 0
-
-def get_flashcards_with_today_study_date(clerk_id):
-    """
-    Retrieve all flashcards with a next study date of today, including the course name.
-    
-    Args:
-        clerk_id (str): The Clerk ID of the user.
-
-    Returns:
-        list: A list of dictionaries with today's flashcards and their course names.
-    """
-    today = datetime.datetime.now().date()
-    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
-    flashcards_today = []
-
-    if user_courses and 'courses' in user_courses:
-        for course in user_courses['courses']:
-            for card in course['flashcards']:
-                if 'review_dates' in card:
-                    for review_date in card['review_dates']:
-                        if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
-                            flashcards_today.append({
-                                "course_name": course['course_name'],
-                                "flashcard": card
-                            })
-                            break
-
-    return flashcards_today
