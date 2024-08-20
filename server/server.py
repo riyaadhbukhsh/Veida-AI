@@ -258,14 +258,12 @@ def route_create_course():
     course_count = len(user_courses)  # user_courses is already a list
     
     
-    #!commenting out for testing purposes
-    # If not premium and already has 2 or more courses, return an error
-    # if not is_premium and course_count >= 2:
-    #     return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
-    # Check if the user is premium
+    
+    #If not premium and already has 2 or more courses, return an error
+    if not is_premium and course_count >= 2:
+        return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
+    #Check if the user is premium
 
-
-   
 
     make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, mc_questions)
     return jsonify({"message": "Course created successfully"}), 201
