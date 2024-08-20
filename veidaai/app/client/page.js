@@ -16,11 +16,12 @@ const ClientPage = () => {
   const router = useRouter();
   const [showEditForm, setShowEditForm] = useState(false);
   const [courseToEdit, setCourseToEdit] = useState(null);
+
   useEffect(() => {
     if (!isSignedIn) {
       router.push('/sign-in');
     } else if (userId) {
-      console.log('User ID:', userId); // Add this line
+      console.log('User ID:', userId);
       fetchAndSetCourses();
     }
   }, [isSignedIn, userId, router]);
@@ -33,11 +34,14 @@ const ClientPage = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched courses:', data.courses); // Add this line
-        setCourses(data.courses);
+        console.log('Fetched courses:', data.courses);
+        // Remove duplicates by using a Set
+        const uniqueCourses = Array.from(new Set(data.courses.map(course => course.course_name)))
+          .map(course_name => data.courses.find(course => course.course_name === course_name));
+        setCourses(uniqueCourses);
       } else {
         console.error('Failed to fetch courses');
       }
@@ -45,7 +49,6 @@ const ClientPage = () => {
       console.error('Error fetching courses:', error);
     }
   };
-
 
   const handleCourseCreated = async (newCourse) => {
     setShowCreateForm(false);
@@ -69,20 +72,20 @@ const ClientPage = () => {
   const handleDeleteCourse = async (courseName) => {
     if (window.confirm(`Are you sure you want to delete the course "${courseName}"?`)) {
       try {
-        console.log('Attempting to delete course:', courseName); // Add this line
-        const response = await fetch('http://localhost:8080/api/delete_course', { // Ensure the port is correct
+        console.log('Attempting to delete course:', courseName);
+        const response = await fetch('http://localhost:8080/api/delete_course', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ clerk_id: userId, course_name: courseName }),
         });
-  
+
         if (response.ok) {
-          console.log('Course deleted successfully'); // Add this line
+          console.log('Course deleted successfully');
           await fetchAndSetCourses(); // Refresh the course list
         } else {
-          console.error('Failed to delete course:', response.statusText); // Add this line
+          console.error('Failed to delete course:', response.statusText);
         }
       } catch (error) {
         console.error('Error deleting course:', error);
@@ -91,7 +94,7 @@ const ClientPage = () => {
   };
 
   function formatCourseName(courseName) {
-    if (!courseName) return ''; 
+    if (!courseName) return '';
     let hyphenated = courseName.replace(/\s+/g, '-');
     let encoded = encodeURIComponent(hyphenated);
     return encoded;
@@ -132,7 +135,7 @@ const ClientPage = () => {
           <p className="loading-courses">Please Create a Course.</p>
         )}
       </div>
-  
+
       {showCreateForm && (
         <div className="create-course-overlay">
           <div className="create-course-form">
@@ -144,7 +147,7 @@ const ClientPage = () => {
           </div>
         </div>
       )}
-  
+
       {showEditForm && (
         <div className="create-course-overlay">
           <div className="create-course-form">

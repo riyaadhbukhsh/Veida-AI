@@ -10,28 +10,28 @@ import './flashcards-page.css';
 function FlashcardPage() {
   const [flashcards, setFlashcards] = useState([]);
   const [reviewing, setReviewing] = useState(false);
-  const [currentCard, setCurrentCard] = useState({card: null, index: null});
+  const [currentCard, setCurrentCard] = useState({ card: null, index: null });
   const [error, setError] = useState('');
   const { userId } = useAuth();
-  const flashcardRef = useRef(); // Add this line
+  const flashcardRef = useRef();
 
   const params = useParams();
   const urlCourseName = params['course-name'];
-  const courseName = unformatURL(urlCourseName); 
+  const courseName = unformatURL(urlCourseName);
 
   const handleNextCard = useCallback(() => {
     let newIndex = (currentCard.index + 1) % flashcards.length;
-    setCurrentCard({card: flashcards[newIndex], index: newIndex});
+    setCurrentCard({ card: flashcards[newIndex], index: newIndex });
   }, [currentCard, flashcards]);
 
   const handlePrevCard = useCallback(() => {
     let newIndex = (currentCard.index - 1 + flashcards.length) % flashcards.length;
-    setCurrentCard({card: flashcards[newIndex], index: newIndex});
+    setCurrentCard({ card: flashcards[newIndex], index: newIndex });
   }, [currentCard, flashcards]);
 
   const handleKeyDown = useCallback((event) => {
     if (reviewing) {
-      switch(event.key) {
+      switch (event.key) {
         case 'ArrowRight':
           handleNextCard();
           break;
@@ -53,10 +53,9 @@ function FlashcardPage() {
     };
   }, [handleKeyDown]);
 
-
   const fetchFlashcards = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+      const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -65,8 +64,9 @@ function FlashcardPage() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched flashcards:', data.flashcards); // Debugging log
         setFlashcards(data.flashcards);
-        setCurrentCard({card: data.flashcards[0], index: 0});
+        setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
       } else {
         setError('Failed to fetch flashcards');
       }
@@ -75,6 +75,29 @@ function FlashcardPage() {
     }
   };
 
+  const fetchFlashcardsDueToday = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched flashcards due today:', data.flashcards); // Debugging log
+        setFlashcards(data.flashcards);
+        setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
+        setReviewing(true);
+      } else {
+        setError('Failed to fetch flashcards due today');
+      }
+    } catch (err) {
+      setError('An error occurred while fetching flashcards due today');
+    }
+  };
+  
   useEffect(() => {
     if (userId) {
       fetchFlashcards();
@@ -87,7 +110,7 @@ function FlashcardPage() {
         {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
       </h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      
+
       {reviewing ? (
         <div id="review-container">
           <div className="review-flashcard">
@@ -104,15 +127,20 @@ function FlashcardPage() {
               Next Card
             </button>
           </div>
-          <p className="card-counter">{`Card ${currentCard.index+1}/${flashcards.length}`}</p>
+          <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
         </div>
       ) : (
         <div id="cards-available">
           {flashcards.length > 0 ? (
             <>
-              <button className="start-review-button" onClick={() => setReviewing(true)}>
-                Start Reviewing
-              </button>
+              <div className="button-container">
+                <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>
+                  Review all Flashcards
+                </button>
+                <button className="start-review-button" onClick={fetchFlashcardsDueToday}>
+                  Study Today's Flashcards
+                </button>
+              </div>
               <div id="cards-preview">
                 {flashcards.map((card, index) => (
                   <FlashCard key={index} card={card} />

@@ -616,6 +616,7 @@ def get_next_study_date(clerk_id, course_name, card_id):
                         return card.get('next_study_date')
     return None
 
+
 def get_flashcards_with_today_study_date(clerk_id):
     """
     Retrieve all flashcards with a next study date of today.
@@ -627,17 +628,22 @@ def get_flashcards_with_today_study_date(clerk_id):
         list: A list of flashcards with today's next study date.
     """
     today = datetime.datetime.now().date()
+    print(f"Today's date: {today}")  # Debugging log
     user_courses = courses_collection.find_one({"clerk_id": clerk_id})
     flashcards_today = []
 
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             for card in course['flashcards']:
-                if card.get('next_study_date') and card['next_study_date'].date() == today:
-                    flashcards_today.append(card)
+                print(f"Checking card: {card}")  # Debugging log
+                if 'review_dates' in card:
+                    for review_date in card['review_dates']:
+                        if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
+                            flashcards_today.append(card)
+                            break
 
+    print(f"Flashcards due today: {flashcards_today}")  # Debugging log
     return flashcards_today
-
 
 def update_times_seen(clerk_id, course_name, card_id):
     """

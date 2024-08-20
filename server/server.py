@@ -305,40 +305,45 @@ def extract_text():
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
+    
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
     description = data.get('description', '')
-    exam_date = data.get('exam_date', '')
+    exam_date_str = data.get('exam_date', '')
     notes = data.get('notes', {})
     mc_questions = data.get('mc_questions', [])
     flashcards = data.get('flashcards', [])
     course_schedule = data.get('course_schedule', {})
 
-    if not all([clerk_id, course_name, description, exam_date]):
+    if not all([clerk_id, course_name, description, exam_date_str]):
         return jsonify({"error": "Missing required fields"}), 400
     
     is_premium = check_premium_status(clerk_id)
 
-    # Get the user's current course count
     user_courses = get_courses(clerk_id)
-    course_count = len(user_courses)  # user_courses is already a list
+    course_count = len(user_courses)
     
-    
-    
-    #If not premium and already has 2 or more courses, return an error
     if not is_premium and course_count >= 2:
         return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
-    #Check if the user is premium
 
+    try:
+        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({"error": "Invalid exam date format"}), 400
 
-    make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, mc_questions)
+    start_date = datetime.now()
+    review_dates = generate_review_dates(start_date, exam_date)
+
+    # Add review_dates and times_seen to each flashcard
+    for flashcard in flashcards:
+        flashcard['review_dates'] = review_dates
+        flashcard['times_seen'] = 0
+
+    make_course(clerk_id, course_name, description, exam_date_str, notes, flashcards, course_schedule, mc_questions)
     return jsonify({"message": "Course created successfully"}), 201
-
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
 def route_create_or_update_notes():
