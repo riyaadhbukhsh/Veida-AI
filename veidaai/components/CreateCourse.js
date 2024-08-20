@@ -12,6 +12,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [fileName, setFileName] = useState("");
     const [courseSchedule, setCourseSchedule] = useState({
         Monday: "",
         Tuesday: "",
@@ -22,13 +23,28 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         Sunday: "",
     });
 
+    const checkDuplicateCourseName = async (name) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
+            if (response.ok) {
+                const data = await response.json();
+                return data.courses.some(course => course.course_name.toLowerCase() === name.toLowerCase());
+            }
+        } catch (error) {
+            console.error("Error checking for duplicate course name:", error);
+        }
+        return false;
+    };
+
     const validateCourseName = (name) => {
         const invalidChars = /[.!~*'()]/;
         return !invalidChars.test(name);
     };
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        const file = e.target.files[0];
+        setFile(file);
+        setFileName(file ? file.name : "");
     };
 
     const handleCourseScheduleChange = (day, time) => {
@@ -41,9 +57,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateCourseName(name)) {
-            setError(
-                "Please enter a valid course name without special characters: [.!~*'()]"
-            );
+            setError("Please enter a valid course name without special characters: [.!~*'()]");
             return;
         }
         if (!name || !description || !examDate) {
@@ -54,16 +68,23 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             setError("Please select a file to upload.");
             return;
         }
+    
+        const isDuplicate = await checkDuplicateCourseName(name);
+        if (isDuplicate) {
+            setError("A course with this name already exists. Please choose a different name.");
+            return;
+        }
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to midnight
         const selectedDate = new Date(examDate);
+        selectedDate.setHours(0, 0, 0, 0); // Set time to midnight
+
         if (selectedDate < today) {
             setError("Please select a future date for the exam");
             setLoading(false);
             return;
         }
-
-        setLoading(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -202,11 +223,11 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         </div> */}
                 <div className="file-input-wrapper">
                     <div className="file-input-button">
-                        Choose Course Content (PDF, PNG, JPEG)
+                        {fileName || "Choose Course Content (PDF, PNG, JPEG)"}
                     </div>
                     <input
                         type="file"
-                        onChange={(e) => setFile(e.target.files[0])}
+                        onChange={handleFileChange}
                         required
                     />
                 </div>

@@ -27,19 +27,22 @@ from helpers.mongo import (
     check_premium_status, 
     update_premium_status,
     add_course_content,
-    update_subscription_id
+    update_subscription_id,
 )
 from helpers.ai import (
     generate_flashcards,
     generate_notes,
     generate_mc_questions
 )
+from helpers.util import (
+    generate_review_dates
+)
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
 import io
-import datetime
+from datetime import datetime
 import stripe
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
@@ -73,7 +76,7 @@ def clerk_webhook():
     elif event_type == 'user.deleted':
         delete_user(user_data)
 
-    return jsonify({"success": True}), 200
+    return jsonify({"success": True}), 
 
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
@@ -173,6 +176,74 @@ def webhook():
 
     return jsonify(success=True)
 
+@app.route('/api/update_course', methods=['PUT'])
+def update_course():
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    original_course_name = data.get('original_course_name')  # Get the original course name
+    course_name = data.get('course_name')
+    description = data.get('description')
+    exam_date_str = data.get('exam_date')
+
+    # Convert exam_date_str to datetime object
+    try:
+        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({"error": "Invalid exam date format"}), 400
+
+    # Debugging logs
+    print(f"Received data: {data}")
+    print(f"clerk_id: {clerk_id}, original_course_name: {original_course_name}, course_name: {course_name}, description: {description}, exam_date: {exam_date}")
+
+    if not all([clerk_id, original_course_name, course_name, description, exam_date]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Fetch the existing course data
+    existing_course = db.courses.find_one(
+        {"clerk_id": clerk_id, "courses.course_name": original_course_name},
+        {"courses.$": 1}
+    )
+    if not existing_course or 'courses' not in existing_course:
+        return jsonify({"error": "Course not found"}), 404
+
+    course_data = existing_course['courses'][0]
+
+    # Delete the existing course using the original course name
+    delete_result = delete_course(clerk_id, original_course_name)
+    print(f"Delete result: {delete_result}")  # Add this line
+    if not delete_result:
+        return jsonify({"error": "Failed to delete existing course"}), 500
+
+    # Generate new review dates based on the new exam date
+    start_date = datetime.now()
+    review_dates = generate_review_dates(start_date, exam_date)
+
+    # Create a new course with the updated content and existing associated data
+    new_course = {
+        "course_name": course_name,
+        "description": description,
+        "exam_date": exam_date,
+        "review_dates": review_dates,  # Add review dates
+        "notes": course_data.get('notes', {}),
+        "flashcards": course_data.get('flashcards', []),
+        "mc_questions": course_data.get('mc_questions', []),
+        "course_schedule": course_data.get('course_schedule', {}),
+        "created_at": course_data.get('created_at', datetime.now()),
+        "updated_at": datetime.now()
+    }
+    result = db.courses.update_one(
+        {"clerk_id": clerk_id},
+        {"$addToSet": {"courses": new_course}},
+        upsert=True
+    )
+
+    print(f"Update result: {result.raw_result}")  # Add this line
+    if result.modified_count > 0 or result.upserted_id is not None:
+        return jsonify({"message": "Course updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to create new course"}), 500
+    
+    
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
     clerk_id = request.args.get('clerk_id')

@@ -29,29 +29,23 @@ export default function CourseDetailsPage() {
   
     const checkPageExists = async () => {
       try {
-        console.log('Checking for course:', courseName);
-        const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`);
+        const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched courses:', data.courses);
           const exists = data.courses.some(course => {
-            console.log('Comparing:', course.course_name, 'with', courseName);
             return course.course_name.toLowerCase() === courseName.toLowerCase();
           });
           if (isMounted) {
-            console.log('Course exists:', exists);
             setPageExists(exists);
             setIsLoading(false);
           }
         } else {
-          console.error('Failed to fetch courses:', response.status, response.statusText);
           if (isMounted) {
             setPageExists(false);
             setIsLoading(false);
           }
         }
       } catch (error) {
-        console.error('Error checking page existence:', error);
         if (isMounted) {
           setPageExists(false);
           setIsLoading(false);

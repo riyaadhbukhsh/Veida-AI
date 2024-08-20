@@ -119,11 +119,6 @@ def generate_flashcards(notes):
 
 
 
-
-
-
-
-
 def update_subscription_id(clerk_id, subscription_id):
     """
     Update the subscription ID for a user.
@@ -506,6 +501,7 @@ def delete_course(clerk_id, course_name):
     Returns:
         bool: True if the operation was successful, False otherwise.
     """
+    print(f"Deleting course {course_name} for user {clerk_id}")
     result = courses_collection.update_one(
         {"clerk_id": clerk_id},
         {"$pull": {"courses": {"course_name": course_name}}}

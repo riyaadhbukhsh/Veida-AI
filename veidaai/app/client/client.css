@@ -45,6 +45,11 @@ h1 {
   background-color: #3f3f46;
 }
 
+.delete-course-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 .new-course {
   background-color: #6d9dc5;
   color: #1e1e1e;
@@ -73,20 +78,6 @@ h1 {
   font-size: 1.4rem;
 }
 
-.delete-course-button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-left: 1rem;
-}
-
-.delete-course-button:hover {
-  background-color: #ff3333;
-}
 .create-course-overlay {
   position: fixed;
   top: 0;
@@ -167,7 +158,42 @@ h1 {
   font-size: 0.9rem;
   text-align: center;
 }
+.loading-courses {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+.delete-course-button,
+.edit-course-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: gray;
+  font-size: 1.5rem;
+  margin-right: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
+.delete-course-button {
+  right: 10px;
+}
+
+.delete-course-button:hover {
+  color: rgb(205, 62, 62);
+}
+
+.edit-course-button {
+  right: 45px; /* Adjust as needed to position next to the trashcan */
+  margin-right: 25px;
+}
+
+.edit-course-button:hover {
+  color: #6d9dc5;
+}
 .form-buttons {
   display: flex;
   justify-content: space-between;

@@ -6,6 +6,7 @@ import CreateCourse from "../../components/CreateCourse";
 import "./client.css";
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from "@clerk/nextjs";
+import EditCourse from "../../components/EditCourse";
 
 const ClientPage = () => {
   const { isSignedIn, userId } = useAuth();
@@ -13,26 +14,29 @@ const ClientPage = () => {
   const [courses, setCourses] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const router = useRouter();
-
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [courseToEdit, setCourseToEdit] = useState(null);
   useEffect(() => {
     if (!isSignedIn) {
       router.push('/sign-in');
     } else if (userId) {
+      console.log('User ID:', userId); // Add this line
       fetchAndSetCourses();
     }
   }, [isSignedIn, userId, router]);
 
   const fetchAndSetCourses = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
+      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      
+  
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched courses:', data.courses); // Add this line
         setCourses(data.courses);
       } else {
         console.error('Failed to fetch courses');
@@ -40,7 +44,8 @@ const ClientPage = () => {
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
-  }
+  };
+
 
   const handleCourseCreated = async (newCourse) => {
     setShowCreateForm(false);
@@ -51,21 +56,33 @@ const ClientPage = () => {
     setShowCreateForm(false);
   };
 
+  const handleEditCourse = (course) => {
+    setCourseToEdit(course);
+    setShowEditForm(true);
+  };
+
+  const handleCourseUpdated = async () => {
+    setShowEditForm(false);
+    await fetchAndSetCourses(); // Refresh the course list after updating a course
+  };
+
   const handleDeleteCourse = async (courseName) => {
     if (window.confirm(`Are you sure you want to delete the course "${courseName}"?`)) {
       try {
-        const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/delete_course', {
+        console.log('Attempting to delete course:', courseName); // Add this line
+        const response = await fetch('http://localhost:8080/api/delete_course', { // Ensure the port is correct
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ clerk_id: userId, course_name: courseName }),
         });
-
+  
         if (response.ok) {
+          console.log('Course deleted successfully'); // Add this line
           await fetchAndSetCourses(); // Refresh the course list
         } else {
-          console.error('Failed to delete course');
+          console.error('Failed to delete course:', response.statusText); // Add this line
         }
       } catch (error) {
         console.error('Error deleting course:', error);
@@ -91,24 +108,31 @@ const ClientPage = () => {
         <div className="course-card new-course" onClick={() => setShowCreateForm(true)}>
           <h2>Create New Course</h2>
         </div>
-        {courses.map((course, index) => (
-          <div key={index} className="course-card">
-            <Link href={`/${formatCourseName(course.course_name)}`} className="course-link">
-              <h2>{course.course_name || 'Unnamed Course'}</h2>
-            </Link>
-            <button
-              className="delete-course-button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteCourse(course.course_name);
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        {courses.length > 0 ? (
+          courses.map((course, index) => (
+            <div key={index} className="course-card">
+              <Link href={`/${formatCourseName(course.course_name)}`} className="course-link">
+                <h2>{course.course_name || 'Unnamed Course'}</h2>
+              </Link>
+              <button className="edit-course-button" onClick={() => handleEditCourse(course)}>
+                <i className="fas fa-pencil-alt"></i>
+              </button>
+              <button
+                className="delete-course-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteCourse(course.course_name);
+                }}
+              >
+                <i className="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="loading-courses">Please Create a Course.</p>
+        )}
       </div>
-      
+  
       {showCreateForm && (
         <div className="create-course-overlay">
           <div className="create-course-form">
@@ -116,6 +140,19 @@ const ClientPage = () => {
             <CreateCourse 
               onCourseCreated={handleCourseCreated} 
               onClose={handleCloseForm}
+            />
+          </div>
+        </div>
+      )}
+  
+      {showEditForm && (
+        <div className="create-course-overlay">
+          <div className="create-course-form">
+            <button className="close-button" onClick={() => setShowEditForm(false)}>×</button>
+            <EditCourse 
+              course={courseToEdit}
+              onCourseUpdated={handleCourseUpdated} 
+              onClose={() => setShowEditForm(false)}
             />
           </div>
         </div>
