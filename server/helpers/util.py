@@ -1,6 +1,5 @@
 import datetime
-from datetime import timedelta
-
+from datetime import datetime, timedelta
 import json
 import re
 def parse_mc_questions(multiple_choice_questions):
@@ -26,21 +25,22 @@ def parse_mc_questions(multiple_choice_questions):
     except json.JSONDecodeError as e:
         print(f"Failed to decode JSON: {e}")
         return None  # Return None if parsing fails
+    
 
 def generate_review_dates(start_date, exam_date):
     if isinstance(exam_date, str):
         # Try parsing with time first
         try:
-            exam_date = datetime.datetime.strptime(exam_date, '%Y-%m-%d %H:%M:%S')
+            exam_date = datetime.strptime(exam_date, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             # If that fails, try parsing as date only
             try:
-                exam_date = datetime.datetime.strptime(exam_date, '%Y-%m-%d')
+                exam_date = datetime.strptime(exam_date, '%Y-%m-%d')
             except ValueError:
                 raise ValueError("Invalid exam_date format. Expected 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'")
 
     if isinstance(start_date, str):
-        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
+        start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
 
     # Rest of the function remains the same
     study_duration = (exam_date - start_date).days
@@ -48,12 +48,9 @@ def generate_review_dates(start_date, exam_date):
 
     intervals = [1, 3, 7, 14, 30]  # Review intervals in days
     for interval in intervals:
-        review_date = start_date + datetime.timedelta(days=interval)
+        review_date = start_date + timedelta(days=interval)
         if review_date < exam_date:
             review_dates.append(review_date.strftime('%Y-%m-%d'))
 
     return review_dates
-
-
-    
     

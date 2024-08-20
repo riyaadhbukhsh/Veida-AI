@@ -52,5 +52,4 @@ const CourseList = ({ courses }) => {
     </div>
   );
 };
-
 export default CourseList;
