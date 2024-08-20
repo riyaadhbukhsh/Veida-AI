@@ -12,28 +12,27 @@
     border-top: 1px solid gray;
     max-width: 72rem;
 }
-  
 
-div#markdown h1 {
+#notes-content h1 {
     text-align: center;
     margin: 1em auto 2.5em auto;
 }
 
-div#markdown h2, h3 {
+#notes-content h2, #notes-content h3 {
     margin: 2em auto 0.5em auto;
 }
 
-div#markdown p, ol, ul, li {
+#notes-content p, #notes-content ol, #notes-content ul, #notes-content li {
     color: #DDD;
     margin: 0.5em auto;
 }
 
-/* indents lists */
-div#markdown ol, ul {
+/* Indents lists */
+#notes-content ol, #notes-content ul {
     margin-left: 4ch;
 }
 
-/* custom spacing after list marker (num or bullet point) */
-div#markdown li {
+/* Custom spacing after list marker (number or bullet point) */
+#notes-content li {
     padding-left: 0.7ch;
 }

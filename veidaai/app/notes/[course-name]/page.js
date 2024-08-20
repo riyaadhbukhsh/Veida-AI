@@ -3,17 +3,19 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import Markdown from 'markdown-to-jsx';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { useParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
-import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import './notes.css';
 
 const NotesPage = () => {
   const { userId } = useAuth();
   const [notes, setNotes] = useState(null);
+  const [parsedNotes, setParsedNotes] = useState('');
   const [error, setError] = useState('');
 
   const params = useParams();
@@ -31,8 +33,8 @@ const NotesPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) === 0);
-        let courseObj = data.courses[courseIndex];
+        const courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) === 0);
+        const courseObj = data.courses[courseIndex];
         setNotes(courseObj.notes);
       } else {
         setError('Failed to fetch notes');
@@ -42,31 +44,34 @@ const NotesPage = () => {
     }
   };
 
-  const parseTextWithLatex = (text) => {
-    if (typeof text !== 'string') return text;
-
-    const parts = text.split(/(\\\(.*?\\\))/g).filter(Boolean);
-
-    return parts.map((part) => {
-      if (part.startsWith('\\(') && part.endsWith('\\)')) {
-        let latexRendered = katex.renderToString(part.slice(2, -2), { throwOnError: false });
-
-        // Extract the MathML content from the rendered output
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(latexRendered, 'text/html');
-        const mathMl = doc.querySelector('.katex-mathml');
-
-        return mathMl ? mathMl.outerHTML : latexRendered;
-      }
-      return part;
-    }).join('');
-  };
-
   useEffect(() => {
     if (userId) {
       fetchNotes();
     }
   }, [userId]);
+
+  const parseTextWithLatex = (text) => {
+    if (typeof text !== 'string') return '';
+
+    // Handle display math \[...\]
+    text = text.replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$'); // Convert \[...\] to $$ ... $$
+
+    // Handle inline math \(...\)
+    text = text.replace(/\\\((.*?)\\\)/g, '$ $1 $'); // Convert \(...\) to $ ... $
+
+    // Handle cases where there are trailing or leading spaces around math delimiters
+    text = text.replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$'); // Convert extra spaces within $$ ... $$ to single space
+    text = text.replace(/\$ +([^$]+) +\$/g, '$ $1 $'); // Convert extra spaces within $ ... $ to single space
+  
+    return text;
+  };
+  
+  useEffect(() => {
+    if (notes) {
+      const updatedText = parseTextWithLatex(notes);
+      setParsedNotes(updatedText);
+    }
+  }, [notes]);
 
   return (
     <div className="main-inline">
@@ -75,12 +80,12 @@ const NotesPage = () => {
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div id="notes-content">
-          {notes ? (
-            <div id='markdown'>
-              <Markdown options={{ forceBlock: true }}>
-                {parseTextWithLatex(notes)}
-              </Markdown>
-            </div>
+          {parsedNotes ? (
+            <ReactMarkdown
+              children={parsedNotes}
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            />
           ) : (
             <p id="unavailable">No notes available.</p>
           )}
