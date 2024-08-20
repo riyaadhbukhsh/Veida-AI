@@ -50,7 +50,7 @@ function McqsPage() {
     
     return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Link href={`/${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
         <h1>Your MCQs for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div>
