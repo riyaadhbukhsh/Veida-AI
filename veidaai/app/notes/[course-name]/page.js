@@ -70,7 +70,7 @@ const NotesPage = () => {
 
   return (
     <div className="main-inline">
-      <div className="container">
+      <div className="notes-container">
         <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft /></Link>
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}

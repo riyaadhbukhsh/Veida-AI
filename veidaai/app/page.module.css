@@ -42,7 +42,7 @@
 .hookText h1 {
   margin: 0;
   text-align: left;
-  font-size: 2.6rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #f0f0f0;
   line-height: 3.2rem;
@@ -156,6 +156,10 @@
 }
 
 @media (max-width: 768px) {
+  .hookSection {
+    padding: 5%;
+  }
+
   .sectionInner {
     flex-direction: column;
     text-align: center;
