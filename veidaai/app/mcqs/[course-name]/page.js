@@ -47,7 +47,7 @@ function McqsPage() {
 
     const fetchPremiumStatus = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/user_premium_status?clerk_id=${userId}`);
+            const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 setIsPremium(data.isPremium);
