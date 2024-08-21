@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();
-
     const router = useRouter();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -13,6 +12,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [fileName, setFileName] = useState("");
+    const [isFormValid, setIsFormValid] = useState(false);
     const [courseSchedule, setCourseSchedule] = useState({
         Monday: "",
         Tuesday: "",
@@ -22,6 +22,14 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         Saturday: "",
         Sunday: "",
     });
+
+    useEffect(() => {
+        // Update form validity
+        setIsFormValid(
+            [name, description, examDate].every((field) => field.trim() !== "") &&
+            file !== null
+        );
+    }, [name, description, examDate, file]);
 
     const checkDuplicateCourseName = async (name) => {
         try {
@@ -36,10 +44,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         return false;
     };
 
-    const validateCourseName = (name) => {
-        const invalidChars = /[.!~*'()]/;
-        return !invalidChars.test(name);
-    };
+    const validateCourseName = (name) => !/[.!~*'()]/.test(name);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -47,44 +52,42 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         setFileName(file ? file.name : "");
     };
 
-    const handleCourseScheduleChange = (day, time) => {
-        setCourseSchedule((prevSchedule) => ({
-            ...prevSchedule,
-            [day]: time,
-        }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
         if (!validateCourseName(name)) {
             setError("Please enter a valid course name without special characters: [.!~*'()]");
+            setLoading(false);
+            submitButton.disabled = false;
             return;
         }
-        if (!name || !description || !examDate) {
+        if (!isFormValid) {
             setError("Please fill in all fields.");
-            return;
-        }
-        if (!file) {
-            setError("Please select a file to upload.");
-            return;
-        }
-    
-        const isDuplicate = await checkDuplicateCourseName(name);
-        if (isDuplicate) {
-            setError("A course with this name already exists. Please choose a different name.");
+            setLoading(false);
+            submitButton.disabled = false;
             return;
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set time to midnight
-        const selectedDate = new Date(examDate);
-        selectedDate.setHours(0, 0, 0, 0); // Set time to midnight
+        if (await checkDuplicateCourseName(name)) {
+            setError("A course with this name already exists. Please choose a different name.");
+            setLoading(false);
+            submitButton.disabled = false;
+            return;
+        }
+
+        const today = new Date().setHours(0, 0, 0, 0);
+        const selectedDate = new Date(examDate).setHours(0, 0, 0, 0);
 
         if (selectedDate < today) {
             setError("Please select a future date for the exam");
             setLoading(false);
+            submitButton.disabled = false;
             return;
         }
+
+        setLoading(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -94,56 +97,51 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         formData.append("exam_date", examDate);
 
         try {
-            const extractResponse = await fetch(
-                "http://localhost:8080/api/extract_text",
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
+            const extractResponse = await fetch("http://localhost:8080/api/extract_text", {
+                method: "POST",
+                body: formData,
+            });
 
             if (!extractResponse.ok) {
                 const errorData = await extractResponse.json();
-                setError(
-                    errorData.error ||
-                        "An error occurred while extracting text."
-                );
+                setError(errorData.error || "An error occurred while extracting text.");
+                setLoading(false);
+                submitButton.disabled = false;
                 return;
             }
 
             const extractedData = await extractResponse.json();
-            const notes = extractedData.notes || {};
-            const flashcards = extractedData.flashcards || [];
-            const mc_questions = extractedData.mc_questions || [];
-            const createResponse = await fetch(
-                "http://localhost:8080/api/create_course",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        clerk_id: userId,
-                        course_name: name,
-                        description: description,
-                        exam_date: examDate,
-                        notes: notes,
-                        flashcards: flashcards,
-                        mc_questions: mc_questions,
-                        course_schedule: courseSchedule,
-                    }),
-                }
-            );
+            const { notes = {}, flashcards = [], mc_questions = [] } = extractedData;
+            console.log('Notes:', notes);
+            console.log('Flashcards:', flashcards);
+            console.log('MC Questions:', mc_questions);
+
+            const createResponse = await fetch("http://localhost:8080/api/create_course", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    clerk_id: userId,
+                    course_name: name,
+                    description,
+                    exam_date: examDate,
+                    notes,
+                    flashcards,
+                    mc_questions,
+                    course_schedule: courseSchedule,
+                }),
+            });
 
             if (createResponse.ok) {
                 onCourseCreated({
                     clerk_id: userId,
                     course_name: name,
-                    description: description,
+                    description,
                     exam_date: examDate,
-                    notes: notes,
-                    flashcards: flashcards,
-                    mc_questions: mc_questions,
+                    notes,
+                    flashcards,
+                    mc_questions,
                     course_schedule: courseSchedule,
                 });
                 setName("");
@@ -161,25 +159,16 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     Sunday: "",
                 });
                 router.push("/client"); // Redirect to the course list page
-                router.push("/client");
             } else {
                 const errorData = await createResponse.json();
-                if (createResponse.status === 403) {
-                    setError(
-                        "You've reached the maximum number of courses for free users. Please upgrade to premium for unlimited courses."
-                    );
-                } else {
-                    setError(
-                        errorData.message ||
-                            "An error occurred while creating the course."
-                    );
-                }
+                setError(errorData.message || "An error occurred while creating the course.");
             }
         } catch (err) {
             console.error("Error:", err);
             setError("An unexpected error occurred.");
         } finally {
             setLoading(false);
+            submitButton.disabled = false;
         }
     };
 
@@ -207,20 +196,20 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     required
                 />
                 {/*<div>
-          <h3>Course Schedule</h3>
-          {Object.keys(courseSchedule).map((day) => (
-            <div key={day}>
-              <label>{day}: </label>
-              <input
-                type="time"
-                value={courseSchedule[day]}
-                onChange={(e) =>
-                  handleCourseScheduleChange(day, e.target.value)
-                }
-              />
-            </div>
-          ))}
-        </div> */}
+                    <h3>Course Schedule</h3>
+                    {Object.keys(courseSchedule).map((day) => (
+                        <div key={day}>
+                            <label>{day}: </label>
+                            <input
+                                type="time"
+                                value={courseSchedule[day]}
+                                onChange={(e) =>
+                                    handleCourseScheduleChange(day, e.target.value)
+                                }
+                            />
+                        </div>
+                    ))}
+                </div> */}
                 <div className="file-input-wrapper">
                     <div className="file-input-button">
                         {fileName || "Choose Course Content (PDF, PNG, JPEG)"}
@@ -233,7 +222,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 </div>
                 {error && <p className="error">{error}</p>}
                 <div className="form-buttons">
-                    <button type="submit" disabled={loading}>
+                    <button type="submit" disabled={!isFormValid || loading}>
                         {loading ? "Submitting..." : "Submit"}
                     </button>
                     <button type="button" onClick={onClose}>

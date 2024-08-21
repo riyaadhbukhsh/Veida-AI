@@ -235,7 +235,6 @@ def delete_user(user_data):
     """
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
-
 def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
     """
     Create a new course for a user.
@@ -245,40 +244,43 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         course_name (str): The name of the course.
         description (str): The description of the course.
         notes (dict): A dictionary of notes for the course.
-        description (str): The description of the course.
         exam_date (datetime): The due date for the course.
         flashcards (list): A list of flashcards for the course.
-        review_dates (list): A list of review dates for the course.
+        course_schedule (list): A list of course schedules.
+        multiple_choice_questions (list): A list of MCQs for the course.
 
     Returns:
         None
     """
 
-    #!mock course schedule
-    
-    
+    # Ensure each MCQ has a correct_answer_index
+    for mcq in multiple_choice_questions:
+        if 'correct_answer' in mcq and 'possible_answers' in mcq:
+            try:
+                mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+            except ValueError:
+                raise ValueError(f"Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'")
+        else:
+            raise ValueError("Each MCQ must have 'correct_answer' and 'possible_answers' fields.")
 
     new_course = {
         "course_name": course_name,
         "description": description,
         "notes": notes,
-        "description": description,
         "exam_date": exam_date,
         "course_schedule": course_schedule,
         "flashcards": flashcards,
-        "review_dates": generate_review_dates(datetime.datetime.now(),exam_date), #for spaced intervals of the content
+        "review_dates": generate_review_dates(datetime.datetime.now(), exam_date),  # for spaced intervals of the content
         "multiple_choice_questions": multiple_choice_questions,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now(),
         "push_notifications": False
-
     }
     courses_collection.update_one(
         {"clerk_id": clerk_id},
         {"$addToSet": {"courses": new_course}},
         upsert=True
     )
-    
     
 def create_or_update_notes(clerk_id, course_name, notes, notes_name):
     """
@@ -390,18 +392,29 @@ def remove_flashcard(clerk_id, course_name, card_id):
         {"clerk_id": clerk_id, "courses.course_name": course_name},
         {"$pull": {"courses.$.flashcards": {"id": card_id}}}
     )
-
-def get_mcqs(clerk_id,course_name):
-
-
     
-    user_course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
-    if user_course and 'courses' in user_course:
-        for course in user_course['courses']:
-            if course['course_name'] == course_name:
-                return course['multiple_choice_questions']
-    return None
+    
+def get_mcqs(clerk_id, course_name):
+    user = courses_collection.find_one({"clerk_id": clerk_id})
+    if not user:
+        print(f"User not found for clerk_id: {clerk_id}")
+        return []
 
+    # Check if the user is premium
+    is_premium = user.get('premium', False)
+
+    user_course = next((course for course in user.get('courses', []) if course['course_name'] == course_name), None)
+    if not user_course:
+        print(f"Course {course_name} not found for user {clerk_id}")
+        return []
+
+    mcqs = user_course.get('multiple_choice_questions', [])
+
+    # If the user is not premium, return only the first 3 MCQs
+    if not is_premium:
+        mcqs = mcqs[:3]
+
+    return mcqs
 
 
 
@@ -431,7 +444,8 @@ def get_courses(clerk_id):
 
 import traceback
 
-def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
+
+def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
     try:
         # First, let's find the existing course
         course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
@@ -447,27 +461,42 @@ def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
             print(f"Course {course_name} not found in user's courses")
             return False
 
-        # Check if notes is a string or an array
+        # Prepare the update operation
+        update_operation = {}
+
+        # Handle notes
         if isinstance(target_course.get('notes'), str):
-            # If it's a string, we'll append the new notes to the existing string
-            update_operation = {
-                "$set": {
-                    "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
-                }
+            update_operation["$set"] = {
+                "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
             }
         else:
-            # If it's an array (or doesn't exist), we'll push the new notes
-            update_operation = {
-                "$push": {
-                    "courses.$.notes": new_notes
-                }
+            update_operation["$push"] = {
+                "courses.$.notes": new_notes
             }
 
-        # If there are new flashcards, add them to the update operation
+        # Handle flashcards
         if new_flashcards:
             if "$push" not in update_operation:
                 update_operation["$push"] = {}
             update_operation["$push"]["courses.$.flashcards"] = {"$each": new_flashcards}
+
+        # Handle MCQs
+        if new_mcqs:
+            # Ensure each MCQ has a correct_answer_index
+            for mcq in new_mcqs:
+                if 'correct_answer' in mcq and 'possible_answers' in mcq:
+                    try:
+                        mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+                    except ValueError:
+                        print(f"Warning: Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'. Skipping this MCQ.")
+                        continue
+                else:
+                    print(f"Warning: MCQ is missing 'correct_answer' or 'possible_answers'. Skipping this MCQ.")
+                    continue
+
+            if "$push" not in update_operation:
+                update_operation["$push"] = {}
+            update_operation["$push"]["courses.$.multiple_choice_questions"] = {"$each": new_mcqs}
 
         print(f"Update operation: {update_operation}")  # Log the update operation
 
@@ -489,7 +518,7 @@ def add_course_content(clerk_id, course_name, new_notes, new_flashcards):
         print(f"Error adding course content: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return False
-    
+
 def delete_course(clerk_id, course_name):
     """
     Delete a course for a user.
@@ -616,28 +645,40 @@ def get_next_study_date(clerk_id, course_name, card_id):
                         return card.get('next_study_date')
     return None
 
-def get_flashcards_with_today_study_date(clerk_id):
+
+def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     """
     Retrieve all flashcards with a next study date of today.
 
     Args:
         clerk_id (str): The Clerk ID of the user.
+        course_name (str, optional): The name of the course. If provided, only flashcards from this course will be retrieved.
 
     Returns:
         list: A list of flashcards with today's next study date.
     """
     today = datetime.datetime.now().date()
-    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    print(f"Today's date: {today}")  # Debugging log
+    query = {"clerk_id": clerk_id}
+    if course_name:
+        query["courses.course_name"] = course_name
+
+    user_courses = courses_collection.find_one(query)
     flashcards_today = []
 
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
-            for card in course['flashcards']:
-                if card.get('next_study_date') and card['next_study_date'].date() == today:
-                    flashcards_today.append(card)
+            if course_name is None or course['course_name'] == course_name:
+                for card in course['flashcards']:
+                    print(f"Checking card: {card}")  # Debugging log
+                    if 'review_dates' in card:
+                        for review_date in card['review_dates']:
+                            if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
+                                flashcards_today.append(card)
+                                break
 
+    print(f"Flashcards due today: {flashcards_today}")  # Debugging log
     return flashcards_today
-
 
 def update_times_seen(clerk_id, course_name, card_id):
     """

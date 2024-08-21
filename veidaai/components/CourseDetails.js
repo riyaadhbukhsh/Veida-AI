@@ -46,10 +46,18 @@ const CourseDetails = ({ courseName }) => {
     fetchCourseObj(); // Refresh the course data after adding content
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div className="course-details-container">
       <Link href={`/client`} title={'back to your courses'} className="back-arrow-link"><FaArrowLeft/></Link>
       <h2 className="course-title">{courseName}</h2>
+      {courseObj.exam_date && (
+        <p className="course-exam-date">Exam Date: {formatDate(courseObj.exam_date)}</p>
+      )}
       {courseObj.description && (
         <p className="course-description">{courseObj.description}</p>
       )}

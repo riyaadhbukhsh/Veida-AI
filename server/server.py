@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -60,6 +60,9 @@ db = client['VeidaAI']
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
+@app.route('/')
+def index():
+  return render_template('index.html')
 
 @app.route('/webhook/clerk', methods=['POST'])
 def clerk_webhook():
@@ -305,47 +308,50 @@ def extract_text():
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
+    
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
     description = data.get('description', '')
-    exam_date = data.get('exam_date', '')
+    exam_date_str = data.get('exam_date', '')
     notes = data.get('notes', {})
     mc_questions = data.get('mc_questions', [])
     flashcards = data.get('flashcards', [])
     course_schedule = data.get('course_schedule', {})
 
-    if not all([clerk_id, course_name, description, exam_date]):
+    if not all([clerk_id, course_name, description, exam_date_str]):
         return jsonify({"error": "Missing required fields"}), 400
     
     is_premium = check_premium_status(clerk_id)
 
-    # Get the user's current course count
     user_courses = get_courses(clerk_id)
-    course_count = len(user_courses)  # user_courses is already a list
+    course_count = len(user_courses)
     
-    
-    #!commenting out for testing purposes
-    # If not premium and already has 2 or more courses, return an error
-    # if not is_premium and course_count >= 2:
-    #     return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
-    # Check if the user is premium
+    if not is_premium and course_count >= 2:
+        return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
 
+    try:
+        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({"error": "Invalid exam date format"}), 400
 
-   
+    start_date = datetime.now()
+    review_dates = generate_review_dates(start_date, exam_date)
 
-    make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, mc_questions)
+    #Add review_dates and times_seen to each flashcard
+    for flashcard in flashcards:
+        flashcard['review_dates'] = review_dates
+        flashcard['times_seen'] = 0
+
+    make_course(clerk_id, course_name, description, exam_date_str, notes, flashcards, course_schedule, mc_questions)
     return jsonify({"message": "Course created successfully"}), 201
-
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
 def route_create_or_update_notes():
     """
-    Creates or updates notes for a specific course.
+    Creates or updates notes for a` specific course.
 
     This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and notes_name. It creates or updates the specified notes for the given course.
 
@@ -661,17 +667,18 @@ def route_get_flashcards_today():
     """
     Retrieves all flashcards with a next study date of today.
 
-    This endpoint accepts a GET request with query parameter clerk_id.
+    This endpoint accepts a GET request with query parameters clerk_id and optionally course_name.
 
     Returns:
         tuple: A JSON response containing the list of flashcards and HTTP status code 200.
     """
     clerk_id = request.args.get('clerk_id')
+    course_name = request.args.get('course_name')
 
     if not clerk_id:
         return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
-    flashcards_today = get_flashcards_with_today_study_date(clerk_id)
+    flashcards_today = get_flashcards_with_today_study_date(clerk_id, course_name)
     return jsonify({"flashcards": flashcards_today}), 200
 
 @app.route('/api/update_times_seen', methods=['POST'])
@@ -696,6 +703,8 @@ def route_update_times_seen():
     return jsonify({"message": "Times seen updated successfully"}), 200
 
 import traceback
+from helpers.ai import generate_mc_questions
+
 @app.route('/api/add_course_content', methods=['POST'])
 def route_add_course_content():
     try:
@@ -720,16 +729,20 @@ def route_add_course_content():
         if missing_fields:
             return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
-        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards)
+        # Generate new MCQs based on the new notes
+        new_mcqs = generate_mc_questions(new_notes)
+
+        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs)
         
         if result:
-            return jsonify({"success": True, "message": "Content added successfully"}), 200
+            return jsonify({"success": True, "message": "Content and MCQs added successfully"}), 200
         else:
-            return jsonify({"success": False, "message": "Failed to add content. Check server logs for details."}), 500
+            return jsonify({"success": False, "message": "Failed to add content and MCQs. Check server logs for details."}), 500
     except Exception as e:
         print(f"Unexpected error in route_add_course_content: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 
 if __name__ == '__main__':
     

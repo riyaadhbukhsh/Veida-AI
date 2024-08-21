@@ -1,7 +1,9 @@
 import os
 import json
+from typing import List
 import openai
 import datetime
+from pydantic import BaseModel
 from pymongo import MongoClient
 from .util import parse_mc_questions
 from .mongo import create_or_update_next_study_date, get_times_seen
@@ -130,8 +132,23 @@ def generate_mc_questions(notes):
     Returns:
         list: Generated multiple-choice questions.
     """
+
+
+        
+    class Question(BaseModel):
+
+        concept: str
+        question_type: str
+        question: str
+        possible_answers: List[str]
+        correct_answer: str
+        why: str
+
+    class List_of_questions(BaseModel):
+        generated_questions: List[Question]
+
     initial_content = """
-    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. The questions should be conceptually similar to the following examples:
+    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. THIS PART IS VERY IMPORTANT You MUST generate any math equations in LaTeX, including possible answers, encolse each LaTeX expression in $. The questions should be conceptually similar to the following examples:
 
     1. **Synthesis:** Combining different pieces of information to create a new understanding.
         Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
@@ -148,51 +165,47 @@ def generate_mc_questions(notes):
     5. **Application:** Using concepts or formulas to solve problems or perform calculations.
         Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
-    Please generate exactly 2 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
+    Please generate exactly 7 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
 
-    [
-        {
-            "concept": "Concept Name",
+ 
+         
+            "concept": "Set Theory",
             "question_type": "Synthesis/Comparison/Context/Etc.",
-            "question": "Your question here?",
+            "question": "How does the concept of a subset differ from the concept of a power set in set theory?",
             "possible_answers": [
                 "Option A",
                 "Option B",
                 "Option C",
                 "Option D"
             ],
-            "correct_answer": "Correct Option",
-            "why": "Explanation of why this answer is correct."
-        }
-    ]
-
-    Ensure the output is a valid JSON array with exactly 2 question objects.
-    Please ensure that no escape characters (such as backslashes) are used in the output, except for properly escaped quotes within strings.
+            "correct_answer": "A subset is a smaller set contained within another set, while a power set is the set of all possible subsets of a set.",
+            "why": "In set theory, a subset is defined as a set A that is contained within another set B if every element of A is also an element of B. On the other hand, a power set of a set A, is the set of all possible subsets of A, including the empty set and A itself."
+        },
+    
     """
 
+
     try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
+        response = openai_client.beta.chat.completions.parse(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": initial_content},
                 {"role": "user", "content": notes}
             ],
-            temperature=0.7,  # Lower temperature for more deterministic output
-              # Adjust max tokens to ensure sufficient length
+            response_format=List_of_questions,  
         )
-        output = response.choices[0].message.content
-
-        # Attempt to parse the JSON to validate it
-        try:
-            json_output = json.loads(output)
-            return json_output  # Return as Python dict (list of dicts)
-        except json.JSONDecodeError as e:
-            print(f"Failed to parse JSON: {e}")
-            return None
+    # Extract the relevant part of the response
+        output = response.choices[0].message.parsed
+        output_json = output.json()
+        output_dict = json.loads(output_json)
+        
+        return output_dict['generated_questions']
 
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
+        print(f"Error: {e}")
+        return []
+
+
 
 
 def generate_flashcards(notes):

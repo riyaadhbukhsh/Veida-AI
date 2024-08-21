@@ -2,14 +2,13 @@ import datetime
 from datetime import datetime, timedelta
 import json
 import re
+
+
 def parse_mc_questions(multiple_choice_questions):
     # Extract the JSON string (ignoring surrounding text)
     start_index = multiple_choice_questions.find('```json') + len('```json')
     end_index = multiple_choice_questions.find('```', start_index)
     json_str = multiple_choice_questions[start_index:end_index].strip()
-
-    # Remove escape sequences if any
-    json_str = json_str.replace('\n', '').replace('\\"', '"').replace('\\\'', '\'')
 
     # Ensure it starts with a proper JSON list or object
     if not json_str.startswith('[') and not json_str.startswith('{'):
@@ -26,14 +25,11 @@ def parse_mc_questions(multiple_choice_questions):
         print(f"Failed to decode JSON: {e}")
         return None  # Return None if parsing fails
     
-
 def generate_review_dates(start_date, exam_date):
     if isinstance(exam_date, str):
-        # Try parsing with time first
         try:
             exam_date = datetime.strptime(exam_date, '%Y-%m-%d %H:%M:%S')
         except ValueError:
-            # If that fails, try parsing as date only
             try:
                 exam_date = datetime.strptime(exam_date, '%Y-%m-%d')
             except ValueError:
@@ -42,15 +38,19 @@ def generate_review_dates(start_date, exam_date):
     if isinstance(start_date, str):
         start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
 
-    # Rest of the function remains the same
-    study_duration = (exam_date - start_date).days
+    total_days = (exam_date - start_date).days
     review_dates = []
 
-    intervals = [1, 3, 7, 14, 30]  # Review intervals in days
-    for interval in intervals:
-        review_date = start_date + timedelta(days=interval)
-        if review_date < exam_date:
+    # Specific ratios for review intervals
+    ratios = [1/45, 4/45, 9/45, 15/45, 25/45, 34/45, 1]  # Last ratio is 1 to ensure the last day is the exam day
+
+    for ratio in ratios:
+        review_interval = int(ratio * total_days)
+        review_date = start_date + timedelta(days=review_interval)
+        if review_date <= exam_date:
             review_dates.append(review_date.strftime('%Y-%m-%d'))
 
-    return review_dates
-    
+    # Remove duplicates while preserving order
+    unique_review_dates = list(dict.fromkeys(review_dates))
+
+    return unique_review_dates
