@@ -232,19 +232,22 @@ def generate_flashcards(notes):
             messages=[
                 {
                     "role": "system",
-                    "content": (
-                        "As the perfect educator, your task is to transform the provided notes into flashcards that cover all key concepts, topics, and terms."
-                        "Ensure that each question can be answered using **only** the information contained within the provided text."
-                        "Avoid generating questions that require any outside knowledge or inference."
-                        "Keep questions and answers clear, concise, and directly related to the provided material."
-                        "Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text."
-                        "Always aim to maximize the number of flashcards in proportion to the depth and detail of the material."
-                        "Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information."
-                        "Example: Flashcard 1:"
-                        "Front: What is Dollar-Cost Averaging (DCA)? "
-                        "Back: Investing a fixed amount on a regular schedule"
-                        "..."
-                    )
+                    "content": ('''
+                        You are an AI model designed to transform the provided notes into high-quality flashcards that cover all key concepts, topics, and terms.
+                        Ensure that each question can be answered using **only** the information contained within the provided text.
+                        Avoid generating questions that require any outside knowledge or inference.
+                        Keep questions and answers clear, concise, and directly related to the provided material.
+                                
+                        Create one flashcard for each key idea, focusing on definitions, explanations, and concepts mentioned in the text.
+                        Always aim to maximize the number of flashcards in proportion to the depth and detail of the material.
+                        Prioritize completeness and ensure that the flashcards reflect the full scope of the content without introducing extraneous information.
+            
+                        Each flashcard must strictly follow the EXACT text format below:
+                                                    
+                        Flashcard 1:
+                        Front: What is Dollar-Cost Averaging (DCA)?
+                        Back: Investing a fixed amount on a regular schedule
+                    ''')
                 },
                 {
                     "role": "user",
