@@ -13,77 +13,105 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [fileName, setFileName] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
-    const [courseSchedule, setCourseSchedule] = useState({
-        Monday: "",
-        Tuesday: "",
-        Wednesday: "",
-        Thursday: "",
-        Friday: "",
-        Saturday: "",
-        Sunday: "",
-    });
+    const [isPremium, setIsPremium] = useState(false);
+    const [courseCount, setCourseCount] = useState(0);
+
+    useEffect(() => {
+        // Perform initial checks on page load
+        const fetchPremiumStatusAndCourses = async () => {
+            try {
+                // Fetch the premium status
+                const premiumResponse = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
+                if (premiumResponse.ok) {
+                    const premiumData = await premiumResponse.json();
+                    setIsPremium(premiumData.premium);
+                    console.log("Premium Status:", premiumData.premium);
+                } else {
+                    console.error("Failed to fetch premium status.");
+                }
+
+                // Fetch the course count
+                const coursesResponse = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
+                if (coursesResponse.ok) {
+                    const coursesData = await coursesResponse.json();
+                    setCourseCount(coursesData.courses.length);
+                    console.log("Course Count:", coursesData.courses.length);
+
+                    // If not premium and course count is 2 or more, set an error
+                    if (!isPremium && coursesData.courses.length >= 2) {
+                        setError("You have reached the limit of 2 courses for free users. Upgrade to premium for unlimited courses.");
+                    }
+                } else {
+                    console.error("Failed to fetch course count.");
+                }
+            } catch (error) {
+                console.error("Error fetching premium status or course count:", error);
+            }
+        };
+
+        if (userId) {
+            fetchPremiumStatusAndCourses();
+        }
+    }, [userId]);
 
     useEffect(() => {
         // Update form validity
         setIsFormValid(
-            [name, description, examDate].every((field) => field.trim() !== "") &&
-            file !== null
+            name.trim() !== "" &&
+            description.trim() !== "" &&
+            examDate.trim() !== "" &&
+            file !== null &&
+            (isPremium || courseCount < 2)
         );
-    }, [name, description, examDate, file]);
+    }, [name, description, examDate, file, isPremium, courseCount]);
 
-    const checkDuplicateCourseName = async (name) => {
+    const checkDuplicateCourseName = async (courseName) => {
         try {
             const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
             if (response.ok) {
                 const data = await response.json();
-                return data.courses.some(course => course.course_name.toLowerCase() === name.toLowerCase());
+                return data.courses.some(
+                    (course) => course.course_name.toLowerCase() === courseName.toLowerCase()
+                );
+            } else {
+                console.error("Failed to fetch courses for duplicate check.");
+                return false;
             }
         } catch (error) {
             console.error("Error checking for duplicate course name:", error);
+            return false;
         }
-        return false;
     };
 
-    const validateCourseName = (name) => !/[.!~*'()]/.test(name);
+    const validateCourseName = (courseName) => {
+        // Disallow special characters: [.!~*'()]
+        const invalidChars = /[.!~*'()]/;
+        return !invalidChars.test(courseName);
+    };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFile(file);
-        setFileName(file ? file.name : "");
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        setFileName(selectedFile ? selectedFile.name : "");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const submitButton = e.target.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
+        setError(""); // Reset error message
+
+        if (!isPremium && courseCount >= 2) {
+            setError("You have reached the limit of 2 courses for free users. Upgrade to premium for unlimited courses.");
+            return;
+        }
 
         if (!validateCourseName(name)) {
-            setError("Please enter a valid course name without special characters: [.!~*'()]");
-            setLoading(false);
-            submitButton.disabled = false;
-            return;
-        }
-        if (!isFormValid) {
-            setError("Please fill in all fields.");
-            setLoading(false);
-            submitButton.disabled = false;
+            setError("Course name contains invalid characters. Please avoid using [ . ! ~ * ' ( ) ]");
             return;
         }
 
-        if (await checkDuplicateCourseName(name)) {
+        const isDuplicate = await checkDuplicateCourseName(name);
+        if (isDuplicate) {
             setError("A course with this name already exists. Please choose a different name.");
-            setLoading(false);
-            submitButton.disabled = false;
-            return;
-        }
-
-        const today = new Date().setHours(0, 0, 0, 0);
-        const selectedDate = new Date(examDate).setHours(0, 0, 0, 0);
-
-        if (selectedDate < today) {
-            setError("Please select a future date for the exam");
-            setLoading(false);
-            submitButton.disabled = false;
             return;
         }
 
@@ -104,17 +132,13 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
 
             if (!extractResponse.ok) {
                 const errorData = await extractResponse.json();
-                setError(errorData.error || "An error occurred while extracting text.");
+                setError(errorData.error || "An error occurred while processing the file.");
                 setLoading(false);
-                submitButton.disabled = false;
                 return;
             }
 
             const extractedData = await extractResponse.json();
             const { notes = {}, flashcards = [], mc_questions = [] } = extractedData;
-            console.log('Notes:', notes);
-            console.log('Flashcards:', flashcards);
-            console.log('MC Questions:', mc_questions);
 
             const createResponse = await fetch("http://localhost:8080/api/create_course", {
                 method: "POST",
@@ -129,7 +153,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     notes,
                     flashcards,
                     mc_questions,
-                    course_schedule: courseSchedule,
                 }),
             });
 
@@ -142,35 +165,28 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     notes,
                     flashcards,
                     mc_questions,
-                    course_schedule: courseSchedule,
                 });
                 setName("");
                 setDescription("");
                 setExamDate("");
                 setFile(null);
+                setFileName("");
                 setError("");
-                setCourseSchedule({
-                    Monday: "",
-                    Tuesday: "",
-                    Wednesday: "",
-                    Thursday: "",
-                    Friday: "",
-                    Saturday: "",
-                    Sunday: "",
-                });
-                router.push("/client"); // Redirect to the course list page
+                router.push("/client"); // Redirect to course list page
             } else {
                 const errorData = await createResponse.json();
                 setError(errorData.message || "An error occurred while creating the course.");
             }
         } catch (err) {
             console.error("Error:", err);
-            setError("An unexpected error occurred.");
+            setError("An unexpected error occurred. Please try again later.");
         } finally {
             setLoading(false);
-            submitButton.disabled = false;
         }
     };
+
+    // Get today's date in YYYY-MM-DD format for disabling past dates
+    const today = new Date().toISOString().split("T")[0];
 
     return (
         <div className="create-course-overlay">
@@ -194,28 +210,15 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
                     required
+                    min={today} // Disable past dates
                 />
-                {/*<div>
-                    <h3>Course Schedule</h3>
-                    {Object.keys(courseSchedule).map((day) => (
-                        <div key={day}>
-                            <label>{day}: </label>
-                            <input
-                                type="time"
-                                value={courseSchedule[day]}
-                                onChange={(e) =>
-                                    handleCourseScheduleChange(day, e.target.value)
-                                }
-                            />
-                        </div>
-                    ))}
-                </div> */}
                 <div className="file-input-wrapper">
                     <div className="file-input-button">
                         {fileName || "Choose Course Content (PDF, PNG, JPEG)"}
                     </div>
                     <input
                         type="file"
+                        accept=".pdf,.png,.jpg,.jpeg"
                         onChange={handleFileChange}
                         required
                     />

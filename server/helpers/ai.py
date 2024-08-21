@@ -148,7 +148,9 @@ def generate_mc_questions(notes):
         generated_questions: List[Question]
 
     initial_content = """
-            You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. 
+            You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
+            
+            Each question should be followed by four answer options (no need to include an answer letter) and a correct answer, including an explanation. Make sure each question's correct answer in RAW TEXT MUST BE EXACTLY EQUAL TO one of the possible answers. No differences.
 
             For math notes, focus on equations. For ALL math formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
@@ -169,7 +171,7 @@ def generate_mc_questions(notes):
 
             Please generate exactly 7 multiple-choice questions based on the provided concept and principles.
             
-            Each question must strictly follow the JSON format below. Every "correct_answer" in RAW TEXT MUST EXACTLY match a "possible_answer":
+            Each question must strictly follow the JSON format below:
 
             "concept": "Set Theory",
             "question_type": "Synthesis/Comparison/Context/Etc.",

@@ -21,7 +21,7 @@
 
 .error-message {
     color: red;
-    margin-bottom: 1rem;
+    margin: 0.6rem 0 1rem 0;
 }
 
 .question-container {
@@ -113,4 +113,10 @@
     font-size: 1rem;
     margin-top: 1rem;
     color: #d1d5db;
+}
+
+@media (max-width: 781px) {
+    .answers-grid {
+        grid-template-columns: 1fr; /* Change to a single column layout */
+    }
 }
