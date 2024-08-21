@@ -40,7 +40,6 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
       }
 
       const extractedData = await extractResponse.json();
-      console.log('Extracted Data:', extractedData);
 
       const requestBody = {
         clerk_id: userId,
@@ -48,7 +47,6 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
         notes: extractedData.notes,
         flashcards: extractedData.flashcards,
       };
-      console.log('Request Body:', requestBody);
 
       const addContentResponse = await fetch('http://localhost:8080/api/add_course_content', {
         method: 'POST',
@@ -65,7 +63,6 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
       }
 
       const responseData = await addContentResponse.json();
-      console.log('Success response:', responseData);
 
       onContentAdded();
       onClose();

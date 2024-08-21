@@ -99,8 +99,6 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
       exam_date: examDate,
     };
 
-    console.log('Payload:', payload);
-
     try {
       const response = await fetch('http://localhost:8080/api/update_course', {
         method: 'PUT',
@@ -111,7 +109,6 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
       });
 
       if (response.ok) {
-        console.log('Course updated successfully');
         onCourseUpdated();
         onClose();
       } else {

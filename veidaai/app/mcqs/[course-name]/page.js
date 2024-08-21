@@ -35,7 +35,6 @@ function McqsPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Fetched MCQs:', data.mcqs);
                 setMcqs(data.mcqs);
             } else {
                 setError('Failed to fetch MCQs');
@@ -110,7 +109,6 @@ function McqsPage() {
     
         // Split text based on LaTeX delimiters
         const parts = convertedText.split(/(\$\$.*?\$\$|\$.*?\$)/g).filter(Boolean);
-        console.log('Parsed LaTeX parts:', parts); // Debugging log
     
         return parts.map((part, index) => {
             // Detect if the part is inline LaTeX ($...$) or display LaTeX ($$...$$)
@@ -131,9 +129,6 @@ function McqsPage() {
 
     const currentQuestion = mcqs[currentQuestionIndex];
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
-    console.log('Selected Answer:', selectedAnswer); // Debugging log
-    console.log('Correct Answer Index:', currentQuestion ? currentQuestion.correct_answer_index : null); // Debugging log
-    console.log('Is Correct:', isCorrect); // Debugging log
     return (
         <div className="mcqs-container">
             <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>

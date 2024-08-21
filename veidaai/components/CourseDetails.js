@@ -24,7 +24,6 @@ const CourseDetails = ({ courseName }) => {
         let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) == 0);
         let courseObj = data.courses[courseIndex];
         setCourseObj(courseObj);
-        console.log(courseObj);
       } else {
         console.error('Failed to fetch course. Response error: ', response.ok);
       }

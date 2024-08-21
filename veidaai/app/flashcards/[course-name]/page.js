@@ -66,7 +66,6 @@ function FlashcardPage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched flashcards:', data.flashcards); // Debugging log
         setFlashcards(data.flashcards);
         setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
       } else {
@@ -88,7 +87,6 @@ function FlashcardPage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched flashcards due today:', data.flashcards); // Debugging log
         setFlashcards(data.flashcards);
         setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
         setReviewing(true);
@@ -111,7 +109,6 @@ function FlashcardPage() {
       {reviewing ? (
         <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
           <FaArrowLeft onClick={() => { 
-            console.log('Back to flashcards link clicked');
             setReviewing(false); 
             fetchFlashcards(); 
           }}/>
@@ -119,7 +116,6 @@ function FlashcardPage() {
       ) : (
         <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
           <FaArrowLeft onClick={() => { 
-            console.log('Back to course link clicked');
             setReviewing(false); 
           }}/>
         </Link>

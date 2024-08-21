@@ -26,7 +26,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const tomorrow = getTomorrowDate();
 
     useEffect(() => {
-        console.log(tomorrow)
         // Perform initial checks on page load
         const fetchPremiumStatusAndCourses = async () => {
             try {
@@ -35,7 +34,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 if (premiumResponse.ok) {
                     const premiumData = await premiumResponse.json();
                     setIsPremium(premiumData.premium);
-                    console.log("Premium Status:", premiumData.premium);
                 } else {
                     console.error("Failed to fetch premium status.");
                 }
@@ -45,7 +43,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 if (coursesResponse.ok) {
                     const coursesData = await coursesResponse.json();
                     setCourseCount(coursesData.courses.length);
-                    console.log("Course Count:", coursesData.courses.length);
 
                     // If not premium and course count is 2 or more, set an error
                     if (!isPremium && coursesData.courses.length >= 2) {

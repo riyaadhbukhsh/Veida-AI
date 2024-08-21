@@ -21,7 +21,6 @@ const ClientPage = () => {
     if (!isSignedIn) {
       router.push('/sign-in');
     } else if (userId) {
-      console.log('User ID:', userId);
       fetchAndSetCourses();
     }
   }, [isSignedIn, userId, router]);
@@ -37,7 +36,6 @@ const ClientPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched courses:', data.courses);
         // Remove duplicates by using a Set
         const uniqueCourses = Array.from(new Set(data.courses.map(course => course.course_name)))
           .map(course_name => data.courses.find(course => course.course_name === course_name));
@@ -72,7 +70,6 @@ const ClientPage = () => {
   const handleDeleteCourse = async (courseName) => {
     if (window.confirm(`Are you sure you want to delete the course "${courseName}"?`)) {
       try {
-        console.log('Attempting to delete course:', courseName);
         const response = await fetch('http://localhost:8080/api/delete_course', {
           method: 'DELETE',
           headers: {
@@ -82,7 +79,6 @@ const ClientPage = () => {
         });
 
         if (response.ok) {
-          console.log('Course deleted successfully');
           await fetchAndSetCourses(); // Refresh the course list
         } else {
           console.error('Failed to delete course:', response.statusText);
