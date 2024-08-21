@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from pymongo import MongoClient
+import pymongo
 from dotenv import load_dotenv
 import os
 from helpers.mongo import (
@@ -53,7 +53,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
-client = MongoClient(mongo_uri)
+client = pymongo.MongoClient(mongo_uri)
 db = client['VeidaAI']
 
 # Set your Stripe API key
@@ -79,11 +79,8 @@ def clerk_webhook():
     elif event_type == 'user.deleted':
         delete_user(user_data)
 
-    return jsonify({"success": True}), 
+    return jsonify({"success": True}), 200
 
-
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 @app.route('/api/create-checkout-session', methods=['POST'])
 def create_checkout_session():
@@ -234,11 +231,15 @@ def update_course():
         "created_at": course_data.get('created_at', datetime.now()),
         "updated_at": datetime.now()
     }
-    result = db.courses.update_one(
-        {"clerk_id": clerk_id},
-        {"$addToSet": {"courses": new_course}},
-        upsert=True
-    )
+    try:
+        result = db.courses.update_one(
+            {"clerk_id": clerk_id},
+            {"$addToSet": {"courses": new_course}},
+            upsert=True
+        )
+    except pymongo.errors.DuplicateKeyError:
+        return jsonify({"error": "A course with this name already exists."}), 400
+
 
     print(f"Update result: {result.raw_result}")  # Add this line
     if result.modified_count > 0 or result.upserted_id is not None:
@@ -276,6 +277,8 @@ def extract_text():
         return jsonify({"error": "No selected file"}), 400
 
     file_type = file.filename.split('.')[-1].lower()
+    if file_type not in ['pdf', 'jpg', 'jpeg', 'png']:
+        return jsonify({"error": "Unsupported file type"}), 400
     extracted_text = ""
 
     try:
@@ -351,7 +354,7 @@ def route_create_course():
 @app.route('/api/create_or_update_notes', methods=['POST'])
 def route_create_or_update_notes():
     """
-    Creates or updates notes for a` specific course.
+    Creates or updates notes for a specific course.
 
     This endpoint accepts a POST request with JSON data containing the clerk_id, course_name, notes, and notes_name. It creates or updates the specified notes for the given course.
 
@@ -573,7 +576,7 @@ def route_update_lastseen():
         return jsonify({"error": "Missing required fields"}), 400
 
     success = update_lastseen(clerk_id, course_name, card_id)
-    return jsonify({"success": success}), 200 if success else 404
+    return jsonify({"success": success}), (200 if success else 404)
 
 @app.route('/api/edit_flashcard', methods=['POST'])
 def route_edit_flashcard():
