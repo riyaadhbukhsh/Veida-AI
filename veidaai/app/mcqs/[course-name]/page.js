@@ -97,6 +97,8 @@ function McqsPage() {
             .replace(/\\{2}(.*?)\\{2}/g, '$$$$ $1 $$$$')
             .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$') 
             .replace(/\$ +([^$]+) +\$/g, '$ $1 $')     
+            .replace(/(?<!\$)\b([A-Za-z_]+\s*=\s*[^,\s]+)/g, '$$$1$$')
+            .replace(/(?<!\$)\b(KE_{avg}|\\frac|\\cdot|R|T)\b(?!\$)/g, '$$$1$$')
             .replace(/\s+/g, ' ')              
             .trim();    
     };
