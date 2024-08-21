@@ -24,6 +24,7 @@ const CourseDetails = ({ courseName }) => {
         let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) == 0);
         let courseObj = data.courses[courseIndex];
         setCourseObj(courseObj);
+        console.log(courseObj);
       } else {
         console.error('Failed to fetch course. Response error: ', response.ok);
       }
@@ -47,8 +48,11 @@ const CourseDetails = ({ courseName }) => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    const date = new Date(dateString);
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${month}/${day}/${year}`;
   };
 
   return (

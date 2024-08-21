@@ -16,7 +16,17 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const [isPremium, setIsPremium] = useState(false);
     const [courseCount, setCourseCount] = useState(0);
 
+    // Function to get tomorrow's date in YYYY-MM-DD format
+    const getTomorrowDate = () => {
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // Add 1 day to today's date
+        return today.toISOString().split("T")[0]; // Return in YYYY-MM-DD format
+    };
+
+    const tomorrow = getTomorrowDate();
+
     useEffect(() => {
+        console.log(tomorrow)
         // Perform initial checks on page load
         const fetchPremiumStatusAndCourses = async () => {
             try {
@@ -185,9 +195,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         }
     };
 
-    // Get today's date in YYYY-MM-DD format for disabling past dates
-    const today = new Date().toISOString().split("T")[0];
-
     return (
         <div className="create-course-overlay">
             <form onSubmit={handleSubmit} className="create-course-form">
@@ -210,7 +217,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
                     required
-                    min={today} // Disable past dates
+                    min={tomorrow} // Disable dates before tomorrow
                 />
                 <div className="file-input-wrapper">
                     <div className="file-input-button">
