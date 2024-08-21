@@ -150,7 +150,7 @@ def generate_mc_questions(notes):
     initial_content = """
             You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
             
-            Each question should be followed by four answer options (no need to include an answer letter) and a correct answer, including an explanation. Make sure each question's correct answer in RAW TEXT MUST BE EXACTLY EQUAL TO one of the possible answers. No differences.
+            Each question should be followed by four answer options (no need to include an answer letter) and a correct answer.
 
             For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
@@ -170,6 +170,8 @@ def generate_mc_questions(notes):
                 Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
             Please generate exactly 7 multiple-choice questions based on the provided concept and principles.
+
+            For the correct answer field, you are to copy the exact text from the correct "possible_answers" option to "correct_answer".
             
             Each question must strictly follow the JSON format below:
 
@@ -182,7 +184,7 @@ def generate_mc_questions(notes):
                 "Option C",
                 "Option D"
             ],
-            "correct_answer": "A subset is a smaller set contained within another set, while a power set is the set of all possible subsets of a set.",
+            "correct_answer": "Option A",
             "why": "In set theory, a subset is defined as a set A that is contained within another set B if every element of A is also an element of B. On the other hand, a power set of a set A, is the set of all possible subsets of A, including the empty set and A itself."
         },
     
@@ -255,20 +257,20 @@ def generate_flashcards(notes):
         # Parse the flashcards from the response
         flashcards = []
         for flashcard in flashcards_text.split("Flashcard")[1:]:
-            parts = flashcard.split("Front:")[1].split("Back:")
-            front = parts[0].strip()
-            back = parts[1].strip()
-            flashcards.append({"front": front, "back": back})
+            if "Front:" in flashcard and "Back:" in flashcard:
+                parts = flashcard.split("Front:")[1].split("Back:")
+                front = parts[0].strip()
+                back = parts[1].strip()
+                flashcards.append({"front": front, "back": back})
+            else:
+                print("Error: Flashcard format is incorrect.")
         
-        return flashcards
-
-        # Store each flashcard in the database
-        # for card in flashcards:
-            # add_flashcard(clerk_id, course_name, card['front'], card['back'])
-
+    
     except Exception as e:
         print(f"Error: {e}")
         return []
+        
+    return flashcards
 
 
 def calculate_dynamic_intervals(due_by):

@@ -18,17 +18,53 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
         setFlipped(false);
     }, [card]);
 
-    const cleanText = (text) => {
-        if (!text) return ''; // Return empty string if text is undefined or null
+    const convertMath = (text) => {
+        if (typeof text !== 'string') return '';
+
+        text = text.replace(/^\*\*\s*|\s*\*\*$/g, '').trim();
+    
+        const replacements = {
+            '\\\\cdotp': '\\cdotp',
+            '\\\\times': '\\times',
+            '\\\\infty': '\\infty',
+            '\\\\sqrt': '\\sqrt',
+            '\\\\leq': '\\leq',
+            '\\\\geq': '\\geq',
+            '\\\\alpha': '\\alpha',
+            '\\\\beta': '\\beta',
+            '\\\\gamma': '\\gamma',
+            '\\\\delta': '\\delta',
+            '\\\\epsilon': '\\epsilon',
+            '\\\\pi': '\\pi',
+            '\\\\theta': '\\theta',
+            '\\\\lambda': '\\lambda',
+            '\\\\sigma': '\\sigma',
+            '\\\\omega': '\\omega',
+            '\\\\mu': '\\mu',
+            '\\\\sin': '\\sin',
+            '\\\\cos': '\\cos',
+            '\\\\tan': '\\tan',
+            '\\\\log': '\\log',
+            '\\\\ln': '\\ln',
+            '\\\\int': '\\int',
+            '\\\\sum': '\\sum',
+            '\\\\prod': '\\prod'
+        };
+    
+        for (const [key, value] of Object.entries(replacements)) {
+            text = text.replace(new RegExp(key, 'g'), `$${value}$`);
+        }
+    
         return text
-            .replace(/[*_~`#>!-]/g, '') // Remove common markdown symbols
-            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove Markdown links but keep the link text
-            .replace(/!\[(.*?)\]\(.*?\)/g, '$1') // Remove Markdown image links but keep the alt text
-            .replace(/`{1,2}([^`]*)`{1,2}/g, '$1') // Remove inline code formatting
-            .replace(/~~(.*?)~~/g, '$1') // Remove strikethrough formatting
-            .replace(/^\s+|\s+$/g, '') // Trim leading and trailing whitespace
-            .replace(/\n{2,}/g, '\n'); // Replace multiple newlines with a single newline
-    };
+            .replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
+            .replace(/\\\((.*?)\\\)/g, '$ $1 $')
+            .replace(/\\{2}(.*?)\\{2}/g, '$$$$ $1 $$$$')
+            .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$') 
+            .replace(/\$ +([^$]+) +\$/g, '$ $1 $') 
+            .replace(/\s+/g, ' ')       
+            .trim();    
+    };    
+    
 
     const parseTextWithLatex = (text) => {
         if (!text) return []; // Return empty array if text is undefined or null
@@ -50,7 +86,7 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
                 );
             }
             // Clean the non-LaTeX part
-            return <span key={index}>{cleanText(part)}</span>;
+            return <span key={index}>{convertMath(part)}</span>;
         });
     };
     
