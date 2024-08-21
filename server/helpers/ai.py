@@ -152,7 +152,7 @@ def generate_mc_questions(notes):
             
             Each question should be followed by four answer options (no need to include an answer letter) and a correct answer, including an explanation. Make sure each question's correct answer in RAW TEXT MUST BE EXACTLY EQUAL TO one of the possible answers. No differences.
 
-            For math notes, focus on equations. For ALL math formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
+            For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
             1. **Synthesis:** Combining different pieces of information to create a new understanding.
                 Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?

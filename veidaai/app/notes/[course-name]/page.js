@@ -52,14 +52,17 @@ const NotesPage = () => {
 
   const convertMath = (text) => {
     if (typeof text !== 'string') return '';
-
-    text = text.replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
-               .replace(/\\\((.*?)\\\)/g, '$ $1 $')
-               .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$')
-               .replace(/\$ +([^$]+) +\$/g, '$ $1 $');
   
-    return text;
+    return text
+      .replace(/\\text{([^}]*)}/g, (fullMatch) => {
+        return fullMatch.replace(/#/g, '\\#');
+      })
+      .replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
+      .replace(/\\\((.*?)\\\)/g, '$ $1 $')
+      .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$')
+      .replace(/\$ +([^$]+) +\$/g, '$ $1 $');
   };
+  
   
   useEffect(() => {
     if (notes) {
