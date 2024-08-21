@@ -24,7 +24,7 @@ const NotesPage = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
+      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -50,25 +50,20 @@ const NotesPage = () => {
     }
   }, [userId]);
 
-  const parseTextWithLatex = (text) => {
+  const convertMath = (text) => {
     if (typeof text !== 'string') return '';
 
-    // Handle display math \[...\]
-    text = text.replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$'); // Convert \[...\] to $$ ... $$
-
-    // Handle inline math \(...\)
-    text = text.replace(/\\\((.*?)\\\)/g, '$ $1 $'); // Convert \(...\) to $ ... $
-
-    // Handle cases where there are trailing or leading spaces around math delimiters
-    text = text.replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$'); // Convert extra spaces within $$ ... $$ to single space
-    text = text.replace(/\$ +([^$]+) +\$/g, '$ $1 $'); // Convert extra spaces within $ ... $ to single space
+    text = text.replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
+               .replace(/\\\((.*?)\\\)/g, '$ $1 $')
+               .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$')
+               .replace(/\$ +([^$]+) +\$/g, '$ $1 $');
   
     return text;
   };
   
   useEffect(() => {
     if (notes) {
-      const updatedText = parseTextWithLatex(notes);
+      const updatedText = convertMath(notes);
       setParsedNotes(updatedText);
     }
   }, [notes]);
