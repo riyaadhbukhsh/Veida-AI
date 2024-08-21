@@ -23,15 +23,15 @@ const PremiumPage = () => {
 
   const fetchPremiumStatus = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
-      const data = await res.json();
-      setIsPremium(data.premium);
+        const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
+        if (response.ok) {
+            const data = await response.json();
+            setIsPremium(data.premium);
+        }
     } catch (error) {
-      console.error('Error fetching premium status:', error);
-    } finally {
-      setIsLoading(false);
+        console.error('Error fetching premium status:', error);
     }
-  };
+};
 
   if (isLoading) {
     return <div>Loading...</div>;
