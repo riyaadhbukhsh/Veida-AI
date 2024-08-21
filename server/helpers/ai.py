@@ -150,7 +150,7 @@ def generate_mc_questions(notes):
     initial_content = """
             You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. 
 
-            For ALL math formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
+            For math notes, focus on equations. For ALL math formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
             1. **Synthesis:** Combining different pieces of information to create a new understanding.
                 Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
