@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
@@ -89,19 +89,45 @@ function McqsPage() {
         router.push(`/${urlCourseName}`);
     };
 
+    const convertMath = (text) => {
+        if (typeof text !== 'string') return '';
+    
+        return text
+            .replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
+            .replace(/\\\((.*?)\\\)/g, '$ $1 $')
+            .replace(/\\{2}(.*?)\\{2}/g, '$$$$ $1 $$$$')
+            .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$') 
+            .replace(/\$ +([^$]+) +\$/g, '$ $1 $')     
+            .replace(/\s+/g, ' ')              
+            .trim();    
+    };
+
     const parseTextWithLatex = (text) => {
-        if (!text) return null;
-        const parts = text.split(/(\$.*?\$)/g).filter(Boolean);
+        if (!text) return null;    
+    
+        // Convert detected LaTeX delimiters
+        const convertedText = convertMath(text);
+    
+        // Split text based on LaTeX delimiters
+        const parts = convertedText.split(/(\$\$.*?\$\$|\$.*?\$)/g).filter(Boolean);
         console.log('Parsed LaTeX parts:', parts); // Debugging log
+    
         return parts.map((part, index) => {
-            if (part.startsWith('$') && part.endsWith('$')) {
+            // Detect if the part is inline LaTeX ($...$) or display LaTeX ($$...$$)
+            if (part.startsWith('$$') && part.endsWith('$$')) {
                 return (
-                    <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(1, -1), { throwOnError: false }) }} />
+                    <div key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2).trim(), { displayMode: true, throwOnError: false }) }} />
+                );
+            } else if (part.startsWith('$') && part.endsWith('$')) {
+                return (
+                    <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(1, -1).trim(), { throwOnError: false }) }} />
                 );
             }
+            // Return non-LaTeX text as is
             return <span key={index}>{part}</span>;
         });
     };
+    
 
     const currentQuestion = mcqs[currentQuestionIndex];
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;

@@ -1,4 +1,4 @@
-.container {
+.notes-container {
     max-width: 72rem;
     margin-left: auto;
     margin-right: auto;
@@ -41,4 +41,14 @@
 .title {
     font-size: 2.5rem;
     color: #f0f0f0;
+}
+
+@media (max-width: 781px) {
+    #notes-content {
+        padding: 2em 0;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
 }

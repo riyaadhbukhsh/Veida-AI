@@ -148,27 +148,31 @@ def generate_mc_questions(notes):
         generated_questions: List[Question]
 
     initial_content = """
-    You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. Each question should be followed by four answer options and a correct answer, including an explanation. THIS PART IS VERY IMPORTANT You MUST generate any math equations in LaTeX, including possible answers, encolse each LaTeX expression in $. The questions should be conceptually similar to the following examples:
+            You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
+            
+            Each question should be followed by four answer options (no need to include an answer letter) and a correct answer, including an explanation. Make sure each question's correct answer in RAW TEXT MUST BE EXACTLY EQUAL TO one of the possible answers. No differences.
 
-    1. **Synthesis:** Combining different pieces of information to create a new understanding.
-        Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
+            For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
-    2. **Reorganization:** Arranging information in a systematic way to aid understanding.
-        Example: Which of the following best represents a reorganized view of Newton's Law of Gravity?
+            1. **Synthesis:** Combining different pieces of information to create a new understanding.
+                Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
 
-    3. **Context:** Applying a concept in various situations or scenarios.
-        Example: In which context would you apply the Law of Gravity differently than on Earth?
+            2. **Reorganization:** Arranging information in a systematic way to aid understanding.
+                Example: Which of the following best represents a reorganized view of Newton's Law of Gravity?
 
-    4. **Comparison:** Examining similarities and differences between concepts.
-        Example: How does Newton's Law of Gravity differ from Einstein's Theory of General Relativity?
+            3. **Context:** Applying a concept in various situations or scenarios.
+                Example: In which context would you apply the Law of Gravity differently than on Earth?
 
-    5. **Application:** Using concepts or formulas to solve problems or perform calculations.
-        Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
+            4. **Comparison:** Examining similarities and differences between concepts.
+                Example: How does Newton's Law of Gravity differ from Einstein's Theory of General Relativity?
 
-    Please generate exactly 7 multiple-choice questions based on the provided concept and principles. Each question must strictly follow the JSON format below:
+            5. **Application:** Using concepts or formulas to solve problems or perform calculations.
+                Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
- 
-         
+            Please generate exactly 7 multiple-choice questions based on the provided concept and principles.
+            
+            Each question must strictly follow the JSON format below:
+
             "concept": "Set Theory",
             "question_type": "Synthesis/Comparison/Context/Etc.",
             "question": "How does the concept of a subset differ from the concept of a power set in set theory?",

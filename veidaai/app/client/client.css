@@ -1,5 +1,5 @@
 .client-page {
-  padding: 2rem;
+  padding: 5%;
   background-color: #1e1e1e;
   min-height: 100vh;
   color: #f0f0f0;
@@ -154,7 +154,7 @@ h1 {
 
 .create-course-form .error {
   color: #fc8181;
-  margin-bottom: 1rem;
+  margin: 0.6rem 0 1rem 0;
   font-size: 0.9rem;
   text-align: center;
 }
@@ -314,4 +314,14 @@ h1 {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 781px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .create-course-form h2 {
+    font-size: 1.5rem;
+  }
 }

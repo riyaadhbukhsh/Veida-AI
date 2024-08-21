@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: flex-start;
     min-height: calc(100vh - 60px); /* Adjust for navbar height */
-    padding: 2rem;
+    padding: 5%;
     background-color: #1e1e1e;
     color: #fff;
     font-family: 'Poppins', sans-serif;
@@ -115,22 +115,11 @@
   
     .study-container {
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
     }
   
     #add-content-btn {
-      max-width: 500px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .study-container {
-      width: 100%;
-      max-width: 320px;
-    }
-  
-    #add-content-btn {
-      max-width: 320px;
+      max-width: 600px;
     }
   }
   
@@ -219,7 +208,7 @@
   
   .create-course-form .error {
     color: #fc8181;
-    margin-bottom: 1rem;
+    margin: 0.6rem 0 1rem 0;
     font-size: 0.9rem;
     text-align: center;
   }
@@ -291,4 +280,14 @@
   .close-button:hover {
     color: #6d9dc5;
     transform: rotate(90deg);
+  }
+
+  @media only screen and (max-width: 781px) {
+    .course-title {
+      font-size: 2rem;
+    }
+
+    .create-course-form h2 {
+      font-size: 1.5rem;
+    }
   }

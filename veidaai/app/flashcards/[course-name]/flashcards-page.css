@@ -1,5 +1,5 @@
 .flashcard-page {
-  padding: 2rem;
+  padding: 5%;
   background-color: #1e1e1e;
   min-height: 100vh;
   color: #f0f0f0;
@@ -25,20 +25,14 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .back-arrow-link {
-    position: absolute;
-    left: 1rem;
-    top: 80px;
-    color: #6d9dc5;
-    font-size: 2.6rem;
-  }
-  
-  @media screen and (max-width: 781px) {
-    .back-arrow-link {
-      top: 75px;
-      font-size: 1.8rem;
-    }
-  }
+  position: absolute;
+  left: 1rem;
+  top: 80px;
+  color: #6d9dc5;
+  font-size: 2.6rem;
+}
   
 .review-flashcard {
   width: 100%;
@@ -98,7 +92,7 @@
   display: flex;
   gap: 2rem;
   width: 100%;
-  max-width: 964px;
+  max-width: 1024px;
   margin-bottom: 2rem;
 }
 
@@ -126,19 +120,31 @@
   }
 
   .button-container {
-    max-width: 632px;
+    max-width: 672px;
   }
 }
 
 @media only screen and (max-width: 781px) {
+  .back-arrow-link {
+    top: 75px;
+    font-size: 1.8rem;
+  }
+
+  .flashcard-title {
+    font-size: 2rem;
+  }
+
   #cards-preview {
     grid-template-columns: 1fr;
     gap: 1rem;
+    width: 100%; 
+    max-width: 366px; 
+    margin: 0 auto;
   }
 
   .button-container {
     flex-direction: column;
-    max-width: 300px;
+    max-width: 366px;
   }
 
   .review-buttons {

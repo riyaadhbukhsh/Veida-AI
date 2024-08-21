@@ -189,9 +189,11 @@
 .notification-bell {
     position: relative;
     margin-right: 10px;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: #f0f0f0;
     cursor: pointer;
+    display: flex; /* Use flexbox */
+    align-items: center; /* Vertically center the icon */
 }
 
 .notification-bell .has-notification {
@@ -211,7 +213,7 @@
 .notification-bell .tooltip {
     visibility: hidden;
     margin-right: 5px;
-    width: 200px;
+    width: 130px;
     background-color: #333;
     color: #fff;
     text-align: center;
@@ -219,9 +221,9 @@
     padding: 10px;
     position: absolute;
     z-index: 1;
-    top: 125%;
+    top: 150%;
     left: 50%;
-    margin-left: -100px;
+    margin-left: -60px;
     opacity: 0;
     transition: opacity 0.3s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -246,7 +248,7 @@
 
 @media (max-width: 768px) {
     .notification-bell .tooltip {
-        width: 150px;
-        margin-left: -75px;
+        width: 130px;
+        margin-left: -65px;
     }
 }

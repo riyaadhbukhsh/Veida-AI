@@ -50,9 +50,9 @@ html, body {
 
 .content-wrapper {
   width: 100%;
+  padding: 5%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
 }
 
 .section-title {
@@ -74,7 +74,7 @@ html, body {
 
 .features-list {
   list-style: none;
-  padding: 0;
+  padding: 0 0.4rem;
   margin: 4rem auto;
   max-width: 800px;
   width: 100%;
@@ -161,9 +161,19 @@ html, body {
   color: #285b8e;
 }
 
-@media (max-width: 768px) {
-  .features-list {
-    padding: 0 1rem;
+@media only screen and (max-width: 781px) {
+  .hero-title {
+    font-size: 2.6rem;
+    line-height: 3.2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .feature-icon {
+    font-size: 4rem;
+    margin-right: 1.5rem;
   }
 
   .founders-grid {
