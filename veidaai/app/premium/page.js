@@ -39,8 +39,6 @@ const PremiumPage = () => {
     return <div>Loading...</div>;
   }
 
-  console.log('help')
-
   if (isPremium) {
     return (
       <div className="premium-page">
