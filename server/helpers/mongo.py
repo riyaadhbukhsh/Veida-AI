@@ -185,11 +185,18 @@ def check_premium_status(clerk_id):
             return True
     return False
 
+
 def create_user(user_data):
     """
     Create a new user in the database.
     """
     users_collection = db.users
+    # Check if the user already exists
+    existing_user = users_collection.find_one({'clerk_id': user_data['id']})
+    if existing_user:
+        print(f"User with clerk_id {user_data['id']} already exists.")
+        return
+
     users_collection.insert_one({
         'clerk_id': user_data['id'],
         'email': user_data['email_addresses'][0]['email_address'],
@@ -201,6 +208,7 @@ def create_user(user_data):
         'premium': False,  # Set premium to False by default
         'premium_expiry': None  # Initialize premium expiry as None
     })
+
 
 def update_user(user_data):
     """

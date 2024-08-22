@@ -76,7 +76,10 @@ def clerk_webhook():
     user_data = event.get('data')
 
     if event_type == 'user.created':
-        create_user(user_data)
+        # Check if the user already exists
+        existing_user = db.users.find_one({'clerk_id': user_data['id']})
+        if not existing_user:
+            create_user(user_data)
         check_premium_status(user_data['id'])  # Check premium status on user creation
     elif event_type == 'user.updated':
         update_user(user_data)
