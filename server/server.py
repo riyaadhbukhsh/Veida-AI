@@ -299,7 +299,6 @@ def extract_text():
         if not extracted_text.strip():
             return jsonify({"error": "No text detected"}), 204
 
-        # Assuming generate_notes, generate_mc_questions, and generate_flashcards are optimized and available
         notes = generate_notes(extracted_text)
         mc_questions = generate_mc_questions(notes)
         flashcards = generate_flashcards(notes)
@@ -324,35 +323,30 @@ def process_pdf(file):
             xref = img[0]
             base_image = pdf_document.extract_image(xref)
             image_bytes = base_image["image"]
-            image = Image.open(io.BytesIO(image_bytes)).convert("L")  # Convert to grayscale
+            image = Image.open(io.BytesIO(image_bytes)).convert("L")
             extracted_text += process_image(image)
     
     return extracted_text
 
 
 def process_image_file(file):
-    image = Image.open(file).convert("L")  # Convert to grayscale
+    image = Image.open(file).convert("L")
     return process_image(image)
 
 
 def process_image(image):
-    # Resize large images to speed up OCR processing
-    if max(image.size) > 1280:  # Increased from 1024 for slightly better accuracy
-        scaling_factor = 1280 / max(image.size)
+    if max(image.size) > 1024:
+        scaling_factor = 1024 / max(image.size)
         new_size = tuple(int(dim * scaling_factor) for dim in image.size)
-        image = image.resize(new_size, Image.LANCZOS)  # Replaced ANTIALIAS with LANCZOS
+        image = image.resize(new_size, Image.LANCZOS) 
 
-    # Apply padding to the image to help with OCR
     image = ImageOps.expand(image, border=10, fill='white')
 
-    # Convert to numpy array for PaddleOCR
     image_np = np.array(image)
 
-    # Use PaddleOCR for text extraction
     result = ocr.ocr(image_np, cls=True)
     extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
 
-    # Fallback to Tesseract if PaddleOCR fails
     if not extracted_text_paddle.strip():
         return pytesseract.image_to_string(image) + "\n"
     
