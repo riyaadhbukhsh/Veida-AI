@@ -37,14 +37,13 @@ from helpers.ai import (
 from helpers.util import (
     generate_review_dates
 )
-from PIL import Image, UnidentifiedImageError, ImageOps
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
-import io
 from datetime import datetime
 import stripe
 import numpy as np
+import cv2
 
 from paddleocr import PaddleOCR
 
@@ -303,8 +302,6 @@ def extract_text():
 
         return jsonify({"notes": notes, "flashcards": flashcards, "mc_questions": mc_questions}), 200
     
-    except UnidentifiedImageError:
-        return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -321,28 +318,29 @@ def process_pdf(file):
             xref = img[0]
             base_image = pdf_document.extract_image(xref)
             image_bytes = base_image["image"]
-            image = Image.open(io.BytesIO(image_bytes)).convert("L")
+            image_np = np.frombuffer(image_bytes, np.uint8)
+            image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
             extracted_text += process_image(image)
     
     return extracted_text
 
 
 def process_image_file(file):
-    image = Image.open(file).convert("L")
+    image_bytes = file.read()
+    image_np = np.frombuffer(image_bytes, np.uint8)
+    image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
     return process_image(image)
 
 
 def process_image(image):
-    if max(image.size) > 1024:
-        scaling_factor = 1024 / max(image.size)
-        new_size = tuple(int(dim * scaling_factor) for dim in image.size)
-        image = image.resize(new_size, Image.LANCZOS) 
+    if max(image.shape) > 1024:
+        scaling_factor = 1024 / max(image.shape)
+        new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
+        image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
 
-    image = ImageOps.expand(image, border=10, fill='white')
+    image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
 
-    image_np = np.array(image)
-
-    result = ocr.ocr(image_np, cls=True)
+    result = ocr.ocr(image, cls=True)
     extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
 
     if not extracted_text_paddle.strip():
