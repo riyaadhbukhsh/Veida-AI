@@ -30,12 +30,16 @@ const PremiumPage = () => {
         }
     } catch (error) {
         console.error('Error fetching premium status:', error);
+    } finally {
+      setIsLoading(false);
     }
-};
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  console.log('help')
 
   if (isPremium) {
     return (
@@ -51,7 +55,7 @@ const PremiumPage = () => {
     return (
       <div className="premium-page">
         <h1 className="premium-title">Premium Access</h1>
-        <p className="premium-description">Unlock the full potential of VeidaAI with our premium subscription. Enjoy unlimited courses, unlimited multiple choice questions, advanced AI features, and priority support.</p>
+        <p className="premium-description">Unlock the full potential of Veida AI with our premium subscription. Enjoy unlimited courses, unlimited multiple choice questions, advanced AI features, and priority support.</p>
         <CheckoutButton clerkId={userId} />
       </div>
     );
