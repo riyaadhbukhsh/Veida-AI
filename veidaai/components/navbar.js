@@ -76,6 +76,7 @@ export default function Navbar() {
                 )}
                 <div className={isOpen ? "right open" : "right"}>
                     <Link href="/about" onClick={closeMenu}><span>ABOUT</span></Link>
+                    <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfstQu5HHkMr-8Q4GDFbivQKxlhrE5XzxrD1eMj_Ne87YDe6Q/viewform" target="_BLANK" onClick={closeMenu}><span>SURVEY</span></Link>
                     {!userId ? (
                         <>
                             <Link href="/sign-in">
