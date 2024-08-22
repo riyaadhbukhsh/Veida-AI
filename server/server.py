@@ -44,12 +44,10 @@ import fitz  # PyMuPDF
 import io
 from datetime import datetime
 import stripe
-import easyocr
 import numpy as np
 
 from paddleocr import PaddleOCR
 
-reader = easyocr.Reader(['en'])
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 
