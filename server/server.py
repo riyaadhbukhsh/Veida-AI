@@ -294,11 +294,20 @@ def extract_text():
             extracted_text = process_image_file(file)
 
         if not extracted_text.strip():
-            return jsonify({"error": "No text detected"}), 204
+            return jsonify({
+                "error": "Sorry, we couldn't detect any text in that file! Try a higher resolution image or a text-based PDF."
+            }), 204
 
+        # Generate content
         notes = generate_notes(extracted_text)
         mc_questions = generate_mc_questions(notes)
         flashcards = generate_flashcards(notes)
+
+        # Check if generated content is empty
+        if not notes and not mc_questions and not flashcards:
+            return jsonify({
+                "error": "Sorry, we couldn't generate some content! The text may be unclear. Try using a higher resolution image or a different file."
+            }), 204
 
         return jsonify({"notes": notes, "flashcards": flashcards, "mc_questions": mc_questions}), 200
     
@@ -311,9 +320,13 @@ def process_pdf(file):
     pdf_document = fitz.open(stream=file.read(), filetype="pdf")
 
     for page in pdf_document:
-        extracted_text += page.get_text() + "\n"
+        # Extract text directly from the PDF's text layer
+        text = page.get_text()
+        if text.strip():
+            extracted_text += text + "\n"
+        
+        # Extract images from the PDF and apply OCR
         images = page.get_images(full=True)
-
         for img in images:
             xref = img[0]
             base_image = pdf_document.extract_image(xref)
@@ -321,7 +334,7 @@ def process_pdf(file):
             image_np = np.frombuffer(image_bytes, np.uint8)
             image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
             extracted_text += process_image(image)
-    
+
     return extracted_text
 
 
@@ -339,13 +352,19 @@ def process_image(image):
         image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
 
     image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+    image = cv2.convertScaleAbs(image, alpha=2.0, beta=0)
+    _, image = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
 
     result = ocr.ocr(image, cls=True)
-    extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
+    
+    if result and result[0]:
+        extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
+    else:
+        extracted_text_paddle = ""
 
     if not extracted_text_paddle.strip():
-        return pytesseract.image_to_string(image) + "\n"
-    
+        extracted_text_paddle = pytesseract.image_to_string(image) + "\n"
+
     return extracted_text_paddle + "\n"
     
 @app.route('/api/create_course', methods=['POST'])

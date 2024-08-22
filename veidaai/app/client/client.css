@@ -229,7 +229,7 @@ h1 {
 .form-buttons button[type="submit"] {
   background-color: #6d9dc5;
   color: #1e1e1e;
-  flex-grow: 2;
+  flex-grow: 1;
   margin-right: 10px;
 }
 
