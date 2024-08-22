@@ -235,6 +235,8 @@ def delete_user(user_data):
     """
     users_collection = db.users
     users_collection.delete_one({'clerk_id': user_data['id']})
+
+
 def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
     """
     Create a new course for a user.
@@ -259,9 +261,11 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
             try:
                 mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
             except ValueError:
-                raise ValueError(f"Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'")
+                # Skip this MCQ and continue with the next one
+                continue
         else:
-            raise ValueError("Each MCQ must have 'correct_answer' and 'possible_answers' fields.")
+            # Skip this MCQ if it doesn't have 'correct_answer' or 'possible_answers' fields
+            continue
 
     new_course = {
         "course_name": course_name,
@@ -276,6 +280,7 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         "updated_at": datetime.datetime.now(),
         "push_notifications": False
     }
+    
     courses_collection.update_one(
         {"clerk_id": clerk_id},
         {"$addToSet": {"courses": new_course}},

@@ -37,13 +37,21 @@ from helpers.ai import (
 from helpers.util import (
     generate_review_dates
 )
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, UnidentifiedImageError, ImageOps
 import pytesseract
 from flask_cors import CORS
 import fitz  # PyMuPDF
 import io
 from datetime import datetime
 import stripe
+import easyocr
+import numpy as np
+
+from paddleocr import PaddleOCR
+
+reader = easyocr.Reader(['en'])
+ocr = PaddleOCR(use_angle_cls=True, lang='en')
+
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 load_dotenv()
@@ -258,17 +266,17 @@ def route_check_premium_status():
     is_premium = check_premium_status(clerk_id)
     return jsonify({"premium": is_premium}), 200
 
-
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
     """
-    Extracts text from uploaded files (PDF, PPTX, images).
+    Extracts text from uploaded files (PDF, JPG, JPEG, PNG).
 
-    This endpoint accepts a POST request with a file attachment. It attempts to extract text from the file based on its type. Supported file types include PDF, PPTX, JPG, JPEG, and PNG. The extracted text is then returned in the response.
+    This endpoint accepts a POST request with a file attachment. It attempts to extract text from the file based on its type. Supported file types include PDF, JPG, JPEG, and PNG. The extracted text is then returned in the response.
 
     Returns:
         tuple: A JSON response containing the extracted text and HTTP status code.
     """
+
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -279,38 +287,76 @@ def extract_text():
     file_type = file.filename.split('.')[-1].lower()
     if file_type not in ['pdf', 'jpg', 'jpeg', 'png']:
         return jsonify({"error": "Unsupported file type"}), 400
+
     extracted_text = ""
 
     try:
         if file_type == 'pdf':
-            pdf_document = fitz.open(stream=file.read(), filetype="pdf")
-            for page in pdf_document:
-                extracted_text += page.get_text() + "\n"
-                # Extract text from images in the PDF
-                images = page.get_images(full=True)
-                for img in images:
-                    xref = img[0]
-                    base_image = pdf_document.extract_image(xref)
-                    image_bytes = base_image["image"]
-                    image = Image.open(io.BytesIO(image_bytes))
-                    extracted_text += pytesseract.image_to_string(image) + "\n"
-        elif file_type in ['jpg', 'jpeg', 'png']:
-            image = Image.open(file)
-            extracted_text = pytesseract.image_to_string(image)
+            extracted_text = process_pdf(file)
         else:
-            return jsonify({"error": "Unsupported file type"}), 400
-        
-        # Call the functions with extracted_text
+            extracted_text = process_image_file(file)
+
+        if not extracted_text.strip():
+            return jsonify({"error": "No text detected"}), 204
+
+        # Assuming generate_notes, generate_mc_questions, and generate_flashcards are optimized and available
         notes = generate_notes(extracted_text)
         mc_questions = generate_mc_questions(notes)
         flashcards = generate_flashcards(notes)
-        
-  
+
         return jsonify({"notes": notes, "flashcards": flashcards, "mc_questions": mc_questions}), 200
+    
     except UnidentifiedImageError:
         return jsonify({"error": "Unsupported image type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+def process_pdf(file):
+    extracted_text = ""
+    pdf_document = fitz.open(stream=file.read(), filetype="pdf")
+
+    for page in pdf_document:
+        extracted_text += page.get_text() + "\n"
+        images = page.get_images(full=True)
+
+        for img in images:
+            xref = img[0]
+            base_image = pdf_document.extract_image(xref)
+            image_bytes = base_image["image"]
+            image = Image.open(io.BytesIO(image_bytes)).convert("L")  # Convert to grayscale
+            extracted_text += process_image(image)
+    
+    return extracted_text
+
+
+def process_image_file(file):
+    image = Image.open(file).convert("L")  # Convert to grayscale
+    return process_image(image)
+
+
+def process_image(image):
+    # Resize large images to speed up OCR processing
+    if max(image.size) > 1280:  # Increased from 1024 for slightly better accuracy
+        scaling_factor = 1280 / max(image.size)
+        new_size = tuple(int(dim * scaling_factor) for dim in image.size)
+        image = image.resize(new_size, Image.LANCZOS)  # Replaced ANTIALIAS with LANCZOS
+
+    # Apply padding to the image to help with OCR
+    image = ImageOps.expand(image, border=10, fill='white')
+
+    # Convert to numpy array for PaddleOCR
+    image_np = np.array(image)
+
+    # Use PaddleOCR for text extraction
+    result = ocr.ocr(image_np, cls=True)
+    extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
+
+    # Fallback to Tesseract if PaddleOCR fails
+    if not extracted_text_paddle.strip():
+        return pytesseract.image_to_string(image) + "\n"
+    
+    return extracted_text_paddle + "\n"
     
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
