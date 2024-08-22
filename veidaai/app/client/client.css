@@ -158,6 +158,20 @@ h1 {
   font-size: 0.9rem;
   text-align: center;
 }
+
+.create-course-form label  {
+  padding-left: 0.1ch;
+  color: #bbb;
+}
+
+.create-course-form #course-description-input {
+  margin-bottom: 0.5rem;
+}
+
+.create-course-form #course-name-input {
+  margin-bottom: 0.8rem;
+}
+
 .loading-courses {
   text-align: center;
   margin-top: 20px;

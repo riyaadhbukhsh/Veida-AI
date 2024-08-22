@@ -196,20 +196,26 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         <div className="create-course-overlay">
             <form onSubmit={handleSubmit} className="create-course-form">
                 <h2>Create a New Course</h2>
+                <label for="course-name-input">Course Name</label>
                 <input
+                    id="course-name-input"
                     type="text"
-                    placeholder="Course Name"
+                    placeholder="e.g. ASTR 113 Intro to Cosmology"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
+                <label for="course-description-input">Course Description</label>
                 <textarea
-                    placeholder="Course Description"
+                    id="course-description-input"
+                    placeholder="e.g. Physical examination of our evolving universe: the Big Bang... "
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
+                <label for="date" class="for-date">Exam Date</label>
                 <input
+                    id="date-input"
                     type="date"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
