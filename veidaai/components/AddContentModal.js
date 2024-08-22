@@ -78,9 +78,10 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
     <div className="create-course-overlay">
       <div className="create-course-form">
         <h2>Add to {courseName}</h2>
+        <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existing content.</p>
         <form onSubmit={handleSubmit}>
           <div className="file-input-wrapper">
-            <div className="file-input-button">Choose Content File (PDF, PNG, JPEG)</div>
+            <div className="file-input-button">Upload Content File (PDF, PNG, JPG, TXT)</div>
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}

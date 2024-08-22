@@ -103,6 +103,7 @@ const ClientPage = () => {
   return (
     <div className="client-page">
       <h1>Course Dashboard</h1>
+      <p className="course-dashboard-description">Click "Create New Course." Enter the course details, then upload your lecture slides, notes, text, or image files. Our AI will auto-generate flashcards, notes, and multiple-choice questions.</p>
       <div className="course-cards">
         <div className="course-card new-course" onClick={() => setShowCreateForm(true)}>
           <h2>Create New Course</h2>
