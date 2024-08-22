@@ -218,11 +218,11 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                 />
                 <div className="file-input-wrapper">
                     <div className="file-input-button">
-                        {fileName || "Choose Course Content (PDF, PNG, JPEG)"}
+                        {fileName || "Choose Course Content (PDF, PNG, JPEG, TXT)"}
                     </div>
                     <input
                         type="file"
-                        accept=".pdf,.png,.jpg,.jpeg"
+                        accept=".pdf,.png,.jpg,.jpeg,.txt"
                         onChange={handleFileChange}
                         required
                     />

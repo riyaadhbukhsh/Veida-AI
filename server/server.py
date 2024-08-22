@@ -285,7 +285,7 @@ def extract_text():
         return jsonify({"error": "No selected file"}), 400
 
     file_type = file.filename.split('.')[-1].lower()
-    if file_type not in ['pdf', 'jpg', 'jpeg', 'png']:
+    if file_type not in ['pdf', 'jpg', 'jpeg', 'png', 'txt']:
         return jsonify({"error": "Unsupported file type"}), 400
 
     extracted_text = ""
