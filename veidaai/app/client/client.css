@@ -293,6 +293,14 @@ h1 {
   cursor: pointer;
 }
 
+.course-dashboard-description {
+  max-width: 700px;
+  font-size: 1.2rem;
+  color: #d1d5db;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+}  
+
 .file-input-wrapper .file-input-button {
   background-color: #4b5563;
   color: #f0f0f0;
@@ -335,7 +343,17 @@ h1 {
     font-size: 2rem;
   }
 
-  .create-course-form h2 {
-    font-size: 1.5rem;
+  .create-course-form {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  .form-buttons button[type="submit"] {
+    margin: 0 0 10px 0;
   }
 }

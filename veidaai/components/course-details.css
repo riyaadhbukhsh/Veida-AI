@@ -21,6 +21,7 @@
 
   .course-exam-date {
     margin: 10px 0;
+    max-width: 800px;
     font-size: 1.2rem;
     color: #d1d5db;
     text-align: center;
@@ -30,8 +31,8 @@
     font-size: 1.2rem;
     color: #d1d5db;
     text-align: center;
-    max-width: 800px;
-    margin-bottom: 2rem;
+    max-width: 300px;
+    margin-bottom: 3rem;
   }
   
   .course-content {
@@ -164,7 +165,7 @@
   }
   
   .create-course-form h2 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #ffffff;  /* Changed from #6d9dc5 to white */
     font-size: 1.8rem;
     text-align: center;
@@ -178,7 +179,7 @@
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    margin-bottom: 1.2rem;
+    margin-bottom: 0.5rem;
   }
   
   .file-input-wrapper input[type=file] {
@@ -205,6 +206,14 @@
   .file-input-wrapper:hover .file-input-button {
     background-color: #4a5568;
   }
+
+
+  .create-course-form .form-description {
+    margin-bottom: 3rem;
+    color: #d1d5db;
+    text-align: center;
+  }
+
   
   .create-course-form .error {
     color: #fc8181;
@@ -234,7 +243,7 @@
   .form-buttons button[type="submit"] {
     background-color: #6d9dc5;
     color: #1e1e1e;
-    flex-grow: 2;
+    flex-grow: 1;
     margin-right: 10px;
   }
   
@@ -287,7 +296,17 @@
       font-size: 2rem;
     }
 
-    .create-course-form h2 {
-      font-size: 1.5rem;
+    .create-course-form {
+      padding: 2.5rem 1.5rem;
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
+    .form-buttons {
+      flex-direction: column;
+    }
+
+    .form-buttons button[type="submit"] {
+      margin: 0 0 10px 0;
     }
   }
