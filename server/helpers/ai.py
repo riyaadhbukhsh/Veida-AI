@@ -150,7 +150,7 @@ def generate_mc_questions(notes):
     initial_content = """
             You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
             
-            Each question should be followed by four answer options (no need to include an answer letter) and a correct answer.
+            Each question should be followed by EXACTLY 4 answer options (no need to include an answer letter), a correct answer choice, and an in-depth, yet concise explanation of the right and wrong answer choices.
 
             For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
@@ -185,7 +185,7 @@ def generate_mc_questions(notes):
                 "Option D"
             ],
             "correct_answer": "Option A",
-            "why": "In set theory, a subset is defined as a set A that is contained within another set B if every element of A is also an element of B. On the other hand, a power set of a set A, is the set of all possible subsets of A, including the empty set and A itself."
+            "why": "Option A is correct because a subset refers to any set whose elements are all contained within another set, while a power set refers to the collection of all possible subsets of a given set, including the empty set and the set itself. Option B is incorrect because it might confuse the subset with the elements that are not necessarily part of the set. Option C is wrong because it might imply that a power set excludes the empty set or the set itself, which is not the case. Option D is incorrect because it could suggest that subsets are not part of the power set, which contradicts the definition of a power set."
         },
     
     """
