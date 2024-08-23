@@ -102,15 +102,18 @@ function FlashcardPage() {
     }
   };
 
-  const calculateFontSize = (katexElement, textElement, containerElement) => {
+  const calculateFontSize = (spanElement, textElement, containerElement) => {
     const computedStyle = window.getComputedStyle(containerElement);
     const paddingLeft = parseFloat(computedStyle.paddingLeft);
     const paddingRight = parseFloat(computedStyle.paddingRight);
+    const paddingTop = parseFloat(computedStyle.paddingTop);
+    const paddingBottom = parseFloat(computedStyle.paddingBottom);
     const maxWidth = containerElement.getBoundingClientRect().width - paddingLeft - paddingRight;
+    const maxHeight = containerElement.getBoundingClientRect().height - paddingTop - paddingBottom;
     let fontSize = 1.3; // Start with 1.3rem
     textElement.style.fontSize = `${fontSize}rem`;
 
-    while (katexElement.getBoundingClientRect().width > maxWidth && fontSize > 0) {
+    while ((spanElement.getBoundingClientRect().width > maxWidth || spanElement.getBoundingClientRect().height > maxHeight) && fontSize > 0) {
         fontSize -= 0.05;
         textElement.style.fontSize = `${fontSize}rem`;
     }
@@ -124,18 +127,17 @@ function FlashcardPage() {
         const backContainer = cardContainer.querySelector('#card-back'); // Get #card-back container
         const frontElement = cardContainer.querySelector('#card-front p'); // Get the p tag inside #card-front
         const backElement = cardContainer.querySelector('#card-back p'); // Get the p tag inside #card-back
-        const frontKatexElement = cardContainer.querySelector('#card-front p span span.katex');
-        const backKatexElement = cardContainer.querySelector('#card-back p span span.katex');
+        const frontSpanElement = cardContainer.querySelector('#card-front p span');
+        const backSpanElement = cardContainer.querySelector('#card-back p span');
 
-        // Adjust font size based on KaTeX element width
-        if (frontKatexElement) {
-            const newFrontSize = calculateFontSize(frontKatexElement, frontElement, frontContainer);
+        if (frontSpanElement) {
+            const newFrontSize = calculateFontSize(frontSpanElement, frontElement, frontContainer);
             setFrontSize(newFrontSize);
             setN(index);
         }
 
-        if (backKatexElement) {
-            const newBackSize = calculateFontSize(backKatexElement, backElement, backContainer);
+        if (backSpanElement) {
+            const newBackSize = calculateFontSize(backSpanElement, backElement, backContainer);
             setBackSize(newBackSize);
             setM(index);
         }
