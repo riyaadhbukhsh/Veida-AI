@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/navigation';
+import Head from 'next/head';
 import styles from './page.module.css';
 import * as THREE from 'three';
 import RINGS from 'vanta/dist/vanta.rings.min';
@@ -61,59 +62,76 @@ export default function Home() {
   ];
 
   return (
-    <div className={styles.main}>
-      <div ref={vantaRef} className={styles.vantaContainer}></div>
-      <div className={`${styles.contentContainer} ${sectionColors[currentSection]}`}>
-        <section className={styles.hookSection}>
-          <div className={styles.hookText}>
-            <h1>Professors Hate Us. Skip Classes. Ace Finals.</h1>
-            <p>Meet Veida AI — your all-in-one secret academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion. Register now and revolutionize your learning experience!</p>
-            <button onClick={() => router.push('/client')} className={styles.ctaButton}>Get Started for Free</button>
-          </div>
-        </section>
+    <>
+      <Head>
+        <title>Veida AI - Revolutionizing Learning</title>
+        <meta name="description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
+        
+        <meta property="og:title" content="Veida AI - Revolutionizing Learning" />
+        <meta property="og:description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
+        <meta property="og:image" content="/veida-logo.png" />
+        <meta property="og:url" content="https://veidaai.com" />
+        
+        <meta name="twitter:card" content="/veida-banner.jpg" />
+        <meta name="twitter:title" content="Veida AI - Revolutionizing Learning" />
+        <meta name="twitter:description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
+        <meta name="twitter:image" content="/veida-logo.png" />
+        
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className={styles.main}>
+        <div ref={vantaRef} className={styles.vantaContainer}></div>
+        <div className={`${styles.contentContainer} ${sectionColors[currentSection]}`}>
+          <section className={styles.hookSection}>
+            <div className={styles.hookText}>
+              <h1>Professors Hate Us. Skip Classes. Ace Finals.</h1>
+              <p>Meet Veida AI — your all-in-one secret academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion. Register now and revolutionize your learning experience!</p>
+              <button onClick={() => router.push('/client')} className={styles.ctaButton}>Get Started for Free</button>
+            </div>
+          </section>
+        </div>
+        {/*
+        
+        
+        <div className={styles.contentBelow}>
+          <section className={styles.fullPageSection} data-section="0">
+            <div className={styles.sectionInner}>
+              <div className={styles.textContent}>
+                <h2>Make flashcards fast</h2>
+                <p>Description here...</p>
+                <button className={styles.getStarted}>Get Started</button>
+              </div>
+              <div className={styles.graphicContent}>
+              </div>
+            </div>
+          </section>
+          
+          <section className={`${styles.fullPageSection} ${styles.middleSection}`} data-section="1">
+            <div className={styles.sectionInner}>
+            <div className={styles.graphicContent}></div>
+              <div className={styles.textContent}>
+                <h2>Study using MCQs</h2>
+                <p>Description here...</p>
+                <button className={styles.getStarted}>Get Started</button>
+              
+              
+              </div>
+            </div>
+          </section>
+          
+          <section className={styles.fullPageSection} data-section="2">
+            <div className={styles.sectionInner}>
+              <div className={styles.textContent}>
+                <h2>Spaced retrieval</h2>
+                <p>Description here...</p>
+                <button className={styles.getStarted}>Get Started</button>
+              </div>
+              <div className={styles.graphicContent}>
+              </div>
+            </div>
+          </section>
+        </div> */}
       </div>
-      {/*
-      
-      
-      
-      <div className={styles.contentBelow}>
-        <section className={styles.fullPageSection} data-section="0">
-          <div className={styles.sectionInner}>
-            <div className={styles.textContent}>
-              <h2>Make flashcards fast</h2>
-              <p>Description here...</p>
-              <button className={styles.getStarted}>Get Started</button>
-            </div>
-            <div className={styles.graphicContent}>
-            </div>
-          </div>
-        </section>
-        
-        <section className={`${styles.fullPageSection} ${styles.middleSection}`} data-section="1">
-          <div className={styles.sectionInner}>
-          <div className={styles.graphicContent}></div>
-            <div className={styles.textContent}>
-              <h2>Study using MCQs</h2>
-              <p>Description here...</p>
-              <button className={styles.getStarted}>Get Started</button>
-            
-            
-            </div>
-          </div>
-        </section>
-        
-        <section className={styles.fullPageSection} data-section="2">
-          <div className={styles.sectionInner}>
-            <div className={styles.textContent}>
-              <h2>Spaced retrieval</h2>
-              <p>Description here...</p>
-              <button className={styles.getStarted}>Get Started</button>
-            </div>
-            <div className={styles.graphicContent}>
-            </div>
-          </div>
-        </section>
-      </div> */}
-    </div>
+    </>
   );
 }
