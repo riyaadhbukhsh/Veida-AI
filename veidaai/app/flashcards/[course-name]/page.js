@@ -14,6 +14,10 @@ function FlashcardPage() {
   const [reviewing, setReviewing] = useState(false);
   const [currentCard, setCurrentCard] = useState({ card: null, index: null });
   const [error, setError] = useState('');
+  const [frontSize, setFrontSize] = useState('1.3rem');
+  const [backSize, setBackSize] = useState('1.3rem');
+  const [n, setN] = useState(null);  // Index for front overflow
+  const [m, setM] = useState(null);  // Index for back overflow
   const { userId } = useAuth();
   const flashcardRef = useRef();
 
@@ -98,12 +102,65 @@ function FlashcardPage() {
     }
   };
 
+  const calculateFontSize = (katexElement, textElement, containerElement) => {
+    const computedStyle = window.getComputedStyle(containerElement);
+    const paddingLeft = parseFloat(computedStyle.paddingLeft);
+    const paddingRight = parseFloat(computedStyle.paddingRight);
+    const maxWidth = containerElement.getBoundingClientRect().width - paddingLeft - paddingRight;
+    let fontSize = 1.3; // Start with 1.3rem
+    textElement.style.fontSize = `${fontSize}rem`;
+
+    while (katexElement.getBoundingClientRect().width > maxWidth && fontSize > 0) {
+        fontSize -= 0.05;
+        textElement.style.fontSize = `${fontSize}rem`;
+    }
+
+    return fontSize + 'rem';
+  };
+
+  const adjustFontSizes = () => {
+    document.querySelectorAll(".flashcard-page #card-container").forEach((cardContainer, index) => {
+        const frontContainer = cardContainer.querySelector('#card-front'); // Get #card-front container
+        const backContainer = cardContainer.querySelector('#card-back'); // Get #card-back container
+        const frontElement = cardContainer.querySelector('#card-front p'); // Get the p tag inside #card-front
+        const backElement = cardContainer.querySelector('#card-back p'); // Get the p tag inside #card-back
+        const frontKatexElement = cardContainer.querySelector('#card-front p span span.katex');
+        const backKatexElement = cardContainer.querySelector('#card-back p span span.katex');
+
+        // Adjust font size based on KaTeX element width
+        if (frontKatexElement) {
+            const newFrontSize = calculateFontSize(frontKatexElement, frontElement, frontContainer);
+            setFrontSize(newFrontSize);
+            setN(index);
+        }
+
+        if (backKatexElement) {
+            const newBackSize = calculateFontSize(backKatexElement, backElement, backContainer);
+            setBackSize(newBackSize);
+            setM(index);
+        }
+    });
+  };
+
+  useEffect(() => {
+    adjustFontSizes();
+    window.addEventListener('resize', adjustFontSizes); // Recalculate font sizes on screen resize
+    return () => {
+        window.removeEventListener('resize', adjustFontSizes);
+    };
+  }, [flashcards, currentCard]);
+
+
   useEffect(() => {
     if (userId) {
       fetchFlashcards();
     }
   }, [userId]);
 
+  useEffect(() => {
+    adjustFontSizes();
+  }, [flashcards, currentCard]);
+  
   return (
     <div className="flashcard-page">
       {reviewing ? (
@@ -128,7 +185,13 @@ function FlashcardPage() {
       {reviewing ? (
         <div id="review-container">
           <div className="review-flashcard">
-            <FlashCard ref={flashcardRef} card={currentCard.card} size="large" />
+            <FlashCard 
+              ref={flashcardRef} 
+              card={currentCard.card} 
+              size="large" 
+              frontStyle={currentCard.index === n ? { fontSize: frontSize } : {}} 
+              backStyle={currentCard.index === m ? { fontSize: backSize } : {}} 
+            />
           </div>
           <div className="review-buttons">
             <button className="review-button" onClick={() => { setReviewing(false); fetchFlashcards(); }}>
@@ -157,7 +220,12 @@ function FlashcardPage() {
               </div>
               <div id="cards-preview">
                 {flashcards.map((card, index) => (
-                  <FlashCard key={index} card={card} />
+                  <FlashCard 
+                    key={index} 
+                    card={card} 
+                    frontStyle={index === n ? { fontSize: frontSize } : {}} 
+                    backStyle={index === m ? { fontSize: backSize } : {}} 
+                  />
                 ))}
               </div>
             </>

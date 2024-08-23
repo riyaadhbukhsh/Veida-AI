@@ -3,7 +3,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import './flashcard-component.css';
 
-const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
+const FlashCard = forwardRef(({ card, size = 'normal', frontStyle, backStyle }, ref) => {
     const [flipped, setFlipped] = useState(false);
 
     function handleClick() {
@@ -21,8 +21,11 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
     const convertMath = (text) => {
         if (typeof text !== 'string') return '';
 
-        text = text.replace(/^\*\*\s*|\s*\*\*$/g, '').trim();
-    
+        text = text.replace(/\\text\{#/g, '\\text{number');
+
+        // Replace all occurrences of # with "number" in case it wasn't caught by the pattern above
+        text = text.replace(/#/g, 'number');
+
         const replacements = {
             '\\\\cdotp': '\\cdotp',
             '\\\\times': '\\times',
@@ -50,31 +53,33 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
             '\\\\sum': '\\sum',
             '\\\\prod': '\\prod'
         };
-    
+
         for (const [key, value] of Object.entries(replacements)) {
             text = text.replace(new RegExp(key, 'g'), `$${value}$`);
         }
-    
+
         return text
             .replace(/\\\[(.*?)\\\]/gs, '$$ $1 $$')
             .replace(/\\\((.*?)\\\)/g, '$ $1 $')
             .replace(/\\{2}(.*?)\\{2}/g, '$$$$ $1 $$$$')
-            .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$') 
-            .replace(/\$ +([^$]+) +\$/g, '$ $1 $') 
-            .replace(/\s+/g, ' ')       
-            .trim();    
-    };    
-    
+            .replace(/\$\$ +([^$]+) +\$\$/g, '$$ $1 $$')
+            .replace(/\$ +([^$]+) +\$/g, '$ $1 $')
+            .replace(/\s+/g, ' ')
+            .trim();
+    };
 
     const parseTextWithLatex = (text) => {
         if (!text) return []; // Return empty array if text is undefined or null
+
+        text = text.replace(/#/g, 'number');
+
         const parts = text.split(/(\\\(.*?\\\))/g).filter(Boolean);
-    
+
         return parts.map((part, index) => {
             if (part.startsWith('\\(') && part.endsWith('\\)')) {
                 const nextPart = parts[index + 1];
                 const spaceAfterLatex = nextPart && !/^[?.]/.test(nextPart) ? ' ' : '';
-                
+
                 return (
                     <span key={index}>
                         {' '}
@@ -89,17 +94,16 @@ const FlashCard = forwardRef(({ card, size = 'normal' }, ref) => {
             return <span key={index}>{convertMath(part)}</span>;
         });
     };
-    
 
     const sizeClass = size === 'large' ? 'card-large' : '';
 
     return (
         <div id="card-container" className={`${flipped ? 'flipped' : ''} ${sizeClass}`} onClick={handleClick}>
             <div id="card-front">
-                <p>{card && card.front ? parseTextWithLatex(card.front) : 'No content'}</p>
+                <p style={frontStyle}>{card && card.front ? parseTextWithLatex(card.front) : 'No content'}</p>
             </div>
             <div id="card-back">
-                <p>{card && card.back ? parseTextWithLatex(card.back) : 'No content'}</p>
+                <p style={backStyle}>{card && card.back ? parseTextWithLatex(card.back) : 'No content'}</p>
             </div>
         </div>
     );

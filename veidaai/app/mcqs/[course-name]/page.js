@@ -64,7 +64,9 @@ function McqsPage() {
     }, [userId, courseName]);
 
     const handleAnswerSelect = (index) => {
-        setSelectedAnswer(index);
+        if (!submitted) {
+            setSelectedAnswer(index);
+        }
     };
 
     const handleSubmit = () => {
@@ -106,14 +108,11 @@ function McqsPage() {
     const parseTextWithLatex = (text) => {
         if (!text) return null;    
     
-        // Convert detected LaTeX delimiters
         const convertedText = convertMath(text);
     
-        // Split text based on LaTeX delimiters
         const parts = convertedText.split(/(\$\$.*?\$\$|\$.*?\$)/g).filter(Boolean);
     
         return parts.map((part, index) => {
-            // Detect if the part is inline LaTeX ($...$) or display LaTeX ($$...$$)
             if (part.startsWith('$$') && part.endsWith('$$')) {
                 return (
                     <div key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(2, -2).trim(), { displayMode: true, throwOnError: false }) }} />
@@ -123,7 +122,6 @@ function McqsPage() {
                     <span key={index} dangerouslySetInnerHTML={{ __html: katex.renderToString(part.slice(1, -1).trim(), { throwOnError: false }) }} />
                 );
             }
-            // Return non-LaTeX text as is
             return <span key={index}>{part}</span>;
         });
     };
@@ -131,6 +129,7 @@ function McqsPage() {
 
     const currentQuestion = mcqs[currentQuestionIndex];
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
+
     return (
         <div className="mcqs-container">
             <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
@@ -159,6 +158,7 @@ function McqsPage() {
                                                 : 'white',
                                         color: 'black'
                                     }}
+                                    disabled={submitted}
                                 >
                                     {String.fromCharCode(97 + index)}. {parseTextWithLatex(answer)}
                                 </button>
