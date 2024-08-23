@@ -16,8 +16,12 @@ function FlashcardPage() {
   const [error, setError] = useState('');
   const [frontSize, setFrontSize] = useState('1.3rem');
   const [backSize, setBackSize] = useState('1.3rem');
-  const [n, setN] = useState(null);  // Index for front overflow
-  const [m, setM] = useState(null);  // Index for back overflow
+  const [frontIndex, setFront] = useState(null); 
+  const [backIndex, setBack] = useState(null); 
+  const [frontReviewSize, setFrontReviewSize] = useState('2.2rem');
+  const [backReviewSize, setBackReviewSize] = useState('2.2rem');
+  const [frontReviewIndex, setFrontReview] = useState(null); 
+  const [backReviewIndex, setBackReview] = useState(null); 
   const { userId } = useAuth();
   const flashcardRef = useRef();
 
@@ -110,7 +114,7 @@ function FlashcardPage() {
     const paddingBottom = parseFloat(computedStyle.paddingBottom);
     const maxWidth = containerElement.getBoundingClientRect().width - paddingLeft - paddingRight;
     const maxHeight = containerElement.getBoundingClientRect().height - paddingTop - paddingBottom;
-    let fontSize = 1.3; // Start with 1.3rem
+    let fontSize = reviewing ? 2.2 : 1.3;
     textElement.style.fontSize = `${fontSize}rem`;
 
     while ((spanElement.getBoundingClientRect().width > maxWidth || spanElement.getBoundingClientRect().height > maxHeight) && fontSize > 0) {
@@ -132,14 +136,24 @@ function FlashcardPage() {
 
         if (frontSpanElement) {
             const newFrontSize = calculateFontSize(frontSpanElement, frontElement, frontContainer);
-            setFrontSize(newFrontSize);
-            setN(index);
+            if (reviewing) {
+              setFrontSize(newFrontSize);
+              setFront(index);
+            } else {
+              setFrontReviewSize(newFrontSize);
+              setFrontReview(index);
+            }
         }
 
         if (backSpanElement) {
             const newBackSize = calculateFontSize(backSpanElement, backElement, backContainer);
-            setBackSize(newBackSize);
-            setM(index);
+            if (reviewing) {
+              setBackSize(newBackSize);
+              setBack(index);
+            } else {
+              setBackReviewSize(newBackSize);
+              setBackReview(index);
+            }
         }
     });
   };
@@ -191,8 +205,8 @@ function FlashcardPage() {
               ref={flashcardRef} 
               card={currentCard.card} 
               size="large" 
-              frontStyle={currentCard.index === n ? { fontSize: frontSize } : {}} 
-              backStyle={currentCard.index === m ? { fontSize: backSize } : {}} 
+              frontStyle={currentCard.index === frontReviewIndex ? { fontSize: frontReviewSize } : {}} 
+              backStyle={currentCard.index === backReviewIndex ? { fontSize: backReviewSize } : {}} 
             />
           </div>
           <div className="review-buttons">
@@ -225,8 +239,8 @@ function FlashcardPage() {
                   <FlashCard 
                     key={index} 
                     card={card} 
-                    frontStyle={index === n ? { fontSize: frontSize } : {}} 
-                    backStyle={index === m ? { fontSize: backSize } : {}} 
+                    frontStyle={index === frontIndex ? { fontSize: frontSize } : {}} 
+                    backStyle={index === backIndex ? { fontSize: backSize } : {}} 
                   />
                 ))}
               </div>

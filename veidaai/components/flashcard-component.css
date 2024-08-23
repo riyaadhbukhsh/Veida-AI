@@ -42,7 +42,6 @@
 }
 
 #card-front p, #card-back p {
-    font-size: 1.3rem;
     line-height: 1.4;
     margin: 0;
     overflow-wrap: break-word; /* Ensure long words break appropriately */
@@ -52,18 +51,8 @@
     font-weight: normal; /* Ensure text is not bold */
 }
 
-/* Adjust font size for larger cards */
-#card-container.card-large #card-front p,
-#card-container.card-large #card-back p {
-    font-size: 2.2rem;
-}
-
 /* Smaller screen adjustments */
 @media only screen and (max-width: 1200px) {
-    #card-container.card-large #card-front p,
-    #card-container.card-large #card-back p {
-        font-size: 1.8rem;
-    }
 
     #card-container {
         width: 320px;
