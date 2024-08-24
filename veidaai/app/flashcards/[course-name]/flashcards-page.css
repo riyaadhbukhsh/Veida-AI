@@ -1,5 +1,4 @@
 .flashcard-page {
-  padding: 5%;
   background-color: #1e1e1e;
   min-height: 100vh;
   color: #f0f0f0;
@@ -125,6 +124,10 @@
 }
 
 @media only screen and (max-width: 781px) {
+  .flashcard-page {
+    padding: 5%;
+  }
+  
   .back-arrow-link {
     top: 75px;
     font-size: 1.8rem;

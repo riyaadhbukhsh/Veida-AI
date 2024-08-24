@@ -65,7 +65,8 @@
 }
 
 @media only screen and (max-width: 781px) {
-    #card-container {
+    #card-container,
+    #card-container.card-large {
         width: 100%;
         height: 366px;
         max-width: 366px;
