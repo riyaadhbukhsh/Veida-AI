@@ -110,13 +110,13 @@ const CourseDetails = ({ courseName }) => {
           onContentAdded={handleContentAdded}
         />
       )}
-      {showAddConceptModal && (
+      {/* {showAddConceptModal && (
         <AddConceptModal
           courseName={courseName}
           onClose={() => setShowAddConceptModal(false)}
           onConceptAdded={handleConceptAdded}
         />
-      )}
+      )} */}
     </div>
   );
 };
