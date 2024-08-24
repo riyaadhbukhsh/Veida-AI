@@ -350,25 +350,22 @@ def process_pdf(file):
             image_np = np.frombuffer(image_bytes, np.uint8)
             image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
 
-            # Compress the image before processing
-            compressed_image = compress_image(image)
-            extracted_text += process_image(compressed_image)
+            # Process the image without resizing
+            extracted_text += process_image(image)
 
     return extracted_text
+
 
 def compress_image(image):
     if image is None:
         raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
-    max_size = 800 
-    if max(image.shape) > max_size:
-        scaling_factor = max_size / max(image.shape)
-        new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
-        image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
 
+    # Compress the image before processing without resizing
     _, compressed_image = cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 70])
     image = cv2.imdecode(compressed_image, cv2.IMREAD_GRAYSCALE)
     
     return image
+
 
 def process_image_file(file):
     image_bytes = file.read()
@@ -380,12 +377,8 @@ def process_image_file(file):
 def process_image(image):
     if image is None:
         raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
-    if max(image.shape) > 800:  # Reduced size for faster processing
-        scaling_factor = 800 / max(image.shape)
-        new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
-        image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
 
-    # Add margins and apply thresholding
+    # Process the image without resizing
     image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
     image = cv2.convertScaleAbs(image, alpha=2.0, beta=0)
     _, image = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
