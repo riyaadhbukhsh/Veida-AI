@@ -77,9 +77,7 @@ const CourseDetails = ({ courseName }) => {
       <button id="add-content-btn" onClick={handleAddContent}>
         Add Content
       </button>
-      <button id="add-concept-btn" onClick={handleAddConcept}>
-        Add Concept
-      </button>
+      
       <div className="course-content">
         <Link href={`/flashcards/${formatURL(courseName)}`} className="study-container">
           <div>

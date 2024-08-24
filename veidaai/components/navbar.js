@@ -56,7 +56,7 @@ export default function Navbar() {
                 </div>
                 {isMobile && (
                     <div className="right-group">
-                        <div id="burger-user" className="userButton-group" className="notification-bell">
+                        <div id="burger-user" className="userButton-group">
 
                             <Link href="/review-all-flashcards" onClick={closeMenu}>
                                 
