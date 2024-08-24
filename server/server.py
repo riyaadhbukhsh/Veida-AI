@@ -344,6 +344,8 @@ def process_pdf(file):
     return extracted_text
 
 def compress_image(image):
+    if image is None:
+        raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
     max_size = 800 
     if max(image.shape) > max_size:
         scaling_factor = max_size / max(image.shape)
@@ -363,6 +365,8 @@ def process_image_file(file):
 
 
 def process_image(image):
+    if image is None:
+        raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
     if max(image.shape) > 800:  # Reduced size for faster processing
         scaling_factor = 800 / max(image.shape)
         new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
@@ -370,6 +374,7 @@ def process_image(image):
 
     # Add margins and apply thresholding
     image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+    image = cv2.convertScaleAbs(image, alpha=2.0, beta=0)
     _, image = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
 
     # OCR processing
@@ -378,7 +383,7 @@ def process_image(image):
     extracted_text = ""
     if result and result[0]:
         extracted_text = ' '.join([line[1][0] for line in result[0]])
-    
+
     if not extracted_text.strip():
         extracted_text = pytesseract.image_to_string(image) + "\n"
 
