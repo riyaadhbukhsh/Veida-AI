@@ -36,12 +36,12 @@ function ReviewAllFlashcardsPage() {
     const flashcardRef = useRef();
 
     const handleNextCard = useCallback(() => {
-        let newIndex = (currentCard.index + 1) % flashcards.length;
+        let newIndex = (currentCard.index + 1) % reviewFlashcards.length;
         setCurrentCard({ card: reviewFlashcards[newIndex], index: newIndex });
       }, [currentCard, reviewFlashcards]);
     
       const handlePrevCard = useCallback(() => {
-        let newIndex = (currentCard.index - 1 + flashcards.length) % flashcards.length;
+        let newIndex = (currentCard.index - 1 + reviewFlashcards.length) % reviewFlashcards.length;
         setCurrentCard({ card: reviewFlashcards[newIndex], index: newIndex });
       }, [currentCard, reviewFlashcards]);
 
