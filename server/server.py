@@ -336,10 +336,24 @@ def process_pdf(file):
             image_bytes = base_image["image"]
             image_np = np.frombuffer(image_bytes, np.uint8)
             image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
-            extracted_text += process_image(image)
+
+            # Compress the image before processing
+            compressed_image = compress_image(image)
+            extracted_text += process_image(compressed_image)
 
     return extracted_text
 
+def compress_image(image):
+    max_size = 800 
+    if max(image.shape) > max_size:
+        scaling_factor = max_size / max(image.shape)
+        new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
+        image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
+
+    _, compressed_image = cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 70])
+    image = cv2.imdecode(compressed_image, cv2.IMREAD_GRAYSCALE)
+    
+    return image
 
 def process_image_file(file):
     image_bytes = file.read()
@@ -349,26 +363,26 @@ def process_image_file(file):
 
 
 def process_image(image):
-    if max(image.shape) > 1024:
-        scaling_factor = 1024 / max(image.shape)
+    if max(image.shape) > 800:  # Reduced size for faster processing
+        scaling_factor = 800 / max(image.shape)
         new_size = tuple(int(dim * scaling_factor) for dim in image.shape[::-1])
         image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
 
+    # Add margins and apply thresholding
     image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
-    image = cv2.convertScaleAbs(image, alpha=2.0, beta=0)
     _, image = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
 
+    # OCR processing
     result = ocr.ocr(image, cls=True)
     
+    extracted_text = ""
     if result and result[0]:
-        extracted_text_paddle = ' '.join([line[1][0] for line in result[0]])
-    else:
-        extracted_text_paddle = ""
+        extracted_text = ' '.join([line[1][0] for line in result[0]])
+    
+    if not extracted_text.strip():
+        extracted_text = pytesseract.image_to_string(image) + "\n"
 
-    if not extracted_text_paddle.strip():
-        extracted_text_paddle = pytesseract.image_to_string(image) + "\n"
-
-    return extracted_text_paddle + "\n"
+    return extracted_text + "\n"
     
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
