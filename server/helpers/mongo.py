@@ -465,8 +465,6 @@ def get_due_flashcards(clerk_id):
 
 
 
-
-
 def get_courses(clerk_id):
     user = courses_collection.find_one({"clerk_id": clerk_id})
     if user:
@@ -475,6 +473,13 @@ def get_courses(clerk_id):
 
 import traceback
 
+
+
+def add_concept(clerk_id,course_name,concept_name,concept_description):
+    courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description}}}
+    )
 
 def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
     try:

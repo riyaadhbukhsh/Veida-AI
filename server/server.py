@@ -29,6 +29,7 @@ from helpers.mongo import (
     update_premium_status,
     add_course_content,
     update_subscription_id,
+    add_concept
 )
 from helpers.ai import (
     generate_flashcards,
@@ -255,8 +256,19 @@ def update_course():
         return jsonify({"message": "Course updated successfully"}), 200
     else:
         return jsonify({"error": "Failed to create new course"}), 500
-    
-    
+
+@app.route('/api/add_course_concept', methods=['POST'])
+def add_course_concept():
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    concept_name = data.get('concept_name')
+    concept_description = data.get('concept_description')
+    try:
+        add_concept(clerk_id, course_name, concept_name, concept_description)
+        return jsonify({"message": "Concept added successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
     clerk_id = request.args.get('clerk_id')

@@ -4,11 +4,13 @@ import { useAuth } from "@clerk/nextjs";
 import { formatURL } from '@/app/helpers';
 import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
 import AddContentModal from './AddContentModal';
+import AddConceptModal from './AddConceptModal';
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {
   const [courseObj, setCourseObj] = useState({});
   const [showAddContentModal, setShowAddContentModal] = useState(false);
+  const [showAddConceptModal, setShowAddConceptModal] = useState(false);
   const { userId } = useAuth();
 
   const fetchCourseObj = async () => {
@@ -42,8 +44,16 @@ const CourseDetails = ({ courseName }) => {
     setShowAddContentModal(true);
   };
 
+  const handleAddConcept = () => {
+    setShowAddConceptModal(true);
+  };
+
   const handleContentAdded = () => {
     fetchCourseObj(); // Refresh the course data after adding content
+  };
+
+  const handleConceptAdded = () => {
+    fetchCourseObj(); // Refresh the course data after adding concept
   };
 
   const formatDate = (dateString) => {
@@ -66,6 +76,9 @@ const CourseDetails = ({ courseName }) => {
       )}
       <button id="add-content-btn" onClick={handleAddContent}>
         Add Content
+      </button>
+      <button id="add-concept-btn" onClick={handleAddConcept}>
+        Add Concept
       </button>
       <div className="course-content">
         <Link href={`/flashcards/${formatURL(courseName)}`} className="study-container">
@@ -95,6 +108,13 @@ const CourseDetails = ({ courseName }) => {
           courseName={courseName}
           onClose={() => setShowAddContentModal(false)}
           onContentAdded={handleContentAdded}
+        />
+      )}
+      {showAddConceptModal && (
+        <AddConceptModal
+          courseName={courseName}
+          onClose={() => setShowAddConceptModal(false)}
+          onConceptAdded={handleConceptAdded}
         />
       )}
     </div>
