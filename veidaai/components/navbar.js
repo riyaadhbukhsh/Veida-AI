@@ -58,14 +58,19 @@ export default function Navbar() {
                     <div className="right-group">
                         <div id="burger-user" className="userButton-group">
 
-                            <Link href="/review-all-flashcards" onClick={closeMenu}>
+                            <div>
                                 
-                                    <FaBell className={hasNotification ? 'has-notification' : ''} />
-                                    <div className="tooltip">
-                                        {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
+                                    <div className="notification-bell">
+                                
+                                        <FaBell className={hasNotification ? 'has-notification' : ''} />
+                                        <div className="tooltip">
+                                        <Link href="/review-all-flashcards" onClick={closeMenu} style = {{color: "white", textDecoration: "none"}}>
+                                            {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
+                                        </Link>
+                                        </div>
                                     </div>
-                               
-                            </Link>
+                            
+                            </div>
                             <div className="userButton">
                                 <UserButton afterSignOutUrl="/" />
                             </div>
@@ -103,7 +108,7 @@ export default function Navbar() {
                                         <div className="tooltip">
                                             {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
                                         </div>
-                                        </div>
+                                    </div>
                                     </Link>
                                     <div className="userButton">
                                         <UserButton afterSignOutUrl="/" />
