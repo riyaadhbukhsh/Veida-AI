@@ -100,14 +100,14 @@ function ReviewAllFlashcardsPage() {
     return (
         <div className="flashcard-page">
       {reviewing ? (
-        <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
-          <FaArrowLeft onClick={() => { 
+        
+          <FaArrowLeft className="back-arrow-link" onClick={() => { 
             setReviewing(false); 
             fetchDueFlashcards(); 
           }}/>
-        </Link>
+        
       ) : (
-        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+        <Link href={`/client`} title={`back to client`} className="back-arrow-link">
           <FaArrowLeft onClick={() => { 
             setReviewing(false); 
           }}/>
