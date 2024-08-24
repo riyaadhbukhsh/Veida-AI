@@ -56,15 +56,15 @@ export default function Navbar() {
                 </div>
                 {isMobile && (
                     <div className="right-group">
-                        <div id="burger-user" className="userButton-group">
+                        <div id="burger-user" className="userButton-group" className="notification-bell">
 
                             <Link href="/review-all-flashcards" onClick={closeMenu}>
-                                <a className="notification-bell">
+                                
                                     <FaBell className={hasNotification ? 'has-notification' : ''} />
                                     <div className="tooltip">
                                         {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
                                     </div>
-                                </a>
+                               
                             </Link>
                             <div className="userButton">
                                 <UserButton afterSignOutUrl="/" />
