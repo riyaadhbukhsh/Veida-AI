@@ -4,7 +4,6 @@ import { useAuth } from "@clerk/nextjs";
 import { formatURL } from '@/app/helpers';
 import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
 import AddContentModal from './AddContentModal';
-import AddConceptModal from './AddConceptModal';
 import "./course-details.css";
 
 const CourseDetails = ({ courseName }) => {

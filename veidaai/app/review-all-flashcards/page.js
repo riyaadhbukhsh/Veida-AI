@@ -18,7 +18,6 @@ function ReviewAllFlashcardsPage() {
     
     const { userId } = useAuth();
     const [reviewing, setReviewing] = useState(false);
-    const [pageExists, setPageExists] = useState(null);
     const [reviewFlashcards, setReviewFlashcards] = useState([]);
     const [currentCard, setCurrentCard] = useState({ card: null, index: null });
     const [error, setError] = useState('');
@@ -31,8 +30,6 @@ function ReviewAllFlashcardsPage() {
     const [frontReviewIndex, setFrontReview] = useState(null); 
     const [backReviewIndex, setBackReview] = useState(null); 
     const params = useParams();
-    const urlCourseName = params['course-name'];
-    const courseName = unformatURL(urlCourseName);
     const flashcardRef = useRef();
 
     const handleNextCard = useCallback(() => {
@@ -90,6 +87,67 @@ function ReviewAllFlashcardsPage() {
             setError('An error occurred while fetching flashcards');
         }
     };
+
+    const calculateFontSize = (spanElement, textElement, containerElement) => {
+      const computedStyle = window.getComputedStyle(containerElement);
+      const paddingLeft = parseFloat(computedStyle.paddingLeft);
+      const paddingRight = parseFloat(computedStyle.paddingRight);
+      const paddingTop = parseFloat(computedStyle.paddingTop);
+      const paddingBottom = parseFloat(computedStyle.paddingBottom);
+      const maxWidth = containerElement.getBoundingClientRect().width - paddingLeft - paddingRight;
+      const maxHeight = containerElement.getBoundingClientRect().height - paddingTop - paddingBottom;
+      let fontSize = reviewing ? 2.2 : 1.3;
+      textElement.style.fontSize = `${fontSize}rem`;
+  
+      while ((spanElement.getBoundingClientRect().width > maxWidth || spanElement.getBoundingClientRect().height > maxHeight) && fontSize > 0) {
+          fontSize -= 0.05;
+          textElement.style.fontSize = `${fontSize}rem`;
+      }
+  
+      return fontSize + 'rem';
+    };
+  
+    const adjustFontSizes = () => {
+      document.querySelectorAll(".flashcard-page #card-container").forEach((cardContainer, index) => {
+          const frontContainer = cardContainer.querySelector('#card-front'); // Get #card-front container
+          const backContainer = cardContainer.querySelector('#card-back'); // Get #card-back container
+          const frontElement = cardContainer.querySelector('#card-front p'); // Get the p tag inside #card-front
+          const backElement = cardContainer.querySelector('#card-back p'); // Get the p tag inside #card-back
+          const frontSpanElement = cardContainer.querySelector('#card-front p span');
+          const backSpanElement = cardContainer.querySelector('#card-back p span');
+  
+          if (frontSpanElement) {
+              const newFrontSize = calculateFontSize(frontSpanElement, frontElement, frontContainer);
+              if (reviewing) {
+                setFrontSize(newFrontSize);
+                setFront(index);
+              } else {
+                setFrontReviewSize(newFrontSize);
+                setFrontReview(index);
+              }
+          }
+  
+          if (backSpanElement) {
+              const newBackSize = calculateFontSize(backSpanElement, backElement, backContainer);
+              if (reviewing) {
+                setBackSize(newBackSize);
+                setBack(index);
+              } else {
+                setBackReviewSize(newBackSize);
+                setBackReview(index);
+              }
+          }
+      });
+    };
+  
+    useEffect(() => {
+      adjustFontSizes();
+      window.addEventListener('resize', adjustFontSizes);
+      return () => {
+          window.removeEventListener('resize', adjustFontSizes);
+      };
+    }, [reviewFlashcards, currentCard]);
+  
 
     useEffect(() => {
         if (userId) {

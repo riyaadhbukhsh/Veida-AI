@@ -160,7 +160,7 @@ function FlashcardPage() {
 
   useEffect(() => {
     adjustFontSizes();
-    window.addEventListener('resize', adjustFontSizes); // Recalculate font sizes on screen resize
+    window.addEventListener('resize', adjustFontSizes);
     return () => {
         window.removeEventListener('resize', adjustFontSizes);
     };
@@ -172,10 +172,6 @@ function FlashcardPage() {
       fetchFlashcards();
     }
   }, [userId]);
-
-  useEffect(() => {
-    adjustFontSizes();
-  }, [flashcards, currentCard]);
   
   return (
     <div className="flashcard-page">
