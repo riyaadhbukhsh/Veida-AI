@@ -17,6 +17,7 @@ from helpers.mongo import (
     get_courses,
     get_mcqs,
     delete_course,
+    get_due_flashcards,
     edit_flashcard,
     edit_note,
     update_lastseen,
@@ -760,6 +761,17 @@ def route_get_flashcards_today():
 
     flashcards_today = get_flashcards_with_today_study_date(clerk_id, course_name)
     return jsonify({"flashcards": flashcards_today}), 200
+
+
+@app.route('/api/get_due_flashcards', methods=['GET'])
+def route_get_due_flashcards():
+
+    clerk_id = request.args.get('clerk_id')
+    if not clerk_id:
+        return jsonify({"error": "Not authorized, missing clerk id"}),400
+    due_flashcards = get_due_flashcards(clerk_id)
+    print(due_flashcards)
+    return jsonify({"due_flashcards": due_flashcards}),200
 
 @app.route('/api/update_times_seen', methods=['POST'])
 def route_update_times_seen():

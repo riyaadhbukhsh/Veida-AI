@@ -449,6 +449,24 @@ def get_flashcards(clerk_id, course_name):
                 return course['flashcards']
     return None
 
+def get_due_flashcards(clerk_id):
+
+    today = datetime.datetime.now().date().strftime("%Y-%m-%d") 
+    user = courses_collection.find_one({"clerk_id":clerk_id})
+    
+    due_flashcards = [flashcard for course in user['courses'] for flashcard in course['flashcards'] if today in flashcard['review_dates']]
+
+
+    return due_flashcards
+
+             
+
+
+
+
+
+
+
 def get_courses(clerk_id):
     user = courses_collection.find_one({"clerk_id": clerk_id})
     if user:
