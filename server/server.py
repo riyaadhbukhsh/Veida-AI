@@ -344,17 +344,6 @@ def process_pdf(file):
     return extracted_text
 
 
-def compress_image(image):
-    if image is None:
-        raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
-
-    # Compress the image before processing without resizing
-    _, compressed_image = cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 70])
-    image = cv2.imdecode(compressed_image, cv2.IMREAD_GRAYSCALE)
-    
-    return image
-
-
 def process_image_file(file):
     image_bytes = file.read()
     image_np = np.frombuffer(image_bytes, np.uint8)
@@ -366,12 +355,10 @@ def process_image(image):
     if image is None:
         raise ValueError("Failed to decode the image. The file might be corrupted or the format might not be supported.")
 
-    # Process the image without resizing
     image = cv2.copyMakeBorder(image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=[255, 255, 255])
     image = cv2.convertScaleAbs(image, alpha=2.0, beta=0)
     _, image = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
 
-    # OCR processing
     result = ocr.ocr(image, cls=True)
     
     extracted_text = ""
