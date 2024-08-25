@@ -1,39 +1,32 @@
-.vantaContainer {
+.main {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+}
+
+.vantaContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: -1;
-  pointer-events: none;
 }
 
 .contentContainer {
-  width: 100%;
   position: relative;
   z-index: 1;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  min-height: 100vh;
-  
-}
-
-.hookSection {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   padding: 10%;
-  position: relative;
 }
 
-.hookText {
+.hookSection {
   text-align: left;
   max-width: 600px;
   font-family: 'Poppins', sans-serif;
@@ -54,7 +47,6 @@
   color: #f0f0f0;
 }
 
-
 .ctaButton {
   padding: 1rem 2rem;
   background-color: rgba(0, 0, 0, 0.7);
@@ -71,113 +63,4 @@
 .ctaButton:hover {
   background-color: white;
   color: black;
-}
-
-.contentBelow {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  background-color: #000; /* Dark background */
-}
-
-
-.fullPageSection {
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  width: 100%;
-  padding: 2rem 0;
-  box-sizing: border-box;
-}
-
-.sectionInner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  width: 100%;
-  padding: 0 2rem;
-}
-
-.textContent, .graphicContent {
-  flex: 1;
-  padding: 1rem;
-}
-.textContent h2 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.textContent p {
-  font-size: 1.1rem;
-  color: #666;
-  margin-bottom: 2rem;
-}
-
-.getStarted {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  color: #fff;
-  background-color: #4a00e0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.getStarted:hover {
-  background-color: #3c00b3;
-}
-
-.graphicContent {
-  background-color: rgba(0, 0, 0, 0.1);
-  height: 300px;
-  border-radius: 8px;
-}
-
-/* Alternating layout and colors */
-.fullPageSection:nth-child(odd) {
-  flex-direction: row-reverse;
-  background-color: #e6f2ff; /* Light blue */
-}
-
-.fullPageSection:nth-child(even) {
-  background-color: #fff0f5; /* Light pink */
-}
-
-
-.fullPageSection:nth-child(even) .textContent {
-  text-align: right;
-}
-
-@media (max-width: 768px) {
-  .hookSection {
-    padding: 5%;
-  }
-
-  .sectionInner {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .fullPageSection:nth-child(odd) .sectionInner {
-    flex-direction: column-reverse;
-  }
-
-  .textContent, .graphicContent {
-    width: 100%;
-  }
-
-  .textContent h2 {
-    font-size: 2rem;
-  }
-
-  .textContent p {
-    font-size: 1rem;
-  }
 }

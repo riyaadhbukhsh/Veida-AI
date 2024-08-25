@@ -53,3 +53,23 @@
         font-size: 2rem;
     }
 }
+
+.download-button {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    background-color: #6d9dc5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-bottom: 2rem;
+    margin-top: 1rem; /* Add margin to separate from content */
+  }
+  
+  .download-button:hover {
+    background-color: #478fca;
+    transform: translateY(-2px);
+  }

@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/nextjs";
 import CourseDetails from '../../components/CourseDetails';
 import NotFound from '../not-found';
 import Loading from '../../components/loading';
-import styles from './details.css';
+import './details.css'; // Ensure this import is correct
 
 export default function CourseDetailsPage() {
   const { userId } = useAuth();
@@ -62,7 +62,7 @@ export default function CourseDetailsPage() {
       isMounted = false;
     };
   }, [courseName, userId]);
-  
+
   if (isLoading) {
     return <Loading />;
   }
@@ -71,25 +71,15 @@ export default function CourseDetailsPage() {
     return <NotFound />;
   }
   
-
-  console.log('isLoading:', isLoading); // Add this line
-  console.log('pageExists:', pageExists); 
   if (pageExists === null) {
     return (
-      <div className="container">
-        <h1 className="title">404</h1>
-        <h2 className="subtitle">Page Not Found</h2>
-        <p className="message">The resource you are looking for does not exist.</p>
-        <button onClick={() => window.location.href = '/'} className="returnButton">Return Home</button>
+      <div className="course-container">
+        <h1 className="course-title">404</h1>
+        <h2 className="course-subtitle">Page Not Found</h2>
+        <p className="course-message">The resource you are looking for does not exist.</p>
+        <button onClick={() => window.location.href = '/'} className="course-returnButton">Return Home</button>
       </div>
     );
-  }
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (pageExists === false) {
-    return <NotFound />;
   }
 
   return (

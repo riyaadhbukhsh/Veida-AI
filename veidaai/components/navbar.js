@@ -1,11 +1,14 @@
-"use client";
+"use client"; // Ensure this component is treated as a client component
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Use the correct import for Next.js 13+
 import Image from 'next/image';
 import { FaBell } from 'react-icons/fa';
-import "./navbar.css";
+import { UserButton } from '@clerk/nextjs';
+import './navbar.css';
+import { useAuth } from '@clerk/nextjs';
+import { useEffect } from 'react';
 
 export default function Navbar() {
     const { userId } = useAuth();
@@ -13,7 +16,11 @@ export default function Navbar() {
     const [isMobile, setIsMobile] = useState(false);
     const [hasNotification, setHasNotification] = useState(false);
     const [flashcardsDue, setFlashcardsDue] = useState(0);
+    const router = useRouter();
 
+  const handleLogoClick = () => {
+    router.push('/'); // Redirect to the home page
+  };
     const toggleMenu = () => setIsOpen(!isOpen);
     const closeMenu = () => setIsOpen(false);
 
@@ -50,9 +57,14 @@ export default function Navbar() {
         <div className="Navbar">
             <div className="links">
                 <div className="left">
-                    <Link href="/" onClick={closeMenu}>
-                        <Image src="/veida-logo-wide-no-pad.png" alt="VeidaAI Logo" width={100} height={40} />
-                    </Link>
+                <Image
+                    src="/veida-logo-wide-no-pad.png"
+                    alt="VeidaAI Logo"
+                    width={100}
+                    height={40}
+                    onClick={handleLogoClick} // Use the router to navigate
+                    style={{ cursor: 'pointer' }} // Change cursor to pointer
+                />
                 </div>
                 {isMobile && (
                     <div className="right-group">

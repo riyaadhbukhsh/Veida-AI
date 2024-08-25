@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import styles from './page.module.css';
@@ -10,7 +10,6 @@ import RINGS from 'vanta/dist/vanta.rings.min';
 export default function Home() {
   const router = useRouter();
   const vantaRef = useRef(null);
-  const [currentSection, setCurrentSection] = useState(0);
 
   useEffect(() => {
     const vantaEffect = RINGS({
@@ -27,61 +26,28 @@ export default function Home() {
       backgroundColor: 0x1e1e1e
     });
 
+    const resizeVanta = () => {
+      vantaEffect.resize();
+    };
+
+    window.addEventListener('resize', resizeVanta);
+
     return () => {
       if (vantaEffect) vantaEffect.destroy();
+      window.removeEventListener('resize', resizeVanta);
     };
   }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add(styles.visible);
-          const sectionIndex = parseInt(entry.target.dataset.section);
-          setCurrentSection(sectionIndex);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    const elements = document.querySelectorAll(`.${styles.fullPageSection}`);
-    elements.forEach((el, index) => {
-      el.dataset.section = index;
-      observer.observe(el);
-    });
-
-    return () => {
-      elements.forEach(el => observer.unobserve(el));
-      observer.disconnect();
-    };
-  }, []);
-
-  const sectionColors = [
-    styles.section1BgColor,
-    styles.section2BgColor,
-    styles.section3BgColor,
-  ];
 
   return (
     <>
       <Head>
         <title>Veida AI - Revolutionizing Learning</title>
-        <meta name="description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
-        
-        <meta property="og:title" content="Veida AI - Revolutionizing Learning" />
-        <meta property="og:description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
-        <meta property="og:image" content="/veida-logo.png" />
-        <meta property="og:url" content="https://veidaai.com" />
-        
-        <meta name="twitter:card" content="/veida-banner.jpg" />
-        <meta name="twitter:title" content="Veida AI - Revolutionizing Learning" />
-        <meta name="twitter:description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students. With AI-generated notes, flashcards, and personalized study plans, Veida AI will to transform your educational journey." />
-        <meta name="twitter:image" content="/veida-logo.png" />
-        
+        <meta name="description" content="Veida AI is your all-in-one secret academic weapon, designed and developed by students, for students." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
         <div ref={vantaRef} className={styles.vantaContainer}></div>
-        <div className={`${styles.contentContainer} ${sectionColors[currentSection]}`}>
+        <div className={styles.contentContainer}>
           <section className={styles.hookSection}>
             <div className={styles.hookText}>
               <h1>Professors Hate Us. Skip Classes. Ace Finals.</h1>
@@ -90,47 +56,6 @@ export default function Home() {
             </div>
           </section>
         </div>
-        {/*
-        
-        
-        <div className={styles.contentBelow}>
-          <section className={styles.fullPageSection} data-section="0">
-            <div className={styles.sectionInner}>
-              <div className={styles.textContent}>
-                <h2>Make flashcards fast</h2>
-                <p>Description here...</p>
-                <button className={styles.getStarted}>Get Started</button>
-              </div>
-              <div className={styles.graphicContent}>
-              </div>
-            </div>
-          </section>
-          
-          <section className={`${styles.fullPageSection} ${styles.middleSection}`} data-section="1">
-            <div className={styles.sectionInner}>
-            <div className={styles.graphicContent}></div>
-              <div className={styles.textContent}>
-                <h2>Study using MCQs</h2>
-                <p>Description here...</p>
-                <button className={styles.getStarted}>Get Started</button>
-              
-              
-              </div>
-            </div>
-          </section>
-          
-          <section className={styles.fullPageSection} data-section="2">
-            <div className={styles.sectionInner}>
-              <div className={styles.textContent}>
-                <h2>Spaced retrieval</h2>
-                <p>Description here...</p>
-                <button className={styles.getStarted}>Get Started</button>
-              </div>
-              <div className={styles.graphicContent}>
-              </div>
-            </div>
-          </section>
-        </div> */}
       </div>
     </>
   );
