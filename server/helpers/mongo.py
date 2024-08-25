@@ -210,6 +210,27 @@ def create_user(user_data):
     })
 
 
+
+def remove_today_review_date(clerk_id, course_name, card_id):
+    """
+    Remove today's review date from a specific flashcard.
+    
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        course_name (str): The name of the course.
+        card_id (str): The ID of the flashcard.
+    
+    Returns:
+        bool: True if the operation was successful, False otherwise.
+    """
+    today = datetime.datetime.now().date().strftime("%Y-%m-%d")
+    result = courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name, "courses.flashcards.id": card_id},
+        {"$pull": {"courses.$[course].flashcards.$[card].review_dates": today}},
+        array_filters=[{"course.course_name": course_name}, {"card.id": card_id}]
+    )
+    return result.modified_count > 0
+
 def update_user(user_data):
     """
     Update an existing user's information in the database.
@@ -682,6 +703,46 @@ def get_next_study_date(clerk_id, course_name, card_id):
     return None
 
 
+def get_course(clerk_id, course_name):
+    course = courses_collection.find_one({
+        'clerk_id': clerk_id,
+        'course_name': course_name
+    })
+
+    if course:
+        return {
+            'clerk_id': course['clerk_id'],
+            'course_name': course['course_name'],
+            'description': course.get('description', ''),
+            'exam_date': course.get('exam_date', ''),
+            'notes': course.get('notes', {}),
+            'flashcards': course.get('flashcards', []),
+            'mc_questions': course.get('mc_questions', [])
+        }
+    else:
+        return None
+    
+    
+def remove_today_review_dates(clerk_id, course_name):
+    """
+    Remove today's review date from all flashcards due today in a course.
+    
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        course_name (str): The name of the course.
+    
+    Returns:
+        bool: True if the operation was successful, False otherwise.
+    """
+    today = datetime.datetime.now().date().strftime("%Y-%m-%d")
+    result = courses_collection.update_many(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"$pull": {"courses.$[course].flashcards.$[card].review_dates": today}},
+        array_filters=[{"course.course_name": course_name}, {"card.review_dates": today}]
+    )
+    return result.modified_count > 0
+
+
 def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     """
     Retrieve all flashcards with a next study date of today.
@@ -694,7 +755,6 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
         list: A list of flashcards with today's next study date.
     """
     today = datetime.datetime.now().date()
-    print(f"Today's date: {today}")  # Debugging log
     query = {"clerk_id": clerk_id}
     if course_name:
         query["courses.course_name"] = course_name
@@ -706,15 +766,14 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
         for course in user_courses['courses']:
             if course_name is None or course['course_name'] == course_name:
                 for card in course['flashcards']:
-                    print(f"Checking card: {card}")  # Debugging log
                     if 'review_dates' in card:
                         for review_date in card['review_dates']:
                             if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
                                 flashcards_today.append(card)
                                 break
 
-    print(f"Flashcards due today: {flashcards_today}")  # Debugging log
     return flashcards_today
+
 
 def update_times_seen(clerk_id, course_name, card_id):
     """

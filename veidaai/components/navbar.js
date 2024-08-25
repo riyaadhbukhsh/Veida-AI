@@ -1,6 +1,6 @@
 "use client"; // Ensure this component is treated as a client component
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Use the correct import for Next.js 13+
 import Image from 'next/image';
@@ -8,19 +8,18 @@ import { FaBell } from 'react-icons/fa';
 import { UserButton } from '@clerk/nextjs';
 import './navbar.css';
 import { useAuth } from '@clerk/nextjs';
-import { useEffect } from 'react';
+import { useNotification } from '../context/NotificationContext';
 
 export default function Navbar() {
     const { userId } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const [hasNotification, setHasNotification] = useState(false);
-    const [flashcardsDue, setFlashcardsDue] = useState(0);
+    const { hasNotification, flashcardsDue, setHasNotification, setFlashcardsDue } = useNotification();
     const router = useRouter();
 
-  const handleLogoClick = () => {
-    router.push('/'); // Redirect to the home page
-  };
+    const handleLogoClick = () => {
+        router.push('/'); // Redirect to the home page
+    };
     const toggleMenu = () => setIsOpen(!isOpen);
     const closeMenu = () => setIsOpen(false);
 
@@ -57,31 +56,27 @@ export default function Navbar() {
         <div className="Navbar">
             <div className="links">
                 <div className="left">
-                <Image
-                    src="/veida-logo-wide-no-pad.png"
-                    alt="VeidaAI Logo"
-                    width={100}
-                    height={40}
-                    onClick={handleLogoClick} // Use the router to navigate
-                    style={{ cursor: 'pointer' }} // Change cursor to pointer
-                />
+                    <Image
+                        src="/veida-logo-wide-no-pad.png"
+                        alt="VeidaAI Logo"
+                        width={100}
+                        height={40}
+                        onClick={handleLogoClick} // Use the router to navigate
+                        style={{ cursor: 'pointer' }} // Change cursor to pointer
+                    />
                 </div>
                 {isMobile && (
                     <div className="right-group">
                         <div id="burger-user" className="userButton-group">
-
                             <div>
-                                
-                                    <div className="notification-bell">
-                                
-                                        <FaBell className={hasNotification ? 'has-notification' : ''} />
-                                        <div className="tooltip">
-                                        <Link href="/review-all-flashcards" onClick={closeMenu} style = {{color: "white", textDecoration: "none"}}>
+                                <div className="notification-bell">
+                                    <FaBell className={hasNotification ? 'has-notification' : ''} />
+                                    <div className="tooltip">
+                                        <Link href="/review-all-flashcards" onClick={closeMenu} style={{ color: "white", textDecoration: "none" }}>
                                             {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
                                         </Link>
-                                        </div>
                                     </div>
-                            
+                                </div>
                             </div>
                             <div className="userButton">
                                 <UserButton afterSignOutUrl="/" />
@@ -115,12 +110,12 @@ export default function Navbar() {
                             {!isMobile && (
                                 <div className="userButton-group">
                                     <Link href="/review-all-flashcards" onClick={closeMenu}>
-                                    <div className="notification-bell">
-                                        <FaBell className={hasNotification ? 'has-notification' : ''} />
-                                        <div className="tooltip">
-                                            {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
+                                        <div className="notification-bell">
+                                            <FaBell className={hasNotification ? 'has-notification' : ''} />
+                                            <div className="tooltip">
+                                                {flashcardsDue} flashcard{flashcardsDue !== 1 ? 's' : ''} due today
+                                            </div>
                                         </div>
-                                    </div>
                                     </Link>
                                     <div className="userButton">
                                         <UserButton afterSignOutUrl="/" />

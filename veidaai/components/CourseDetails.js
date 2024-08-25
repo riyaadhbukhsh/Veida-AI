@@ -11,21 +11,26 @@ const CourseDetails = ({ courseName }) => {
   const [courseObj, setCourseObj] = useState({});
   const [showAddContentModal, setShowAddContentModal] = useState(false);
 
-  useEffect(() => {
-    const fetchCourseObj = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/get_course?clerk_id=${userId}&course_name=${courseName}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCourseObj(data.course);
-        }
-      } catch (error) {
-        console.error('Error fetching course data:', error);
+  const fetchCourseObj = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        let courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) == 0);
+        let courseObj = data.courses[courseIndex];
+        setCourseObj(courseObj);
+      } else {
+        console.error('Failed to fetch course. Response error: ', response.ok);
       }
-    };
-
-    fetchCourseObj();
-  }, [courseName, userId]);
+    } catch (error) {
+      console.error('Error fetching course details:', error);
+    }
+  };
 
   const handleAddContent = () => {
     setShowAddContentModal(true);
@@ -62,7 +67,7 @@ const CourseDetails = ({ courseName }) => {
       </button>
       
       <div className="course-content">
-        <Link href={`/flashcards/${formatURL(courseName)}`} className="course-study-container">
+      <Link href={`/flashcards/${formatURL(courseName)}`} className="course-study-container">
           <div>
             <FaRegLightbulb className="course-study-icon" />
             <h3>Flashcards</h3>

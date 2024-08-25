@@ -7,6 +7,7 @@ import "./client.css";
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from "@clerk/nextjs";
 import EditCourse from "../../components/EditCourse";
+import { useNotification } from "../../context/NotificationContext"; // Adjust the import path as necessary
 
 const ClientPage = () => {
   const { isSignedIn, userId } = useAuth();
@@ -16,6 +17,7 @@ const ClientPage = () => {
   const router = useRouter();
   const [showEditForm, setShowEditForm] = useState(false);
   const [courseToEdit, setCourseToEdit] = useState(null);
+  const { setHasNotification, setFlashcardsDue } = useNotification();
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -51,6 +53,29 @@ const ClientPage = () => {
   const handleCourseCreated = async (newCourse) => {
     setShowCreateForm(false);
     await fetchAndSetCourses(); // Fetch courses again after creating a new one
+    await checkFlashcardsDueToday(); // Check for flashcards due today
+  };
+
+  const checkFlashcardsDueToday = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/check_flashcards_due_today?clerk_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const hasDueFlashcards = data.flashcardsDueToday;
+        setHasNotification(hasDueFlashcards);
+        setFlashcardsDue(hasDueFlashcards ? data.flashcards.length : 0);
+      } else {
+        console.error('Failed to check flashcards due today');
+      }
+    } catch (error) {
+      console.error('Error checking flashcards due today:', error);
+    }
   };
 
   const handleCloseForm = () => {

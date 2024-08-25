@@ -8,6 +8,7 @@ import {
 import Navbar from '../components/navbar';
 import { dark } from "@clerk/themes";
 import Script from 'next/script';
+import { NotificationProvider } from '../context/NotificationContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
+
       
       <html lang="en">
         <head>
@@ -90,8 +92,10 @@ export default function RootLayout({ children }) {
           <ClerkLoaded>
             <div className="container">
               <div className="c2">
-                <Navbar />
-                {children}
+                <NotificationProvider>
+                  <Navbar />
+                  {children}
+                </NotificationProvider>
               </div>
             </div>
           </ClerkLoaded>

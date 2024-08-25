@@ -100,10 +100,10 @@ const FlashCard = forwardRef(({ card, size = 'normal', frontStyle, backStyle }, 
     return (
         <div id="card-container" className={`${flipped ? 'flipped' : ''} ${sizeClass}`} onClick={handleClick}>
             <div id="card-front">
-                <p style={frontStyle}>{card && card.front ? parseTextWithLatex(card.front) : 'No content'}</p>
+                <p style={frontStyle}>{card && card.front ? parseTextWithLatex(card.front) : 'No flashcards due today.'}</p>
             </div>
             <div id="card-back">
-                <p style={backStyle}>{card && card.back ? parseTextWithLatex(card.back) : 'No content'}</p>
+                <p style={backStyle}>{card && card.back ? parseTextWithLatex(card.back) : 'No flashcards due today.'}</p>
             </div>
         </div>
     );

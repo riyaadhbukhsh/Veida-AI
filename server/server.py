@@ -29,7 +29,9 @@ from helpers.mongo import (
     update_premium_status,
     add_course_content,
     update_subscription_id,
-    add_concept
+    add_concept,
+    remove_today_review_dates,
+    get_course
 )
 from helpers.ai import (
     generate_flashcards,
@@ -67,10 +69,22 @@ db = client['VeidaAI']
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
-@app.route('/')
-def index():
-  return render_template('index.html')
 
+@app.route('/api/get_course', methods=['GET'])
+def get_course_route():
+    clerk_id = request.args.get('clerk_id')
+    course_name = request.args.get('course_name')
+
+    if not clerk_id or not course_name:
+        return jsonify({'error': 'Missing required parameters'}), 400
+
+    course = get_course(clerk_id, course_name)
+
+    if course:
+        return jsonify({'course': course}), 200
+    else:
+        return jsonify({'error': 'Course not found'}), 404
+    
 @app.route('/webhook/clerk', methods=['POST'])
 def clerk_webhook():
     event = request.json
@@ -186,6 +200,7 @@ def webhook():
 
     return jsonify(success=True)
 
+    
 @app.route('/api/update_course', methods=['PUT'])
 def update_course():
     data = request.json
@@ -715,6 +730,30 @@ def route_create_or_update_next_study_date():
     create_or_update_next_study_date(clerk_id, course_name, card_id, next_study_date)
     return jsonify({"message": "Next study date updated successfully"}), 200
 
+@app.route('/api/remove_today_review_dates', methods=['POST'])
+def route_remove_today_review_dates():
+    """
+    Remove today's review date from all flashcards due today in a course.
+    
+    This endpoint accepts a POST request with JSON body containing clerk_id and course_name.
+    
+    Returns:
+        tuple: A JSON response indicating success or failure and HTTP status code.
+    """
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    
+    if not all([clerk_id, course_name]):
+        return jsonify({"error": "Missing required parameters"}), 400
+    
+    success = remove_today_review_dates(clerk_id, course_name)
+    if success:
+        return jsonify({"message": "Today's review dates removed successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to remove today's review dates"}), 500
+    
+    
 @app.route('/api/get_next_study_date', methods=['GET'])
 def route_get_next_study_date():
     """
