@@ -1,12 +1,12 @@
 import React from 'react';
+import './loading.css'; // Import the CSS for loading styles
 
 const Loading = () => {
-  return (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>Loading course details...</p>
-    </div>
-  );
+    return (
+        <div className="loading-overlay">
+            <div className="loading-spinner"></div>
+        </div>
+    );
 };
 
 export default Loading;

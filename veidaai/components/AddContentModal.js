@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
+import Loading from './loading'; // Import the Loading component
 
 const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   const [file, setFile] = useState(null);
@@ -15,7 +16,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsUploading(true);
+    setIsUploading(true); // Set uploading to true when submitting
 
     if (!file) {
       setError('Please select a file to upload');
@@ -70,12 +71,13 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
       console.error('Error in handleSubmit:', error);
       setError(error.message || 'An error occurred while adding content');
     } finally {
-      setIsUploading(false);
+      setIsUploading(false); // Reset uploading state
     }
   };
 
   return (
     <div className="create-course-overlay">
+      {isUploading && <Loading />} {/* Show loading animation */}
       <div className="create-course-form">
         <h2>Add to {courseName}</h2>
         <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existing content.</p>

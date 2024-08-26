@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+import Loading from './loading'; // Import the Loading component
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();
@@ -105,24 +106,26 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(""); // Reset error message
+        setLoading(true); // Set loading to true when submitting
 
         if (!isPremium && courseCount >= 2) {
             setError("You have reached the limit of 2 courses for free users. Upgrade to premium for unlimited courses.");
+            setLoading(false); // Reset loading state
             return;
         }
 
         if (!validateCourseName(name)) {
             setError("Course name contains invalid characters. Please avoid using [ . ! ~ * ' ( ) ]");
+            setLoading(false); // Reset loading state
             return;
         }
 
         const isDuplicate = await checkDuplicateCourseName(name);
         if (isDuplicate) {
             setError("A course with this name already exists. Please choose a different name.");
+            setLoading(false); // Reset loading state
             return;
         }
-
-        setLoading(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -188,15 +191,16 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             console.error("Error:", err);
             setError("An unexpected error occurred. Please try again later.");
         } finally {
-            setLoading(false);
+            setLoading(false); // Reset loading state
         }
     };
 
     return (
         <div className="create-course-overlay">
+            {loading && <Loading />} {/* Show loading animation */}
             <form onSubmit={handleSubmit} className="create-course-form">
                 <h2>Create a New Course</h2>
-                <label for="course-name-input">Course Name</label>
+                <label htmlFor="course-name-input">Course Name</label>
                 <input
                     id="course-name-input"
                     type="text"
@@ -205,7 +209,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
-                <label for="course-description-input">Course Description</label>
+                <label htmlFor="course-description-input">Course Description</label>
                 <textarea
                     id="course-description-input"
                     placeholder="e.g. Physical examination of our evolving universe: the Big Bang... "
@@ -213,7 +217,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <label for="date" class="for-date">Exam Date</label>
+                <label htmlFor="date" className="for-date">Exam Date</label>
                 <input
                     id="date-input"
                     type="date"
