@@ -321,8 +321,10 @@ def extract_text():
     try:
         if file_type == 'pdf':
             extracted_text = process_pdf(file)
-        else:
+        elif file_type in ['jpg', 'jpeg', 'png']:
             extracted_text = process_image_file(file)
+        elif file_type == 'txt':
+            extracted_text = file.read().decode('utf-8')
 
         if not extracted_text.strip():
             return jsonify({
