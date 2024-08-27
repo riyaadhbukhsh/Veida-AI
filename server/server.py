@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 import pymongo
 from dotenv import load_dotenv
 import os
@@ -321,10 +321,14 @@ def extract_text():
     try:
         if file_type == 'pdf':
             extracted_text = process_pdf(file)
-        elif file_type == 'txt':
-            extracted_text = file.read().decode('utf-8')
-        else:
+        elif file_type in ['jpg', 'jpeg', 'png']:
             extracted_text = process_image_file(file)
+        elif file_type == 'txt':
+            try:
+                extracted_text = file.stream.read().decode('utf-8')
+            except UnicodeDecodeError:
+                file.stream.seek(0)
+                extracted_text = file.stream.read().decode('latin-1', errors='ignore')
 
         if not extracted_text.strip():
             return jsonify({
