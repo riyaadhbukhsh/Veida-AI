@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import pymongo
 from dotenv import load_dotenv
 import os
+import sys
 from helpers.mongo import (
     create_user,
     delete_user,
@@ -31,7 +32,8 @@ from helpers.mongo import (
     update_subscription_id,
     add_concept,
     remove_today_review_dates,
-    get_course
+    get_course,
+    get_course_exam_date
 )
 from helpers.ai import (
     generate_flashcards,
@@ -50,14 +52,18 @@ import numpy as np
 import cv2
 
 from paddleocr import PaddleOCR
+import logging
+
+app = Flask(__name__)
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 load_dotenv()
-
-app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # MongoDB setup
@@ -272,15 +278,40 @@ def update_course():
     else:
         return jsonify({"error": "Failed to create new course"}), 500
 
-@app.route('/api/add_course_concept', methods=['POST'])
-def add_course_concept():
+@app.route('/api/create_course_concept', methods=['POST'])
+def create_course_concept():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
     concept_name = data.get('concept_name')
     concept_description = data.get('concept_description')
+    concept_mcqs = data.get('concept_mcqs')
+    concept_flashcards = data.get('concept_flashcards', [])
+    concept_notes = data.get('concept_notes')
+
+    start_date = datetime.now()
+    exam_date_str = get_course_exam_date(clerk_id, course_name).get('exam_date', '')
+
+    if not exam_date_str:  # Check if the string is empty
+        return jsonify({"error": "Exam date is missing."}), 400  # Return an error response
+
     try:
-        add_concept(clerk_id, course_name, concept_name, concept_description)
+        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
+    except ValueError as e:
+        return jsonify({"error": "Invalid exam date format."}), 400    
+    review_dates = generate_review_dates(start_date, exam_date)
+
+    #Add review_dates and times_seen to each flashcard
+
+    try:
+        for flashcard in concept_flashcards:
+            flashcard['review_dates'] = review_dates
+            flashcard['times_seen'] = 0
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    try:
+        add_concept(clerk_id, course_name, concept_name, concept_description, concept_mcqs, concept_flashcards, concept_notes)
+
         return jsonify({"message": "Concept added successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -305,6 +336,9 @@ def extract_text():
         tuple: A JSON response containing the extracted text and HTTP status code.
     """
 
+    #!Debugging Protocol
+    #return jsonify({"notes": "notes", "flashcards": "flashcards", "mc_questions": "mc_questions"}), 200
+    
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
