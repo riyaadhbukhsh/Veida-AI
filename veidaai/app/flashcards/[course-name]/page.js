@@ -151,7 +151,7 @@ function FlashcardPage() {
         }
     };
 
-    const calculateFontSize = (spanElement, textElement, containerElement) => {
+    const calculateFontSize = (spanElements, textElement, containerElement) => {
         const computedStyle = window.getComputedStyle(containerElement);
         const paddingLeft = parseFloat(computedStyle.paddingLeft);
         const paddingRight = parseFloat(computedStyle.paddingRight);
@@ -162,10 +162,12 @@ function FlashcardPage() {
         let fontSize = reviewing ? 2.2 : 1.3;
         textElement.style.fontSize = `${fontSize}rem`;
 
-        while ((spanElement.getBoundingClientRect().width > maxWidth || spanElement.getBoundingClientRect().height > maxHeight) && fontSize > 0) {
-            fontSize -= 0.05;
-            textElement.style.fontSize = `${fontSize}rem`;
-        }
+        spanElements.forEach((span) => {
+            while ((span.getBoundingClientRect().width > maxWidth || span.getBoundingClientRect().height > maxHeight) && fontSize > 0) {
+                fontSize -= 0.05;
+                textElement.style.fontSize = `${fontSize}rem`;
+            }
+        });
 
         return fontSize + 'rem';
     };
@@ -176,11 +178,11 @@ function FlashcardPage() {
             const backContainer = cardContainer.querySelector('#card-back');
             const frontElement = cardContainer.querySelector('#card-front p');
             const backElement = cardContainer.querySelector('#card-back p');
-            const frontSpanElement = cardContainer.querySelector('#card-front p span');
-            const backSpanElement = cardContainer.querySelector('#card-back p span');
+            const frontSpanElements = cardContainer.querySelectorAll('#card-front p span');
+            const backSpanElements = cardContainer.querySelectorAll('#card-back p span');
 
-            if (frontSpanElement) {
-                const newFrontSize = calculateFontSize(frontSpanElement, frontElement, frontContainer);
+            if (frontSpanElements) {
+                const newFrontSize = calculateFontSize(frontSpanElements, frontElement, frontContainer);
                 if (reviewing) {
                     setFrontSize(newFrontSize);
                     setFront(index);
@@ -190,8 +192,8 @@ function FlashcardPage() {
                 }
             }
 
-            if (backSpanElement) {
-                const newBackSize = calculateFontSize(backSpanElement, backElement, backContainer);
+            if (backSpanElements) {
+                const newBackSize = calculateFontSize(backSpanElements, backElement, backContainer);
                 if (reviewing) {
                     setBackSize(newBackSize);
                     setBack(index);
