@@ -321,6 +321,9 @@ def extract_text():
     try:
         if file_type == 'pdf':
             extracted_text = process_pdf(file)
+        elif file_type == 'txt':
+            extract_text = file.read().decode('utf-8')
+
         else:
             extracted_text = process_image_file(file)
 
