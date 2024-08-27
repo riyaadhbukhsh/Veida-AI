@@ -13,8 +13,43 @@ client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
 
+#!Database reformate purposes
+#courses_collection = db["courses_test"]
+
 openai_api_key = os.getenv('OPENAI_API_KEY')
 openai_client = openai.OpenAI(api_key=openai_api_key)
+
+def reformat_courses_collection_user(clerk_id):
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+
+    new_courses = []
+    if user_courses:
+        for course in user_courses['courses']:
+            
+            new_course = {
+                "course_name": course['course_name'],
+                "description": course['description'],
+                "exam_date": course['exam_date'],
+                "concepts": [
+                    {
+                        "concept_name": f"{course['course_name']} First Concept",
+                        "concept_description": "No Description",
+                        "flashcards": course['flashcards'],
+                        "review_dates": course['review_dates'],
+                        "multiple_choice_questions": course['multiple_choice_questions'],
+                        "notes": course['notes']
+                    }
+                ],
+                "course_schedule": course['course_schedule'],
+                "created_at": course['created_at'],
+                "updated_at": course['updated_at'],
+                "push_notifications": False
+
+            }
+            new_courses.append(new_course)
+    courses_collection.update_one({"clerk_id": clerk_id}, {"$set": {"courses": new_courses}})
+            
+            
 
 
 def generate_notes(extracted_text):
@@ -496,10 +531,12 @@ import traceback
 
 
 
-def add_concept(clerk_id,course_name,concept_name,concept_description):
+def add_concept(clerk_id,course_name,concept_name,concept_description,concept_mcqs,concept_flashcards,concept_notes):
     courses_collection.update_one(
         {"clerk_id": clerk_id, "courses.course_name": course_name},
-        {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description}}}
+        {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description,
+         "concept_mcqs": concept_mcqs, "concept_flashcards": concept_flashcards, "concept_notes": concept_notes}}}
+
     )
 
 def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
@@ -721,7 +758,18 @@ def get_course(clerk_id, course_name):
         }
     else:
         return None
-    
+
+def get_course_exam_date(clerk_id, course_name):
+    course = courses_collection.find_one({
+        'clerk_id': clerk_id,
+        'courses': {"$elemMatch": {"course_name": course_name}}
+    })
+
+    if course and 'courses' in course:
+        for course_info in course['courses']:
+            if course_info['course_name'] == course_name:
+                return {'exam_date': course_info.get('exam_date', '')}
+    return None
     
 def remove_today_review_dates(clerk_id, course_name):
     """
