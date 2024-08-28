@@ -12,6 +12,19 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
     setIsFileSelected(file !== null);
   }, [file]);
 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
+
+    if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+      setFile(selectedFile);
+      setError('');
+    } else {
+      setError('Please select a valid file type: PDF, PNG, JPG, or TXT.');
+      setFile(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -76,22 +89,22 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
   };
 
   return (
-    <div className="create-course-overlay">
-      <div className="create-course-form">
+    <div className="course-create-course-overlay">
+      <div className="course-create-course-form">
         <h2>Add to {courseName}</h2>
         <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existingconcept.</p>
         <form onSubmit={handleSubmit}>
-          <div className="file-input-wrapper">
-            <div className="file-input-button">Upload concept File (PDF, PNG, JPG, TXT)</div>
+          <div className="course-file-input-wrapper">
+            <div className="course-file-input-button">Upload concept File (PDF, PNG, JPG, TXT)</div>
             <input
               type="file"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={handleFileChange}
               required
               disabled={isUploading}
             />
           </div>
           {error && <p className="error">{error}</p>}
-          <div className="form-buttons">
+          <div className="course-form-buttons">
             <button type="submit" disabled={isUploading || !isFileSelected}>
               {isUploading ? 'Uploading...' : 'Upload'}
             </button>
@@ -100,7 +113,7 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
             </button>
           </div>
         </form>
-        <button className="close-button" onClick={onClose}>×</button>
+        <button className="course-close-button" onClick={onClose}>×</button>
       </div>
     </div>
   );

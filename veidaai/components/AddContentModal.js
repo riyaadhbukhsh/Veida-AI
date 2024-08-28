@@ -13,6 +13,19 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
     setIsFileSelected(file !== null);
   }, [file]);
 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
+
+    if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+      setFile(selectedFile);
+      setError('');
+    } else {
+      setError('Please select a valid file type: PDF, PNG, JPG, or TXT.');
+      setFile(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -76,23 +89,23 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   };
 
   return (
-    <div className="create-course-overlay">
+    <div className="course-create-course-overlay">
       {isUploading && <Loading />} {/* Show loading animation */}
-      <div className="create-course-form">
+      <div className="course-create-course-form">
         <h2>Add to {courseName}</h2>
         <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existing content.</p>
         <form onSubmit={handleSubmit}>
-          <div className="file-input-wrapper">
+          <div className="course-file-input-wrapper">
             <div className="file-input-button">Upload Content File (PDF, PNG, JPG, TXT)</div>
             <input
               type="file"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={handleFileChange}
               required
               disabled={isUploading}
             />
           </div>
           {error && <p className="error">{error}</p>}
-          <div className="form-buttons">
+          <div className="course-form-buttons">
             <button type="submit" disabled={isUploading || !isFileSelected}>
               {isUploading ? 'Uploading...' : 'Upload'}
             </button>
@@ -101,7 +114,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
             </button>
           </div>
         </form>
-        <button className="close-button" onClick={onClose}>×</button>
+        <button className="course-close-button" onClick={onClose}>×</button>
       </div>
     </div>
   );

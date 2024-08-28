@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import Loading from './loading'; // Import the Loading component
+import Loading from './loading';
 
 const CreateCourse = ({ onCourseCreated, onClose }) => {
     const { userId } = useAuth();

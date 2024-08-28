@@ -35,8 +35,11 @@ function FlashcardPage() {
 
     const { setHasNotification, setFlashcardsDue } = useNotification();
 
+    const sanitizeFlashcardContent = (text) => {
+        return text.replace(/\*\*/g, '');
+    };
+
     const fetchFlashcardsDueToday = async () => {
-        console.log('fetchFlashcardsDueToday called'); // Debugging
         try {
             const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
                 method: 'GET',
@@ -47,12 +50,20 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Flashcards due today:', data.flashcards);
-                setFlashcards(data.flashcards);
-                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
+
+                const sanitizedFlashcards = data.flashcards.map(card => ({
+                    ...card,
+                    front: sanitizeFlashcardContent(card.front),
+                    back: sanitizeFlashcardContent(card.back),
+                }));
+
+                console.log('Flashcards due today:', sanitizedFlashcards);
+
+                setFlashcards(sanitizedFlashcards);
+                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
                 setReviewing(true);
                 setStudyingToday(true);
-                const hasDueFlashcards = data.flashcards.length > 0;
+                const hasDueFlashcards = sanitizedFlashcards.length > 0;
                 setFlashcardsDueToday(hasDueFlashcards);
                 console.log('Flashcards due today status:', hasDueFlashcards);
             } else {
@@ -140,9 +151,15 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('All flashcards:', data.flashcards);
-                setFlashcards(data.flashcards);
-                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
+
+                const sanitizedFlashcards = data.flashcards.map(card => ({
+                    ...card,
+                    front: sanitizeFlashcardContent(card.front),
+                    back: sanitizeFlashcardContent(card.back),
+                }));
+
+                setFlashcards(sanitizedFlashcards);
+                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
             } else {
                 setError('Failed to fetch flashcards');
             }
@@ -217,7 +234,7 @@ function FlashcardPage() {
       if (userId) {
           fetchFlashcards();
       }
-  }, [userId]);
+    }, [userId]);
 
     return (
         <div className="flashcard-page">

@@ -42,6 +42,10 @@ function ReviewAllFlashcardsPage() {
         setCurrentCard({ card: reviewFlashcards[newIndex], index: newIndex });
       }, [currentCard, reviewFlashcards]);
 
+      const sanitizeFlashcardContent = (text) => {
+        return text.replace(/\*\*/g, '');
+      };
+    
       const handleKeyDown = useCallback((event) => {
         if (reviewing) {
           switch (event.key) {
@@ -77,9 +81,15 @@ function ReviewAllFlashcardsPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.due_flashcards)
-                setReviewFlashcards(data.due_flashcards);
-                setCurrentCard({ card: data.due_flashcards[0] || null, index: 0 });
+
+                const sanitizedFlashcards = data.due_flashcards.map(card => ({
+                  ...card,
+                  front: sanitizeFlashcardContent(card.front),
+                  back: sanitizeFlashcardContent(card.back),
+                }));
+
+                setReviewFlashcards(sanitizedFlashcards);
+                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
             } else {
                 setError('Failed to fetch flashcards');
             }
