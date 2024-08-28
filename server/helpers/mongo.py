@@ -471,12 +471,20 @@ def get_flashcards(clerk_id, course_name):
     return None
 
 def get_due_flashcards(clerk_id):
-
     today = datetime.datetime.now().date().strftime("%Y-%m-%d") 
-    user = courses_collection.find_one({"clerk_id":clerk_id})
-    
-    due_flashcards = [flashcard for course in user['courses'] for flashcard in course['flashcards'] if today in flashcard['review_dates']]
+    user = courses_collection.find_one({"clerk_id": clerk_id})
 
+    if not user:
+        print(f"No user found with clerk_id: {clerk_id}")
+        return []
+
+    due_flashcards = []
+    for course in user['courses']:
+        for flashcard in course.get('flashcards', []):
+            if 'review_dates' not in flashcard:
+                continue
+            if today in flashcard['review_dates']:
+                due_flashcards.append(flashcard)
 
     return due_flashcards
 
