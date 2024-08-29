@@ -4,8 +4,22 @@
   box-sizing: border-box;
 }
 body {
-  color: #f0f0f0;
-  background-color: #1e1e1e;
+  /* color theme */
+  --black: #1E1E1E;
+  --white: #F0F0F0;
+  --gray: #838383;
+  --accent: #C5F4E0;
+
+  /* Typography */
+  font-size: 25px;
+  --h1: 1.60rem; /*40px*/
+  --h2: 1.20rem; /*30px*/
+  --h3: 1.04rem; /*26px*/
+  --p1: 1.00rem; /*25px*/
+  --p2: 0.88rem; /*22px*/
+
+  color: var(--white);
+  background-color: var(--black);
   overflow-x: hidden;
 }
 
@@ -66,15 +80,30 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+/* h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
+} */
+h1, h2, h3, h4 {
+  /* eventually import Momument-Extended*/
+  font-family: 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif;
+  font-weight: 700;
 }
+
 
 button {
   font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
   font-weight: 500;
+  
+  padding: 1rem 2rem;
+  margin: 1rem 0rem;
+
+  border: 2px solid;
   border-radius: 5px;
+  
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.6s ease;;
 }
 
 .basic-button {
@@ -86,6 +115,24 @@ button {
 .basic-button:hover {
   transform: translate(1.5px, 1.5px);
   background-color: #EAEAEA;
+}
+
+.primary-button {
+  color: var(--black);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.secondary-button {
+  color: var(--accent);
+  background: transparent;
+  border-color: var(--accent);
+}
+
+.tertiary-button {
+  color: var(--accent);
+  background-color: none;
+  border-color: none;
 }
 
 .back-arrow-link {
