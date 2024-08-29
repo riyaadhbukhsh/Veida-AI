@@ -11,10 +11,11 @@ load_dotenv()
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
-courses_collection = db['courses']
+courses_collection = db['courses_test_2']
 
 #!Database reformate purposes
 #courses_collection = db["courses_test"]
+
 
 openai_api_key = os.getenv('OPENAI_API_KEY')
 openai_client = openai.OpenAI(api_key=openai_api_key)
@@ -510,8 +511,12 @@ def get_due_flashcards(clerk_id):
     today = datetime.datetime.now().date().strftime("%Y-%m-%d") 
     user = courses_collection.find_one({"clerk_id":clerk_id})
     
-    due_flashcards = [flashcard for course in user['courses'] for flashcard in course['flashcards'] if today in flashcard['review_dates']]
-
+    due_flashcards = []
+    for course in user['courses']:
+    
+        for flashcard in course['flashcards']:
+            if today in flashcard.get('review_dates', []):
+                due_flashcards.append(flashcard)
 
     return due_flashcards
 
@@ -752,9 +757,8 @@ def get_course(clerk_id, course_name):
             'course_name': course['course_name'],
             'description': course.get('description', ''),
             'exam_date': course.get('exam_date', ''),
-            'notes': course.get('notes', {}),
-            'flashcards': course.get('flashcards', []),
-            'mc_questions': course.get('mc_questions', [])
+            'concepts': course.get('concepts', []),
+            
         }
     else:
         return None
@@ -802,7 +806,7 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     Returns:
         list: A list of flashcards with today's next study date.
     """
-    today = datetime.datetime.now().date()
+    today = datetime.datetime.now().date().strftime("%Y-%m-%d")
     query = {"clerk_id": clerk_id}
     if course_name:
         query["courses.course_name"] = course_name
@@ -813,12 +817,10 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course_name is None or course['course_name'] == course_name:
-                for card in course['flashcards']:
-                    if 'review_dates' in card:
-                        for review_date in card['review_dates']:
-                            if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
-                                flashcards_today.append(card)
-                                break
+                for concept in course['concepts']:
+                    for card in concept['flashcards']:
+                        if today in card.get('review_dates', []):
+                            flashcards_today.append(card)
 
     return flashcards_today
 
@@ -862,3 +864,13 @@ def get_times_seen(clerk_id, course_name, card_id):
                     if card['id'] == card_id:
                         return card.get('times_seen', 0)  # Return 0 if not found
     return 0
+
+
+def get_course_concepts(clerk_id, course_name):
+
+    concepts = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    if concepts and 'courses' in concepts:
+        for course in concepts['courses']:
+            if course['course_name'] == course_name:
+                return course['concepts']
+    return []

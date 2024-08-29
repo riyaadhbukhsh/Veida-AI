@@ -33,7 +33,8 @@ from helpers.mongo import (
     add_concept,
     remove_today_review_dates,
     get_course,
-    get_course_exam_date
+    get_course_exam_date,
+    get_course_concepts
 )
 from helpers.ai import (
     generate_flashcards,
@@ -56,15 +57,18 @@ import logging
 
 app = Flask(__name__)
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
-app.logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.CRITICAL)
+app.logger.setLevel(logging.CRITICAL)
 
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
+
 load_dotenv()
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
@@ -657,6 +661,25 @@ def route_get_courses():
 
     courses = get_courses(clerk_id)
     return jsonify({"courses": courses}), 200
+
+@app.route('/api/get_course_concepts', methods=['GET'])
+def route_get_course_concepts():
+    """
+    Retrieves all concepts for a course.
+
+    This endpoint accepts a GET request with query parameters clerk_id and course_name. It returns a list of concepts for the specified course.
+    """
+
+    clerk_id = request.args.get('clerk_id')
+    course_name = request.args.get('course_name')
+
+    if not all([clerk_id, course_name]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    concepts = get_course_concepts(clerk_id, course_name)
+    print(concepts)
+    sys.stdout.flush()
+    return jsonify({"concepts": concepts}), 200
 
 @app.route('/api/delete_course', methods=['DELETE'])
 def route_delete_course():

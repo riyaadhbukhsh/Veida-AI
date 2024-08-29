@@ -14,6 +14,7 @@ export default function CourseDetailsPage() {
   const router = useRouter();
   const [pageExists, setPageExists] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  
 
   const urlCourseName = params['course-details'];
 
@@ -81,7 +82,8 @@ export default function CourseDetailsPage() {
       </div>
     );
   }
-
+  
+  
   return (
     <div id="course-page">
       <CourseDetails courseName={courseName} />
