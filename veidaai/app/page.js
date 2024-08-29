@@ -47,6 +47,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
+        {/*landing section*/}
         <div ref={vantaRef} className={styles.vantaContainer}></div>
         <div className={styles.contentContainer}>
           <section className={styles.hookSection}>
@@ -61,6 +62,44 @@ export default function Home() {
               </button>
             </div>
           </section>
+        </div>
+        {/*1st feature section*/}
+        <div className="container double-column-container">
+          <div className="feature-column-text">
+
+          </div>
+
+          <div className="feature-column-media">
+
+          </div>
+        </div>
+
+        {/*2nd feature section*/}
+        <div className="container double-column-container">
+          <div className="feature-column-text">
+
+          </div>
+          
+          <div className="feature-column-media">
+
+          </div>
+
+        {/*3rd feature section*/}
+        <div className="container double-column-container">
+          <div className="feature-column-media">
+
+          </div>
+
+          <div className="feature-column-text">
+
+          </div>
+        </div>
+
+        {/*plan comparison section*/}
+        {/* <div>
+
+        </div> */}
+
         </div>
       </div>
     </>
