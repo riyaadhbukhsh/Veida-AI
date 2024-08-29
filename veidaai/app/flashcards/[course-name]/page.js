@@ -51,21 +51,26 @@ function FlashcardPage() {
             if (response.ok) {
                 const data = await response.json();
 
-                const sanitizedFlashcards = data.flashcards.map(card => ({
-                    ...card,
-                    front: sanitizeFlashcardContent(card.front),
-                    back: sanitizeFlashcardContent(card.back),
-                }));
+                if (data.flashcards && data.flashcards.length > 0) {
+                    const sanitizedFlashcards = data.flashcards.map(card => ({
+                        ...card,
+                        front: sanitizeFlashcardContent(card.front),
+                        back: sanitizeFlashcardContent(card.back),
+                    }));
 
-                console.log('Flashcards due today:', sanitizedFlashcards);
-
-                setFlashcards(sanitizedFlashcards);
-                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
-                setReviewing(true);
-                setStudyingToday(true);
-                const hasDueFlashcards = sanitizedFlashcards.length > 0;
-                setFlashcardsDueToday(hasDueFlashcards);
-                console.log('Flashcards due today status:', hasDueFlashcards);
+                    setFlashcards(sanitizedFlashcards);
+                    setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                    setReviewing(true);
+                    setStudyingToday(true);
+                    setFlashcardsDueToday(true);
+                    setFlashcardsDue(sanitizedFlashcards.length);
+                    setHasNotification(true);
+                } else {
+                    setFlashcards([]);  // Reset flashcards if none are due today
+                    setFlashcardsDueToday(false);
+                    setFlashcardsDue(0);
+                    setHasNotification(false);
+                }
             } else {
                 setError('Failed to fetch flashcards due today');
                 setFlashcardsDueToday(false);
@@ -152,14 +157,18 @@ function FlashcardPage() {
             if (response.ok) {
                 const data = await response.json();
 
-                const sanitizedFlashcards = data.flashcards.map(card => ({
-                    ...card,
-                    front: sanitizeFlashcardContent(card.front),
-                    back: sanitizeFlashcardContent(card.back),
-                }));
+                if (data.flashcards && data.flashcards.length > 0) {
+                    const sanitizedFlashcards = data.flashcards.map(card => ({
+                        ...card,
+                        front: sanitizeFlashcardContent(card.front),
+                        back: sanitizeFlashcardContent(card.back),
+                    }));
 
-                setFlashcards(sanitizedFlashcards);
-                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                    setFlashcards(sanitizedFlashcards);
+                    setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                } else {
+                    setFlashcards([]);  // Reset flashcards if none are found
+                }
             } else {
                 setError('Failed to fetch flashcards');
             }
@@ -231,9 +240,9 @@ function FlashcardPage() {
     }, [flashcards, currentCard]);
 
     useEffect(() => {
-      if (userId) {
-          fetchFlashcards();
-      }
+        if (userId) {
+            fetchFlashcards();
+        }
     }, [userId]);
 
     return (
@@ -252,63 +261,58 @@ function FlashcardPage() {
             </h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            {reviewing ? (
-                <div id="review-container">
-                    <div className="review-flashcard">
-                        <FlashCard
-                            ref={flashcardRef}
-                            card={currentCard.card}
-                            size="large"
-                            frontStyle={currentCard.index === frontReviewIndex ? { fontSize: frontReviewSize } : {}}
-                            backStyle={currentCard.index === backReviewIndex ? { fontSize: backReviewSize } : {}}
-                        />
+            {flashcards.length > 0 ? (
+                reviewing ? (
+                    <div id="review-container">
+                        <div className="review-flashcard">
+                            <FlashCard
+                                ref={flashcardRef}
+                                card={currentCard.card}
+                                size="large"
+                                frontStyle={currentCard.index === frontReviewIndex ? { fontSize: frontReviewSize } : {}}
+                                backStyle={currentCard.index === backReviewIndex ? { fontSize: backReviewSize } : {}}
+                            />
+                        </div>
+                        <div className="review-buttons">
+                            <button className="review-button" onClick={handleEndSession}>
+                                End Review
+                            </button>
+                            <button className="review-button" onClick={handlePrevCard}>
+                                Previous Card
+                            </button>
+                            <button className="review-button" onClick={handleNextCard}>
+                                Next Card
+                            </button>
+                        </div>
+                        <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
                     </div>
-                    <div className="review-buttons">
-                        <button className="review-button" onClick={handleEndSession}>
-                            End Review
-                        </button>
-                        <button className="review-button" onClick={handlePrevCard}>
-                            Previous Card
-                        </button>
-                        <button className="review-button" onClick={handleNextCard}>
-                            Next Card
-                        </button>
-                    </div>
-                    <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
-                </div>
-            ) : (
-                <div id="cards-available">
-                    {flashcards && flashcards.length > 0 ? (
-                        <>
-                            <div className="button-container">
-                                <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>
-                                    Review all Flashcards
-                                </button>
-                                <button
+                ) : (
+                    <div id="cards-available">
+                        <div className="button-container">
+                            <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>
+                                Review all Flashcards
+                            </button>
+                            <button
                                 className="start-review-button"
-                                onClick={() => {
-                                    console.log('Button clicked'); // Debugging
-                                    fetchFlashcardsDueToday();
-                                }}
+                                onClick={fetchFlashcardsDueToday}
                             >
                                 Study Today's Flashcards
                             </button>
-                            </div>
-                            <div id="cards-preview">
-                                {flashcards.map((card, index) => (
-                                    <FlashCard
-                                        key={index}
-                                        card={card}
-                                        frontStyle={index === frontIndex ? { fontSize: frontSize } : {}}
-                                        backStyle={index === backIndex ? { fontSize: backSize } : {}}
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <p>No flashcards available.</p>
-                    )}
-                </div>
+                        </div>
+                        <div id="cards-preview">
+                            {flashcards.map((card, index) => (
+                                <FlashCard
+                                    key={index}
+                                    card={card}
+                                    frontStyle={index === frontIndex ? { fontSize: frontSize } : {}}
+                                    backStyle={index === backIndex ? { fontSize: backSize } : {}}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )
+            ) : (
+                <p>No flashcards available.</p>
             )}
         </div>
     );
