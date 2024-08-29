@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import styles from './page.module.css';
+import "./globals.css";
 import * as THREE from 'three';
 import RINGS from 'vanta/dist/vanta.rings.min';
 
@@ -50,9 +51,14 @@ export default function Home() {
         <div className={styles.contentContainer}>
           <section className={styles.hookSection}>
             <div className={styles.hookText}>
-              <h1>Professors Hate Us. Skip Classes. Ace Finals.</h1>
-              <p>Meet Veida AI — your all-in-one secret academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion. Register now and revolutionize your learning experience!</p>
-              <button onClick={() => router.push('/client')} className={styles.ctaButton}>Get Started for Free</button>
+              <h1 style={{textTransform: 'uppercase'}}>Professors Hate Us. Skip Classes. Ace Finals.</h1>
+              <p style={{whiteSpace: "pre-line"}}>{"We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.\n\nRevolutionize your learning experience!"}</p>
+              <button  
+                className={styles.ctaButton}
+                onClick={() => router.push('/client')}
+              >
+                Get Started for Free
+              </button>
             </div>
           </section>
         </div>
