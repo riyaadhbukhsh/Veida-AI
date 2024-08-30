@@ -64,3 +64,22 @@
   background-color: white;
   color: black;
 }
+
+ul#featureMenu {
+  list-style-type: none;
+  border: 0px solid yellow;
+}
+
+ul#featureMenu > li:first-child {
+  border-top: none;
+}
+
+ul#featureMenu > li {
+  text-transform: uppercase;
+  border-top: 1px solid white;
+  transition: margin-left 0.6s ease;
+}
+
+ul#featureMenu > li:hover {
+  margin-left: 2rex;
+}
