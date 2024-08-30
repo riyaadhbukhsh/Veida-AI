@@ -5,6 +5,8 @@ from .util import generate_review_dates
 import os
 import datetime
 import openai
+import urllib.parse
+
 load_dotenv()
 
 # MongoDB setup
@@ -464,31 +466,34 @@ def remove_flashcard(clerk_id, course_name, card_id):
     )
     
     
-def get_mcqs(clerk_id, course_name):
-    user = courses_collection.find_one({"clerk_id": clerk_id})
-    if not user:
+def get_mcqs(clerk_id, course_name,concept_name):
+    
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    if not user_courses:
         print(f"User not found for clerk_id: {clerk_id}")
         return []
 
     # Check if the user is premium
-    is_premium = user.get('premium', False)
+    is_premium = user_courses.get('premium', False)
+    concept_name = decode_url_like_string(concept_name)
+    course_name = decode_url_like_string(course_name)
 
-    user_course = next((course for course in user.get('courses', []) if course['course_name'] == course_name), None)
-    if not user_course:
-        print(f"Course {course_name} not found for user {clerk_id}")
-        return []
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            if course['course_name'] == course_name:
+                for concept in course['concepts']:
+                    if concept['concept_name'] == concept_name:
 
-    mcqs = user_course.get('multiple_choice_questions', [])
-
-    # If the user is not premium, return only the first 3 MCQs
-    if not is_premium:
-        mcqs = mcqs[:3]
-
-    return mcqs
-
+                        if not is_premium:
+                            return concept['multiple_choice_questions'][:3]
+                        else:
+                            return concept['multiple_choice_questions']
+    return []
 
 
-def get_flashcards(clerk_id, course_name):
+
+
+def get_flashcards(clerk_id, course_name,concept_name):
     """
     Retrieve all flashcards for a specific course.
 
@@ -498,13 +503,23 @@ def get_flashcards(clerk_id, course_name):
 
     Returns:
         list: A list of flashcards, or None if not found.
+
     """
+    concept_name = decode_url_like_string(concept_name)
+    course_name = decode_url_like_string(course_name)
+    
     user_courses = courses_collection.find_one({"clerk_id": clerk_id})
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course['course_name'] == course_name:
-                return course['flashcards']
+                for concept in course['concepts']:
+                    if concept['concept_name'] == concept_name:
+                        return concept['flashcards']
     return None
+
+def decode_url_like_string(url_like_string):
+    decoded = urllib.parse.unquote(url_like_string)
+    return decoded
 
 def get_due_flashcards(clerk_id):
     today = datetime.datetime.now().date().strftime("%Y-%m-%d") 

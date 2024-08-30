@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import { useParams } from 'next/navigation';
+import { useParams,useSearchParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -23,23 +23,29 @@ function FlashcardPage() {
     const [backReviewSize, setBackReviewSize] = useState('2.2rem');
     const [frontReviewIndex, setFrontReview] = useState(null);
     const [backReviewIndex, setBackReview] = useState(null);
-    const { userId } = useAuth();
-    const flashcardRef = useRef();
-
-    const params = useParams();
-    const urlCourseName = params['course-name'];
-    const courseName = unformatURL(urlCourseName);
-
     const [studyingToday, setStudyingToday] = useState(false);
     const [flashcardsDueToday, setFlashcardsDueToday] = useState(false);
-
     const { setHasNotification, setFlashcardsDue } = useNotification();
+    const { userId } = useAuth();
+    const flashcardRef = useRef();
+    
 
-    const sanitizeFlashcardContent = (text) => {
-        return text.replace(/\*\*/g, '');
-    };
+
+
+    function unformatConceptName(urlConceptName) {
+        let decoded = decodeURIComponent(urlConceptName);
+        let unhyphenated = decoded.replace(/-/g, ' ');
+        return unhyphenated.trim();
+      }
+    const params = useParams();
+    const courseName = useSearchParams().get('courseName');
+    const urlConceptName = params.conceptName;
+    const decodedConceptName = unformatConceptName(urlConceptName);
+
+
 
     const fetchFlashcardsDueToday = async () => {
+        console.log('fetchFlashcardsDueToday called'); // Debugging
         try {
             const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
                 method: 'GET',
@@ -50,27 +56,14 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-
-                if (data.flashcards && data.flashcards.length > 0) {
-                    const sanitizedFlashcards = data.flashcards.map(card => ({
-                        ...card,
-                        front: sanitizeFlashcardContent(card.front),
-                        back: sanitizeFlashcardContent(card.back),
-                    }));
-
-                    setFlashcards(sanitizedFlashcards);
-                    setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
-                    setReviewing(true);
-                    setStudyingToday(true);
-                    setFlashcardsDueToday(true);
-                    setFlashcardsDue(sanitizedFlashcards.length);
-                    setHasNotification(true);
-                } else {
-                    setFlashcards([]);  // Reset flashcards if none are due today
-                    setFlashcardsDueToday(false);
-                    setFlashcardsDue(0);
-                    setHasNotification(false);
-                }
+                console.log('Flashcards due today:', data.flashcards);
+                setFlashcards(data.flashcards);
+                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
+                setReviewing(true);
+                setStudyingToday(true);
+                const hasDueFlashcards = data.flashcards.length > 0;
+                setFlashcardsDueToday(hasDueFlashcards);
+                console.log('Flashcards due today status:', hasDueFlashcards);
             } else {
                 setError('Failed to fetch flashcards due today');
                 setFlashcardsDueToday(false);
@@ -147,7 +140,7 @@ function FlashcardPage() {
 
     const fetchFlashcards = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,19 +149,9 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-
-                if (data.flashcards && data.flashcards.length > 0) {
-                    const sanitizedFlashcards = data.flashcards.map(card => ({
-                        ...card,
-                        front: sanitizeFlashcardContent(card.front),
-                        back: sanitizeFlashcardContent(card.back),
-                    }));
-
-                    setFlashcards(sanitizedFlashcards);
-                    setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
-                } else {
-                    setFlashcards([]);  // Reset flashcards if none are found
-                }
+                console.log('All flashcards:', data.flashcards);
+                setFlashcards(data.flashcards);
+                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
             } else {
                 setError('Failed to fetch flashcards');
             }
@@ -240,19 +223,20 @@ function FlashcardPage() {
     }, [flashcards, currentCard]);
 
     useEffect(() => {
-        if (userId) {
-            fetchFlashcards();
-        }
-    }, [userId]);
+      if (userId) {
+        
+          fetchFlashcards();
+      }
+  }, [userId]);
 
     return (
         <div className="flashcard-page">
             {reviewing ? (
-                <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/flashcards/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={handleEndSession} />
                 </Link>
             ) : (
-                <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={() => setReviewing(false)} />
                 </Link>
             )}
@@ -261,58 +245,63 @@ function FlashcardPage() {
             </h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            {flashcards.length > 0 ? (
-                reviewing ? (
-                    <div id="review-container">
-                        <div className="review-flashcard">
-                            <FlashCard
-                                ref={flashcardRef}
-                                card={currentCard.card}
-                                size="large"
-                                frontStyle={currentCard.index === frontReviewIndex ? { fontSize: frontReviewSize } : {}}
-                                backStyle={currentCard.index === backReviewIndex ? { fontSize: backReviewSize } : {}}
-                            />
-                        </div>
-                        <div className="review-buttons">
-                            <button className="review-button" onClick={handleEndSession}>
-                                End Review
-                            </button>
-                            <button className="review-button" onClick={handlePrevCard}>
-                                Previous Card
-                            </button>
-                            <button className="review-button" onClick={handleNextCard}>
-                                Next Card
-                            </button>
-                        </div>
-                        <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
+            {reviewing ? (
+                <div id="review-container">
+                    <div className="review-flashcard">
+                        <FlashCard
+                            ref={flashcardRef}
+                            card={currentCard.card}
+                            size="large"
+                            frontStyle={currentCard.index === frontReviewIndex ? { fontSize: frontReviewSize } : {}}
+                            backStyle={currentCard.index === backReviewIndex ? { fontSize: backReviewSize } : {}}
+                        />
                     </div>
-                ) : (
-                    <div id="cards-available">
-                        <div className="button-container">
-                            <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>
-                                Review all Flashcards
-                            </button>
-                            <button
+                    <div className="review-buttons">
+                        <button className="review-button" onClick={handleEndSession}>
+                            End Review
+                        </button>
+                        <button className="review-button" onClick={handlePrevCard}>
+                            Previous Card
+                        </button>
+                        <button className="review-button" onClick={handleNextCard}>
+                            Next Card
+                        </button>
+                    </div>
+                    <p className="card-counter">{`Card ${currentCard.index + 1}/${flashcards.length}`}</p>
+                </div>
+            ) : (
+                <div id="cards-available">
+                    {flashcards && flashcards.length > 0 ? (
+                        <>
+                            <div className="button-container">
+                                <button className="start-review-button" onClick={() => { setReviewing(true); setCurrentCard({ card: flashcards[0], index: 0 }); }}>
+                                    Review all Flashcards
+                                </button>
+                                <button
                                 className="start-review-button"
-                                onClick={fetchFlashcardsDueToday}
+                                onClick={() => {
+                                    console.log('Button clicked'); // Debugging
+                                    fetchFlashcardsDueToday();
+                                }}
                             >
                                 Study Today's Flashcards
                             </button>
-                        </div>
-                        <div id="cards-preview">
-                            {flashcards.map((card, index) => (
-                                <FlashCard
-                                    key={index}
-                                    card={card}
-                                    frontStyle={index === frontIndex ? { fontSize: frontSize } : {}}
-                                    backStyle={index === backIndex ? { fontSize: backSize } : {}}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )
-            ) : (
-                <p>No flashcards available.</p>
+                            </div>
+                            <div id="cards-preview">
+                                {flashcards.map((card, index) => (
+                                    <FlashCard
+                                        key={index}
+                                        card={card}
+                                        frontStyle={index === frontIndex ? { fontSize: frontSize } : {}}
+                                        backStyle={index === backIndex ? { fontSize: backSize } : {}}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <p>No flashcards available.</p>
+                    )}
+                </div>
             )}
         </div>
     );

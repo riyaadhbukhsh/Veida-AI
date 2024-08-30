@@ -111,21 +111,21 @@ const ConceptDetailsPage = () => {
       
           
           <div className="concept-content">
-            <Link href={`/flashcards/${formatURL(conceptName)}`} className="concept-study-container">
+            <Link href={`/flashcards/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
               <div>
                 <FaRegLightbulb className="concept-study-icon" />
                 <h3>Flashcards</h3>
               </div>
               <p>Study with interactive flashcards to reinforce key concepts</p>
             </Link>
-            <Link href={`/notes/${formatURL(conceptName)}`} className="concept-study-container">
+            <Link href={`/notes/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
               <div>
                 <FaRegStickyNote className="concept-study-icon" />
                 <h3>Notes</h3>
               </div>
               <p>Review and organize your course notes efficiently</p>
             </Link>
-            <Link href={`/mcqs/${formatURL(conceptName)}`} className="concept-study-container">
+            <Link href={`/mcqs/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
               <div>
                 <FaRegQuestionCircle className="concept-study-icon" />
                 <h3>MCQs</h3>

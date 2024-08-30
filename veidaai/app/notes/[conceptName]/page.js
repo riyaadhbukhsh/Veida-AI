@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/nextjs";
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { useParams } from 'next/navigation';
+import { useParams,useSearchParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
@@ -19,10 +19,22 @@ const NotesPage = () => {
   const [notes, setNotes] = useState(null);
   const [parsedNotes, setParsedNotes] = useState('');
   const [error, setError] = useState('');
-
   const params = useParams();
-  const urlCourseName = params['course-name'];
-  const courseName = unformatURL(urlCourseName);
+
+
+
+
+
+  function unformatConceptName(urlConceptName) {
+    let decoded = decodeURIComponent(urlConceptName);
+    let unhyphenated = decoded.replace(/-/g, ' ');
+    return unhyphenated.trim();
+  }
+ 
+  const courseName = useSearchParams().get('courseName');
+  const urlConceptName = params.conceptName;
+  const decodedConceptName = unformatConceptName(urlConceptName);
+
 
   const fetchNotes = async () => {
     try {
@@ -37,7 +49,9 @@ const NotesPage = () => {
         const data = await response.json();
         const courseIndex = data.courses.findIndex(course => courseName.localeCompare(course.course_name) === 0);
         const courseObj = data.courses[courseIndex];
-        setNotes(courseObj.notes);
+        const conceptIndex = courseObj.concepts.findIndex(concept => decodedConceptName.localeCompare(concept.concept_name) === 0);
+        const conceptObj = courseObj.concepts[conceptIndex];
+        setNotes(conceptObj.notes);
       } else {
         setError('Failed to fetch notes');
       }
@@ -115,7 +129,7 @@ const NotesPage = () => {
   return (
     <div className="main-inline">
       <div className="notes-container">
-        <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft /></Link>
+        <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft /></Link>
         <h1 className="title">Your Notes for {courseName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div id="notes-content" style={{ backgroundColor: '#1e1e1e', color: 'white' }}>
