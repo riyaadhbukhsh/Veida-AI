@@ -618,11 +618,11 @@ def route_get_mcqs():
 
     clerk_id = request.args.get('clerk_id')
     course_name = request.args.get('course_name')
-
-    if not all([clerk_id, course_name]):
+    concept_name = request.args.get('concept_name')
+    if not all([clerk_id, course_name,concept_name]):
         return jsonify({"error": "Missing required parameters"}), 400
     
-    mcqs = get_mcqs(clerk_id, course_name)
+    mcqs = get_mcqs(clerk_id, course_name,concept_name)
     return jsonify({"mcqs":mcqs}), 200
 
 @app.route('/api/get_flashcards', methods=['GET'])
@@ -637,11 +637,13 @@ def route_get_flashcards():
     """
     clerk_id = request.args.get('clerk_id')
     course_name = request.args.get('course_name')
+    concept_name = request.args.get('concept_name')
+
 
     if not all([clerk_id, course_name]):
         return jsonify({"error": "Missing required parameters"}), 400
 
-    flashcards = get_flashcards(clerk_id, course_name)
+    flashcards = get_flashcards(clerk_id, course_name,concept_name)
     return jsonify({"flashcards": flashcards}), 200
 
 @app.route('/api/get_courses', methods=['GET'])

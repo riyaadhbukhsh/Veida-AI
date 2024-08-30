@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import { useParams } from 'next/navigation';
+import { useParams,useSearchParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -23,17 +23,26 @@ function FlashcardPage() {
     const [backReviewSize, setBackReviewSize] = useState('2.2rem');
     const [frontReviewIndex, setFrontReview] = useState(null);
     const [backReviewIndex, setBackReview] = useState(null);
-    const { userId } = useAuth();
-    const flashcardRef = useRef();
-
-    const params = useParams();
-    const urlCourseName = params['course-name'];
-    const courseName = unformatURL(urlCourseName);
-
     const [studyingToday, setStudyingToday] = useState(false);
     const [flashcardsDueToday, setFlashcardsDueToday] = useState(false);
-
     const { setHasNotification, setFlashcardsDue } = useNotification();
+    const { userId } = useAuth();
+    const flashcardRef = useRef();
+    
+
+
+
+    function unformatConceptName(urlConceptName) {
+        let decoded = decodeURIComponent(urlConceptName);
+        let unhyphenated = decoded.replace(/-/g, ' ');
+        return unhyphenated.trim();
+      }
+    const params = useParams();
+    const courseName = useSearchParams().get('courseName');
+    const urlConceptName = params.conceptName;
+    const decodedConceptName = unformatConceptName(urlConceptName);
+
+
 
     const fetchFlashcardsDueToday = async () => {
         console.log('fetchFlashcardsDueToday called'); // Debugging
@@ -131,7 +140,7 @@ function FlashcardPage() {
 
     const fetchFlashcards = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,6 +224,7 @@ function FlashcardPage() {
 
     useEffect(() => {
       if (userId) {
+        
           fetchFlashcards();
       }
   }, [userId]);
@@ -222,11 +232,11 @@ function FlashcardPage() {
     return (
         <div className="flashcard-page">
             {reviewing ? (
-                <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/flashcards/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={handleEndSession} />
                 </Link>
             ) : (
-                <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={() => setReviewing(false)} />
                 </Link>
             )}

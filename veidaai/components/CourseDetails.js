@@ -98,7 +98,7 @@ const CourseDetails = ({ courseName }) => {
           courseConcepts.map((concept, index) => (
             <div key={index} className="course-concept">
 
-          <Link href={`/concept-details/${concept.concept_name.replace(/\s+/g, '-').toLowerCase()}?courseName=${courseName}`}>
+          <Link href={`/concept-details/${concept.concept_name.replace(/\s+/g, '-')}?courseName=${courseName}`}>
             <h3>{concept.concept_name}</h3>
           </Link>
 
