@@ -112,6 +112,14 @@ img.neuronIcon {
 }
 
 .featurePreviewIcon {
+  /* display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased; */
+
+  /* this is supposed to decrease the icon's light weight */
+  /* https://docs.fontawesome.com/web/style/custom */
+  font: var(--fa-font-thin);
+  
   font-size: 30px;
   /* font-weight doesn't work. How do I change the line-weight? >:( */
   /* font-weight: 300; */
@@ -120,10 +128,29 @@ img.neuronIcon {
   margin-bottom: 5px;
 }
 
-
-
 @keyframes pulse-animation {
   0%    {clip-path: circle(19px at center)}
 
   100%  {clip-path: circle(15px at center)}
+}
+
+#uploadFeatureSection {
+  justify-content: flex-start;
+  position: relative; /*this is so #uploadImg can use position: absolute*/
+}
+
+#uploadFeatureSection > div:first-child {
+  width: 40%;
+}
+
+#uploadFeatureSection > div:last-child {
+  width: 56%;
+}
+
+#uploadImg  {
+  width: min(100%, 630px);
+  height: min(100%, 340px);
+
+  position: absolute;
+  top: 0;
 }

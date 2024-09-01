@@ -70,14 +70,14 @@ export default function Home() {
         </div>
 
         {/*1st feature section*/}
-        <div className="container double-column-container">
+        <div className="container double-column-container" id={styles.uploadFeatureSection}>
           <div className="feature-column-text">
             <h2>Upload Your Lecture Material</h2>
             <p>We accept:<br/>txt, pdf, jpg, png</p>
             <button className="secondary">Upload your file</button>
           </div>
           <div className="feature-column-media">
-            <h2>[insert media here]</h2>
+            <img id={styles.uploadImg} src="data-or-cloud-migration.svg" alt="data-or-cloud-migration" width={630} height={340}/>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export default function Home() {
           <div className="feature-column-media">
             <h2>[insert media here]</h2>
           </div>
-        </div>
+        </div>x
 
         {/*3rd feature section*/}
         <div className="container double-column-container">
