@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import styles from './page.module.css';
 import "./globals.css";
+import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
 import * as THREE from 'three';
 import RINGS from 'vanta/dist/vanta.rings.min';
 
 export default function Home() {
   const router = useRouter();
   const vantaRef = useRef(null);
+  const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
 
   // useEffect(() => {
   //   const vantaEffect = RINGS({
@@ -86,9 +88,35 @@ export default function Home() {
           <div className="feature-column-text">
             <h2>Text Column</h2>
             <ul id={styles.featureMenu}>
-              <li>flashcards</li>
-              <li>multiple choice questions</li>
-              <li>outlined notes</li>
+
+              <li id="flashcardPreview" 
+                  // assign className only if this li is currently selected
+                  className={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                  onClick={()=>setPreviewedFeatureId('flashcardPreview')}
+              >
+                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
+                <FaRegLightbulb className={styles.featurePreviewIcon} />
+                flashcards
+              </li>
+
+              <li id="mcqPreview"// assign className only if this li is currently selected
+                  className={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                  onClick={()=>setPreviewedFeatureId('mcqPreview')}
+              >
+                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
+                <FaRegQuestionCircle className={styles.featurePreviewIcon} />
+                multiple choice questions
+              </li>
+
+              <li id="notesPreview" // assign className only if this li is currently selected
+                  className={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                  onClick={()=>setPreviewedFeatureId('notesPreview')}
+              >
+                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
+                <FaRegStickyNote className={styles.featurePreviewIcon} />
+                outlined notes
+              </li>
+
             </ul>
           </div>
           

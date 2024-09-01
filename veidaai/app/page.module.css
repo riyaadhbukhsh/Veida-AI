@@ -67,19 +67,63 @@
 
 ul#featureMenu {
   list-style-type: none;
-  border: 0px solid yellow;
+  /* border: 1px solid yellow; */
+  overflow-x: hidden;
+}
+
+ul#featureMenu > li {
+  /* font-size: var(--h2); */
+  font-size: calc(var(--h2) * 0.9);
+  line-height: 2.7rem;
+  text-transform: uppercase;
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+  vertical-align: middle;
+  margin-top: -1px;
+  margin-left: -35px;
+  transition: margin-left 0.6s ease;
 }
 
 ul#featureMenu > li:first-child {
   border-top: none;
+  margin-top: 1px;
 }
 
-ul#featureMenu > li {
-  text-transform: uppercase;
-  border-top: 1px solid white;
-  transition: margin-left 0.6s ease;
+ul#featureMenu > li:last-child {
+  border-bottom: none;
 }
 
 ul#featureMenu > li:hover {
-  margin-left: 2rex;
+  margin-left: 0.5rex;
+}
+
+ul#featureMenu > li.selectedFeaturePreview {
+  /* color: var(--accent); */
+  margin-left: 0.5rex;
+}
+
+img.neuronIcon {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  background: transparent;
+  animation: pulse-animation 1s infinite alternate;
+  animation-timing-function: linear;
+}
+
+.featurePreviewIcon {
+  font-size: 30px;
+  /* font-weight doesn't work. How do I change the line-weight? >:( */
+  /* font-weight: 300; */
+  vertical-align: middle;
+  margin-right: 8px;
+  margin-bottom: 5px;
+}
+
+
+
+@keyframes pulse-animation {
+  0%    {clip-path: circle(19px at center)}
+
+  100%  {clip-path: circle(15px at center)}
 }
