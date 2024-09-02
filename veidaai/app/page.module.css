@@ -1,3 +1,210 @@
+#siteWrapper {
+  padding-top: 60px; /* avoid overlap with the nav bar */
+}
+
+/* allow section images to position relative to section divs */
+#siteWrapper > div {
+  position: relative;
+}
+
+/* alternate background-colors between black & black2*/
+#siteWrapper > div:nth-child(2n-1) {
+  background-color: var(--black);
+}
+
+#siteWrapper > div:nth-child(2n) {
+  background-color: var(--black2);
+}
+
+.sectionImg {
+  width: min(100%, 630px);
+  height: min(100%, 340px);
+
+  /* vertically center */
+  position: absolute;
+  top: 50%;
+  --webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+/**************************************/
+/* Section 1 -  PROFESSORS HATE US... */
+/**************************************/
+#siteWrapper > div:first-child {
+  /* background: linear-gradient(90deg, #1e1e1e, transparent 55%); */
+  padding-top: 2rem;
+}
+
+#landingImg {
+  -webkit-transform: scaleX(-1) translateY(-50%);
+  transform: scaleX(-1) translateY(-50%);
+}
+
+/*******************************************/
+/* Section 2 - UPLOAD YOUR COURSE MATERIAL */
+/*******************************************/
+#uploadFeatureSection {
+  justify-content: flex-start;
+  position: relative; /*this is so #uploadImg can use position: absolute*/
+}
+
+/* left column */
+#uploadFeatureSection > div:first-child {
+  width: 40%;
+}
+
+/* right column */
+#uploadFeatureSection > div:last-child {
+  width: 56%;
+}
+
+/************************************************/
+/* Section 3 - AI GENERATES YOUR STUDY MATERIAL */
+/************************************************/
+/* #siteWrapper > div:nth-child(3) {
+
+} */
+
+/* column sections */
+/* #siteWrapper > div:nth-child(3) > div {
+
+} */
+
+ul#featureMenu {
+  height: 15rem;
+  list-style-type: none;
+  overflow-x: hidden;
+}
+
+ul#featureMenu > li {
+  font-size: calc(var(--h2) * 0.9);
+  text-transform: uppercase;
+  
+  vertical-align: middle;
+  margin-top: -1px;
+  margin-left: -35px;
+  line-height: 2.7rem;
+
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+
+  transition: margin-left 0.6s ease;
+}
+
+ul#featureMenu > li:first-child {
+  border-top: none;
+  margin-top: 1px;
+}
+
+ul#featureMenu > li:last-child {
+  border-bottom: none;
+}
+
+ul#featureMenu > li:hover,
+ul#featureMenu > li.selectedFeaturePreview
+{
+  margin-left: 0.5rex;
+}
+
+.featurePreviewIcon {
+  /* display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased; */
+
+  /* this is supposed to decrease the icon's light weight */
+  /* https://docs.fontawesome.com/web/style/custom */
+  font: var(--fa-font-thin);
+  
+  font-size: 30px;
+  /* font-weight doesn't work. How do I change the line-weight? >:( */
+  /* font-weight: 300; */
+  vertical-align: middle;
+  margin-right: 8px;
+  margin-bottom: 5px;
+}
+
+img.neuronIcon {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  background: transparent;
+  animation: pulse-animation 1s infinite alternate;
+  animation-timing-function: linear;
+}
+
+/* this was used to pulse the neuron icon */
+@keyframes pulse-animation {
+  0%    {clip-path: circle(19px at center)}
+
+  100%  {clip-path: circle(15px at center)}
+}
+
+#featureImgContainer {
+  height: 15rem;
+  border: 1px solid white;
+}
+
+.featureImg {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+  
+  display: none;
+  transition: display 2s ease; /* this doesn't work, but it was worth a shot */
+}
+
+/* this makes it visible */
+#selectedFeatureImg {
+  display: inline;
+}
+
+/********************************/
+/* Section 4 - STAY ON SCHEDULE */
+/********************************/
+#notiFeatureSection {
+  position: relative; /* so the section img can use position: absolute */
+}
+
+/********************************/
+/* experimenting with gradients */
+/********************************/
+#siteWrapper {
+  background: rgb(30,30,30);
+  --gradient1: rgba(41,84,94,1) 0%, rgba(37,63,70,1) 25%, rgba(30,30,30,1) 50%, rgba(37,63,70,1) 75%, rgba(41,84,94,1) 100%;
+  --gradient2: rgba(30,30,30,1) 0%, rgba(41,84,94,1) 50%, rgba(30,30,30,1) 100%;
+  --gradient3: rgba(30,30,30,1), rgba(41,84,94,1);
+  --gradient4: #1e1e1e, #23373b, #1e1e1e;
+  --gradient5: #1e1e1e, #23273b, #1e1e1e;
+  --gradient6: #1e1e1e, #23273b, #23373b, #1e1e1e;
+  --gradient7: #1e1e1e, #004c6c, #1e1e1e;
+  --gradient8: #23373b, #004c6c, #23373b;
+  --gradient9: #23373b, #003952, #23373b;
+  --gradient10: #2b474d, #003952, #2b474d;
+  --gradient11: #1e1e1e, #003952, var(--gradient10);
+  --gradient12: #1e1e1e, #003952, #2b474d;
+  /* background: linear-gradient(180deg, var(--gradient12)) */
+  /* animation: 3s infinite alternate rotate-gradient; */
+  /* animation-name: rotate-gradient;
+  animation-duration: 2s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; */
+}
+
+@keyframes rotate-gradient {
+  0%    {
+          background: linear-gradient(135deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
+        }
+
+  100%  {
+          background: linear-gradient(0deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
+        }
+}
+
+/********************************************************************************************************************/
+/* CSS for Everett's original homepage design ***********************************************************************/
+/********************************************************************************************************************/
+
 .main {
   position: fixed;
   top: 0;
@@ -63,173 +270,4 @@
 .ctaButton:hover {
   background-color: white;
   color: black;
-}
-
-#siteWrapper > div:nth-child(3) {
-  /* border: 1px solid yellow; */
-  border: none;
-}
-
-#siteWrapper > div:nth-child(3) > div {
-  /* border: 1px solid red; */
-  border: none;
-}
-
-#featureImgContainer {
-  height: 15rem;
-  border: 1px solid white;
-}
-
-.featureImg {
-  /* border: 2px solid cyan; */
-  object-fit: contain;
-  height: 100%;
-  width: 100%;
-  display: none;
-  transition: 2s ease;
-}
-
-#selectedFeatureImg {
-  display: inline;
-}
-
-
-ul#featureMenu {
-  height: 15rem;
-  list-style-type: none;
-  /* border: 1px solid yellow; */
-  overflow-x: hidden;
-}
-
-ul#featureMenu > li {
-  /* font-size: var(--h2); */
-  font-size: calc(var(--h2) * 0.9);
-  line-height: 2.7rem;
-  text-transform: uppercase;
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
-  vertical-align: middle;
-  margin-top: -1px;
-  margin-left: -35px;
-  transition: margin-left 0.6s ease;
-}
-
-ul#featureMenu > li:first-child {
-  border-top: none;
-  margin-top: 1px;
-}
-
-ul#featureMenu > li:last-child {
-  border-bottom: none;
-}
-
-ul#featureMenu > li:hover {
-  margin-left: 0.5rex;
-}
-
-ul#featureMenu > li.selectedFeaturePreview {
-  /* color: var(--accent); */
-  margin-left: 0.5rex;
-}
-
-img.neuronIcon {
-  margin-right: 5px;
-  margin-bottom: 5px;
-  vertical-align: middle;
-  background: transparent;
-  animation: pulse-animation 1s infinite alternate;
-  animation-timing-function: linear;
-}
-
-.featurePreviewIcon {
-  /* display: inline-block;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased; */
-
-  /* this is supposed to decrease the icon's light weight */
-  /* https://docs.fontawesome.com/web/style/custom */
-  font: var(--fa-font-thin);
-  
-  font-size: 30px;
-  /* font-weight doesn't work. How do I change the line-weight? >:( */
-  /* font-weight: 300; */
-  vertical-align: middle;
-  margin-right: 8px;
-  margin-bottom: 5px;
-}
-
-@keyframes pulse-animation {
-  0%    {clip-path: circle(19px at center)}
-
-  100%  {clip-path: circle(15px at center)}
-}
-
-#uploadFeatureSection {
-  justify-content: flex-start;
-  position: relative; /*this is so #uploadImg can use position: absolute*/
-}
-
-#notiFeatureSection {
-  position: relative;
-}
-
-#uploadFeatureSection > div:first-child {
-  width: 40%;
-}
-
-#uploadFeatureSection > div:last-child {
-  width: 56%;
-}
-
-#uploadImg, .sectionImg {
-  width: min(100%, 630px);
-  height: min(100%, 340px);
-
-  position: absolute;
-  top: 50%;
-  transform: translate(0, -50%);
-}
-
-#siteWrapper {
-  background: rgb(30,30,30);
-  --gradient1: rgba(41,84,94,1) 0%, rgba(37,63,70,1) 25%, rgba(30,30,30,1) 50%, rgba(37,63,70,1) 75%, rgba(41,84,94,1) 100%;
-  --gradient2: rgba(30,30,30,1) 0%, rgba(41,84,94,1) 50%, rgba(30,30,30,1) 100%;
-  --gradient3: rgba(30,30,30,1), rgba(41,84,94,1);
-  --gradient4: #1e1e1e, #23373b, #1e1e1e;
-  --gradient5: #1e1e1e, #23273b, #1e1e1e;
-  --gradient6: #1e1e1e, #23273b, #23373b, #1e1e1e;
-  --gradient7: #1e1e1e, #004c6c, #1e1e1e;
-  --gradient8: #23373b, #004c6c, #23373b;
-  --gradient9: #23373b, #003952, #23373b;
-  --gradient10: #2b474d, #003952, #2b474d;
-  --gradient11: #1e1e1e, #003952, var(--gradient10);
-  --gradient12: #1e1e1e, #003952, #2b474d;
-  /* background: linear-gradient(180deg, var(--gradient12)) */
-  /* animation: 3s infinite alternate rotate-gradient; */
-  /* animation-name: rotate-gradient;
-  animation-duration: 2s;
-  animation-direction: alternate;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear; */
-}
-
-@keyframes rotate-gradient {
-  0%    {
-          background: linear-gradient(135deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
-        }
-
-  100%   {
-          background: linear-gradient(0deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
-  }
-
-  /* 100%  {background: linear-gradient(135deg, rgba(30,30,30,1) 0%, rgba(41,84,94,1) 50%, rgba(30,30,30,1) 100%);} */
-}
-
-#siteWrapper {
-  padding-top: 60px;
-}
-
-#siteWrapper > div:first-child {
-  background: linear-gradient(90deg, #1e1e1e, transparent 55%);
-  padding-top: 2rem;
 }

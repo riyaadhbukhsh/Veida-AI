@@ -6,13 +6,13 @@ import Head from 'next/head';
 import styles from './page.module.css';
 import "./globals.css";
 import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
-import * as THREE from 'three';
-import RINGS from 'vanta/dist/vanta.rings.min';
+// import * as THREE from 'three';
+// import RINGS from 'vanta/dist/vanta.rings.min';
 
 export default function Home() {
   const router = useRouter();
-  const vantaRef = useRef(null);
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
+  // const vantaRef = useRef(null);
   // useEffect(() => {
   //   const vantaEffect = RINGS({
   //     el: vantaRef.current,
@@ -47,28 +47,34 @@ export default function Home() {
         <meta name="description" content="We are your all-in-one secret academic weapon, designed and developed by students, for students." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {/* <div className={styles.main}> */}
       <div id={styles.siteWrapper}> 
-        {/*landing section*/}
+      {/* <div className={styles.main}> */}
         {/* <div ref={vantaRef} className={styles.vantaContainer}></div> */}
         {/* <div className={styles.contentContainer}> */}
         <div className="container double-column-container" id={styles.landingSection}>  
           {/* <section className={styles.hookSection}> */}
             {/* <div className={styles.hookText}> */}
-            <div className="feature-column-text">
-              <h1 style={{textTransform: 'uppercase'}}>Professors Hate Us. Skip Classes. Ace Finals.</h1>
-              <p style={{whiteSpace: "pre-line"}}>{"We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.\n\nRevolutionize your learning experience!"}</p>
-              <button  
-                // className={styles.ctaButton}
-                className="primary"
-                onClick={() => router.push('/client')}
-              >
-                Get Started for Free
-              </button>
-            </div>
-            <div className="feature-column-media">
-
-            </div>
+          <div className="feature-column-text">
+            <h1 style={{textTransform: 'uppercase'}}>Professors Hate Us. Skip Classes. Ace Finals.</h1>
+            <p style={{whiteSpace: "pre-line"}}>{"We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.\n\nRevolutionize your learning experience!"}</p>
+            <button  
+              // className={styles.ctaButton}
+              className="primary"
+              onClick={() => router.push('/client')}
+            >
+              Get Started for Free
+            </button>
+          </div>
+          <div className="feature-column-media">
+            <img
+              id={styles.landingImg}
+              className={styles.sectionImg}
+              src="illustrations/student-studies-with-ai.svg"
+              alt="student-studies-with-ai-illustration"
+              width={630}
+              height={340}
+            />
+          </div>
           {/* </section> */}
         </div>
 
@@ -80,7 +86,13 @@ export default function Home() {
             <button className="secondary">Upload your file</button>
           </div>
           <div className="feature-column-media">
-            <img id={styles.uploadImg} src="data-or-cloud-migration.svg" alt="data-or-cloud-migration" width={630} height={340}/>
+            <img 
+              id={styles.uploadImg}
+              src="illustrations/data-or-cloud-migration.svg"
+              alt="data-or-cloud-migration-illustration"
+              width={630} 
+              height={340}
+            />
           </div>
         </div>
 
@@ -101,7 +113,8 @@ export default function Home() {
                 flashcards
               </li>
 
-              <li id="mcqPreview"// assign className only if this li is currently selected
+              <li id="mcqPreview"
+                  // assign className only if this li is currently selected
                   className={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
                   onClick={()=>setPreviewedFeatureId('mcqPreview')}
               >
@@ -110,7 +123,8 @@ export default function Home() {
                 multiple choice questions
               </li>
 
-              <li id="notesPreview" // assign className only if this li is currently selected
+              <li id="notesPreview" 
+                  // assign className only if this li is currently selected
                   className={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
                   onClick={()=>setPreviewedFeatureId('notesPreview')}
               >
@@ -125,21 +139,21 @@ export default function Home() {
           <div className="feature-column-media">
             <div id={styles.featureImgContainer}>
               <img 
-                className={styles.featureImg} 
                 id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                className={styles.featureImg} 
                 src="feature-flashcards.png" 
                 alt="preview of flashcards feature" width={500} height={400}></img>
               <img 
-                className={styles.featureImg}
                 id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                className={styles.featureImg}
                 src="feature-mcqs.png" 
                 alt="preview of flashcards feature" 
                 width={500} 
                 height={400}
               />
               <img 
-                className={styles.featureImg} 
                 id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                className={styles.featureImg} 
                 src="feature-notes.png" 
                 alt="preview of flashcards feature" 
                 width={500} 
@@ -152,7 +166,13 @@ export default function Home() {
         {/*3rd feature section*/}
         <div className="container double-column-container" id={styles.notiFeatureSection}>
           <div className="feature-column-media" >
-            <img className={styles.sectionImg} src="personal-workplace.svg" alt="data-or-cloud-migration" width={630} height={340}/>
+            <img 
+              className={styles.sectionImg} 
+              src="illustrations/personal-workplace.svg" 
+              alt="personal-workplace-illustration" 
+              width={630} 
+              height={340}
+            />
           </div>
 
           <div className="feature-column-text right-align">
