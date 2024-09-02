@@ -33,6 +33,7 @@
 #siteWrapper > div:first-child {
   /* background: linear-gradient(90deg, #1e1e1e, transparent 55%); */
   padding-top: 2rem;
+  padding-bottom: 0;
 }
 
 #landingSection h1 {
