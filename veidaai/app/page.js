@@ -13,7 +13,6 @@ export default function Home() {
   const router = useRouter();
   const vantaRef = useRef(null);
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
-
   // useEffect(() => {
   //   const vantaEffect = RINGS({
   //     el: vantaRef.current,
@@ -53,7 +52,7 @@ export default function Home() {
         {/*landing section*/}
         {/* <div ref={vantaRef} className={styles.vantaContainer}></div> */}
         {/* <div className={styles.contentContainer}> */}
-        <div className="container double-column-container">  
+        <div className="container double-column-container" id={styles.landingSection}>  
           {/* <section className={styles.hookSection}> */}
             {/* <div className={styles.hookText}> */}
             <div className="feature-column-text">
@@ -90,7 +89,6 @@ export default function Home() {
           <h2 className="center">AI Generates your study material</h2>
           <p className="subtitle">main ideas & key details are identified to be used to create your interactive study methods</p>
           <div className="feature-column-text">
-            <h2>Text Column</h2>
             <ul id={styles.featureMenu}>
 
               <li id="flashcardPreview" 
@@ -125,7 +123,29 @@ export default function Home() {
           </div>
           
           <div className="feature-column-media">
-            <h2>[insert media here]</h2>
+            <div id={styles.featureImgContainer}>
+              <img 
+                className={styles.featureImg} 
+                id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                src="feature-flashcards.png" 
+                alt="preview of flashcards feature" width={500} height={400}></img>
+              <img 
+                className={styles.featureImg}
+                id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                src="feature-mcqs.png" 
+                alt="preview of flashcards feature" 
+                width={500} 
+                height={400}
+              />
+              <img 
+                className={styles.featureImg} 
+                id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                src="feature-notes.png" 
+                alt="preview of flashcards feature" 
+                width={500} 
+                height={400}
+              />
+            </div>
           </div>
         </div>
 

@@ -65,7 +65,37 @@
   color: black;
 }
 
+#siteWrapper > div:nth-child(3) {
+  /* border: 1px solid yellow; */
+  border: none;
+}
+
+#siteWrapper > div:nth-child(3) > div {
+  /* border: 1px solid red; */
+  border: none;
+}
+
+#featureImgContainer {
+  height: 15rem;
+  border: 1px solid white;
+}
+
+.featureImg {
+  /* border: 2px solid cyan; */
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+  display: none;
+  transition: 2s ease;
+}
+
+#selectedFeatureImg {
+  display: inline;
+}
+
+
 ul#featureMenu {
+  height: 15rem;
   list-style-type: none;
   /* border: 1px solid yellow; */
   overflow-x: hidden;
@@ -156,7 +186,8 @@ img.neuronIcon {
   height: min(100%, 340px);
 
   position: absolute;
-  top: 0;
+  top: 50%;
+  transform: translate(0, -50%);
 }
 
 #siteWrapper {
@@ -200,4 +231,5 @@ img.neuronIcon {
 
 #siteWrapper > div:first-child {
   background: linear-gradient(90deg, #1e1e1e, transparent 55%);
+  padding-top: 2rem;
 }
