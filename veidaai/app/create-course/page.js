@@ -6,7 +6,6 @@ import CreateCourse from '../../components/CreateCourse';
 const CreateCoursePage = () => {
     const handleCourseCreated = (newCourse) => {
         // Handle the course creation logic, e.g., redirect or show a success message
-        console.log('Course created:', newCourse);
     };
 
     return (

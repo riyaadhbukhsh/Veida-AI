@@ -26,8 +26,7 @@ const ConceptDetailsPage = () => {
   // Access the query parameter from the URL
   const courseName = useSearchParams().get('courseName');
 
-  console.log('Concept Name:', urlConceptName);
-  console.log('Course Name:', courseName);
+
 
   function unformatConceptName(urlConceptName) {
     let decoded = decodeURIComponent(urlConceptName);
