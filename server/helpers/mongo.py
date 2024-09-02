@@ -521,6 +521,8 @@ def decode_url_like_string(url_like_string):
     decoded = urllib.parse.unquote(url_like_string)
     return decoded
 
+
+
 def get_due_flashcards(clerk_id):
     today = datetime.datetime.now().date().strftime("%Y-%m-%d") 
     user = courses_collection.find_one({"clerk_id":clerk_id})
