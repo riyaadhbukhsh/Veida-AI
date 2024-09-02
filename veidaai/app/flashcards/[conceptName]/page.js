@@ -45,7 +45,6 @@ function FlashcardPage() {
 
 
     const fetchFlashcardsDueToday = async () => {
-        console.log('fetchFlashcardsDueToday called'); // Debugging
         try {
             const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
                 method: 'GET',
@@ -56,14 +55,12 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Flashcards due today:', data.flashcards);
                 setFlashcards(data.flashcards);
                 setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
                 setReviewing(true);
                 setStudyingToday(true);
                 const hasDueFlashcards = data.flashcards.length > 0;
                 setFlashcardsDueToday(hasDueFlashcards);
-                console.log('Flashcards due today status:', hasDueFlashcards);
             } else {
                 setError('Failed to fetch flashcards due today');
                 setFlashcardsDueToday(false);
@@ -90,7 +87,6 @@ function FlashcardPage() {
                 if (!response.ok) {
                     console.error('Failed to remove today\'s review dates');
                 } else {
-                    console.log('Successfully removed today\'s review dates');
                 }
             } catch (error) {
                 console.error('Error removing today\'s review dates:', error);
@@ -149,7 +145,6 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('All flashcards:', data.flashcards);
                 setFlashcards(data.flashcards);
                 setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
             } else {
@@ -280,7 +275,6 @@ function FlashcardPage() {
                                 <button
                                 className="start-review-button"
                                 onClick={() => {
-                                    console.log('Button clicked'); // Debugging
                                     fetchFlashcardsDueToday();
                                 }}
                             >

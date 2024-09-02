@@ -6,7 +6,8 @@ import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } fro
 import AddContentModal from './AddContentModal';
 import AddConceptModal from './AddConceptModal';
 
-import './course-details.css'; // Ensure this import is correct
+import './concept-cards.css'; 
+import './course-details.css';
 
 const CourseDetails = ({ courseName }) => {
   const { userId } = useAuth();
@@ -34,7 +35,7 @@ const CourseDetails = ({ courseName }) => {
         const data = await response.json();
         
         setCourseConcepts(data.concepts);
-        console.log(data.concepts);
+        
       } else {
         console.error('Failed to fetch course. Response error: ', response.ok);
       }
@@ -79,31 +80,20 @@ const CourseDetails = ({ courseName }) => {
       {courseObj.description && (
         <p className="course-description">{courseObj.description}</p>
       )}
-      <button id="add-content-btn" onClick={handleAddContent} className="course-add-content-btn">
-        Add Content
-      </button>
       <button id="add-concept-btn" onClick={handleAddConcept} className="course-add-content-btn">
         Add Concept
       </button>
       
 
-      <div> 
-      <h3>Course Showing</h3>
-      <p>{courseName}</p>
-      </div>
-
-
-      <div className="course-concepts-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="concept-cards" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {courseConcepts.length > 0 ? (
           courseConcepts.map((concept, index) => (
-            <div key={index} className="course-concept">
+            <div key={index} className="concept-card">
 
-          <Link href={`/concept-details/${concept.concept_name.replace(/\s+/g, '-')}?courseName=${courseName}`}>
-            <h3>{concept.concept_name}</h3>
+          <Link href={`/concept-details/${concept.concept_name.replace(/\s+/g, '-')}?courseName=${courseName}`} className="concept-link">
+            <h2 style = {{textAlign: 'center'}}>{concept.concept_name}</h2>
           </Link>
-
-
-              <p>{concept.concept_description}</p>
+            
             </div>
           ))
         ) : (
@@ -111,29 +101,6 @@ const CourseDetails = ({ courseName }) => {
         )}
       </div>
 
-      {/* <div className="course-content">
-      <Link href={`/flashcards/${formatURL(courseName)}`} className="course-study-container">
-          <div>
-            <FaRegLightbulb className="course-study-icon" />
-            <h3>Flashcards</h3>
-          </div>
-          <p>Study with interactive flashcards to reinforce key concepts</p>
-        </Link>
-        <Link href={`/notes/${formatURL(courseName)}`} className="course-study-container">
-          <div>
-            <FaRegStickyNote className="course-study-icon" />
-            <h3>Notes</h3>
-          </div>
-          <p>Review and organize your course notes efficiently</p>
-        </Link>
-        <Link href={`/mcqs/${formatURL(courseName)}`} className="course-study-container">
-          <div>
-            <FaRegQuestionCircle className="course-study-icon" />
-            <h3>MCQs</h3>
-          </div>
-          <p>Test your knowledge with multiple choice questions</p>
-        </Link>
-      </div> */}
 
       {showAddContentModal && (
         <AddContentModal

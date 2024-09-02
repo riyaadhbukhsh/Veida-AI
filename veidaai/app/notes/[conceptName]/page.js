@@ -51,7 +51,7 @@ const NotesPage = () => {
         const courseObj = data.courses[courseIndex];
         const conceptIndex = courseObj.concepts.findIndex(concept => decodedConceptName.localeCompare(concept.concept_name) === 0);
         const conceptObj = courseObj.concepts[conceptIndex];
-        setNotes(conceptObj.notes);
+        setNotes(conceptObj.concept_notes);
       } else {
         setError('Failed to fetch notes');
       }

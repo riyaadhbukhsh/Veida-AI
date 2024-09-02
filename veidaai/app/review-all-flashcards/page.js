@@ -77,7 +77,7 @@ function ReviewAllFlashcardsPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.due_flashcards)
+                
                 setReviewFlashcards(data.due_flashcards);
                 setCurrentCard({ card: data.due_flashcards[0] || null, index: 0 });
             } else {

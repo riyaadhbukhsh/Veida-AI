@@ -28,9 +28,6 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
     formData.append('clerk_id', userId);
     formData.append('course_name', courseName);
 
-    console.log('formData:', userId);
-    console.log('courseName:', courseName)
-    console.log('file:', file);
     
     try {
       const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {

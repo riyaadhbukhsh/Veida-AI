@@ -37,10 +37,10 @@ def reformat_courses_collection_user(clerk_id):
                     {
                         "concept_name": f"{course['course_name']} First Concept",
                         "concept_description": "No Description",
-                        "flashcards": course['flashcards'],
+                        "concept_flashcards": course['flashcards'],
                         "review_dates": course['review_dates'],
-                        "multiple_choice_questions": course['multiple_choice_questions'],
-                        "notes": course['notes']
+                        "concept_multiple_choice_questions": course['multiple_choice_questions'],
+                        "concept_notes": course['notes']
                     }
                 ],
                 "course_schedule": course['course_schedule'],
@@ -485,9 +485,9 @@ def get_mcqs(clerk_id, course_name,concept_name):
                     if concept['concept_name'] == concept_name:
 
                         if not is_premium:
-                            return concept['multiple_choice_questions'][:3]
+                            return concept['concept_multiple_choice_questions'][:3]
                         else:
-                            return concept['multiple_choice_questions']
+                            return concept['concept_multiple_choice_questions']
     return []
 
 
@@ -514,7 +514,7 @@ def get_flashcards(clerk_id, course_name,concept_name):
             if course['course_name'] == course_name:
                 for concept in course['concepts']:
                     if concept['concept_name'] == concept_name:
-                        return concept['flashcards']
+                        return concept['concept_flashcards']
     return None
 
 def decode_url_like_string(url_like_string):
@@ -555,7 +555,7 @@ def add_concept(clerk_id,course_name,concept_name,concept_description,concept_mc
     courses_collection.update_one(
         {"clerk_id": clerk_id, "courses.course_name": course_name},
         {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description,
-         "concept_mcqs": concept_mcqs, "concept_flashcards": concept_flashcards, "concept_notes": concept_notes}}}
+         "concept_multiple_choice_questions": concept_mcqs, "concept_flashcards": concept_flashcards, "concept_notes": concept_notes}}}
 
     )
 
