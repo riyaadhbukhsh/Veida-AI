@@ -139,6 +139,10 @@ img.neuronIcon {
   position: relative; /*this is so #uploadImg can use position: absolute*/
 }
 
+#notiFeatureSection {
+  position: relative;
+}
+
 #uploadFeatureSection > div:first-child {
   width: 40%;
 }
@@ -147,10 +151,53 @@ img.neuronIcon {
   width: 56%;
 }
 
-#uploadImg  {
+#uploadImg, .sectionImg {
   width: min(100%, 630px);
   height: min(100%, 340px);
 
   position: absolute;
   top: 0;
+}
+
+#siteWrapper {
+  background: rgb(30,30,30);
+  --gradient1: rgba(41,84,94,1) 0%, rgba(37,63,70,1) 25%, rgba(30,30,30,1) 50%, rgba(37,63,70,1) 75%, rgba(41,84,94,1) 100%;
+  --gradient2: rgba(30,30,30,1) 0%, rgba(41,84,94,1) 50%, rgba(30,30,30,1) 100%;
+  --gradient3: rgba(30,30,30,1), rgba(41,84,94,1);
+  --gradient4: #1e1e1e, #23373b, #1e1e1e;
+  --gradient5: #1e1e1e, #23273b, #1e1e1e;
+  --gradient6: #1e1e1e, #23273b, #23373b, #1e1e1e;
+  --gradient7: #1e1e1e, #004c6c, #1e1e1e;
+  --gradient8: #23373b, #004c6c, #23373b;
+  --gradient9: #23373b, #003952, #23373b;
+  --gradient10: #2b474d, #003952, #2b474d;
+  --gradient11: #1e1e1e, #003952, var(--gradient10);
+  --gradient12: #1e1e1e, #003952, #2b474d;
+  /* background: linear-gradient(180deg, var(--gradient12)) */
+  /* animation: 3s infinite alternate rotate-gradient; */
+  /* animation-name: rotate-gradient;
+  animation-duration: 2s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; */
+}
+
+@keyframes rotate-gradient {
+  0%    {
+          background: linear-gradient(135deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
+        }
+
+  100%   {
+          background: linear-gradient(0deg, rgba(41,84,94,1) 0%, rgba(30,30,30,1) 50%, rgba(41,84,94,1) 100%);
+  }
+
+  /* 100%  {background: linear-gradient(135deg, rgba(30,30,30,1) 0%, rgba(41,84,94,1) 50%, rgba(30,30,30,1) 100%);} */
+}
+
+#siteWrapper {
+  padding-top: 60px;
+}
+
+#siteWrapper > div:first-child {
+  background: linear-gradient(90deg, #1e1e1e, transparent 55%);
 }

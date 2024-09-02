@@ -49,13 +49,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* <div className={styles.main}> */}
-      <div> 
+      <div id={styles.siteWrapper}> 
         {/*landing section*/}
         {/* <div ref={vantaRef} className={styles.vantaContainer}></div> */}
         {/* <div className={styles.contentContainer}> */}
-        <div>  
-          <section className={styles.hookSection}>
-            <div className={styles.hookText}>
+        <div className="container double-column-container">  
+          {/* <section className={styles.hookSection}> */}
+            {/* <div className={styles.hookText}> */}
+            <div className="feature-column-text">
               <h1 style={{textTransform: 'uppercase'}}>Professors Hate Us. Skip Classes. Ace Finals.</h1>
               <p style={{whiteSpace: "pre-line"}}>{"We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.\n\nRevolutionize your learning experience!"}</p>
               <button  
@@ -66,7 +67,10 @@ export default function Home() {
                 Get Started for Free
               </button>
             </div>
-          </section>
+            <div className="feature-column-media">
+
+            </div>
+          {/* </section> */}
         </div>
 
         {/*1st feature section*/}
@@ -123,12 +127,12 @@ export default function Home() {
           <div className="feature-column-media">
             <h2>[insert media here]</h2>
           </div>
-        </div>x
+        </div>
 
         {/*3rd feature section*/}
-        <div className="container double-column-container">
-          <div className="feature-column-media">
-            <h2>[insert media here]</h2>
+        <div className="container double-column-container" id={styles.notiFeatureSection}>
+          <div className="feature-column-media" >
+            <img className={styles.sectionImg} src="personal-workplace.svg" alt="data-or-cloud-migration" width={630} height={340}/>
           </div>
 
           <div className="feature-column-text right-align">
