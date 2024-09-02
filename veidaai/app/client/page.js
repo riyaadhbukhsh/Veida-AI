@@ -107,7 +107,7 @@ const ClientPage = () => {
 
   function formatCourseName(courseName) {
     if (!courseName) return '';
-    let hyphenated = courseName.replace(/\s+/g, '-');
+    let hyphenated = courseName.replace(/\s+/g, '-')
     let encoded = encodeURIComponent(hyphenated);
     return encoded;
   }

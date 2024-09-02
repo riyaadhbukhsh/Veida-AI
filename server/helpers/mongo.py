@@ -13,7 +13,7 @@ load_dotenv()
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
-courses_collection = db['courses_test_2']
+courses_collection = db['courses_test_3']
 
 #!Database reformate purposes
 #courses_collection = db["courses_test"]
