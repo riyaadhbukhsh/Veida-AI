@@ -35,6 +35,15 @@
   padding-top: 2rem;
 }
 
+#landingSection h1 {
+  text-transform: uppercase;
+  white-space: pre;
+}
+
+#landingSection p {
+  white-space: pre-line;
+}
+
 #landingImg {
   -webkit-transform: scaleX(-1) translateY(-50%);
   transform: scaleX(-1) translateY(-50%);
@@ -156,6 +165,10 @@ img.neuronIcon {
 /* this makes it visible */
 #selectedFeatureImg {
   display: inline;
+}
+
+#captionSection {
+  text-align: center;
 }
 
 /********************************/

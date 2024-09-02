@@ -55,8 +55,16 @@ export default function Home() {
           {/* <section className={styles.hookSection}> */}
             {/* <div className={styles.hookText}> */}
           <div className="feature-column-text">
-            <h1 style={{textTransform: 'uppercase'}}>Professors Hate Us. Skip Classes. Ace Finals.</h1>
-            <p style={{whiteSpace: "pre-line"}}>{"We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.\n\nRevolutionize your learning experience!"}</p>
+            <h1>
+              Professors Hate Us.<br/>
+              Skip Classes.<br/>
+              Ace Finals.
+            </h1>
+            <p>
+              {`We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.
+              
+              Revolutionize your learning experience!`}
+            </p>
             <button  
               // className={styles.ctaButton}
               className="primary"
@@ -159,6 +167,10 @@ export default function Home() {
                 width={500} 
                 height={400}
               />
+            </div>
+            <div id={styles.captionSection}>
+              <p>[insert copy here]</p>
+              <button>cta</button>
             </div>
           </div>
         </div>
