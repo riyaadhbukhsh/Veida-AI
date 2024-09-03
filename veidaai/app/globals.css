@@ -13,7 +13,7 @@ body {
   --accent-dimmed: #86E9bE;
 
   /* Typography */
-  font-size: 25px;
+  /* font-size: 25px; */
   /* --h1: 1.60rem; 40px */
   --h1: 2rem;
   /* --h2: 1.20rem; 30px */
@@ -125,7 +125,7 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-p {
+p.global {
   font-size: var(--p);
   white-space: 'pre-line';
   margin-top: 0.5rem;
