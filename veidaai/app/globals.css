@@ -137,15 +137,16 @@ p {
   font-weight: 600;
 } */
 h1, h2, h3, h4 {
-  font-family: 'Monument Extended', 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif;
+  /* font-family: 'Monument Extended', 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif; */
+  font-family: 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.35rex;
+  /* letter-spacing: 0.35rex; */
 
   margin-bottom: 1rem;
 }
 
-h1 {
+/* h1 {
   font-size: var(--h1);
 }
 
@@ -159,7 +160,7 @@ h3 {
 
 h4 {
   font-size: var(--h4);
-}
+} */
 
 h2.center {
   text-align: center;

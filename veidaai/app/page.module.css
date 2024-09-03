@@ -27,6 +27,31 @@
   transform: translateY(-50%);
 }
 
+#siteWrapper > div h1,
+#siteWrapper > div h2,
+#siteWrapper > div h3,
+#siteWrapper > div h4 {
+  font-family: 'Monument Extended', 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif;
+  font-weight: normal;
+  letter-spacing: 1px;
+}
+
+#siteWrapper h1 {
+  font-family: var(--h1);
+}
+
+#siteWrapper h2 {
+  font-family: var(--h2);
+}
+
+#siteWrapper h3 {
+  font-family: var(--h3);
+}
+
+#siteWrapper h4 {
+  font-family: var(--h4);
+}
+
 /**************************************/
 /* Section 1 -  PROFESSORS HATE US... */
 /**************************************/

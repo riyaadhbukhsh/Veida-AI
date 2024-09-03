@@ -91,7 +91,12 @@ export default function Home() {
           <div className="feature-column-text">
             <h2>Upload Your Lecture Material</h2>
             <p>We accept:<br/>txt, pdf, jpg, png</p>
-            <button className="secondary">Upload your file</button>
+            <button 
+              className="secondary" 
+              onClick={() => router.push('/client')} 
+            >
+              Upload your file
+            </button>
           </div>
           <div className="feature-column-media">
             <img 
@@ -168,10 +173,10 @@ export default function Home() {
                 height={400}
               />
             </div>
-            <div id={styles.captionSection}>
+            {/* <div id={styles.captionSection}>
               <p>[insert copy here]</p>
-              <button>cta</button>
-            </div>
+              <button class="secondary">Generate your own</button>
+            </div> */}
           </div>
         </div>
 
@@ -190,7 +195,12 @@ export default function Home() {
           <div className="feature-column-text right-align">
             <h2>Stay on schedule</h2>
             <p>We send study reminders so you can memorize the content in time for your exam</p>
-            <button className="secondary">Create your study schedule</button>
+            <button 
+              className="secondary"
+              onClick={() => router.push('/client')}
+            >
+              Get Started
+            </button>
           </div>
         </div>
 
