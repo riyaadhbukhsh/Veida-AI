@@ -512,10 +512,10 @@ def get_due_flashcards(clerk_id):
     
     due_flashcards = []
     for course in user['courses']:
-    
-        for flashcard in course['flashcards']:
-            if today in flashcard.get('review_dates', []):
-                due_flashcards.append(flashcard)
+        for concept in course['concepts']:
+            for flashcard in concept['concept_flashcards']:
+                if today in flashcard.get('review_dates', []):
+                    due_flashcards.append(flashcard)
 
     return due_flashcards
 
@@ -817,7 +817,7 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
         for course in user_courses['courses']:
             if course_name is None or course['course_name'] == course_name:
                 for concept in course['concepts']:
-                    for card in concept['flashcards']:
+                    for card in concept['concept_flashcards']:
                         if today in card.get('review_dates', []):
                             flashcards_today.append(card)
 
