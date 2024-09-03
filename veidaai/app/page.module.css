@@ -117,7 +117,7 @@ ul#featureMenu {
   list-style-type: none;
 }
 
-ul#featureMenu > li {
+ul#featureMenu li {
   font-size: calc(var(--h2) * 0.9);
   text-transform: uppercase;
   
@@ -126,25 +126,44 @@ ul#featureMenu > li {
   margin-left: -35px;
   line-height: 2.7rem;
 
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
-
   transition: margin-left 0.6s ease;
 }
 
-ul#featureMenu > li:first-child {
+ul#featureMenu li:first-child {
   border-top: none;
   margin-top: 1px;
 }
 
-ul#featureMenu > li:last-child {
+ul#featureMenu li:last-child {
   border-bottom: none;
 }
 
-ul#featureMenu > li:hover,
-ul#featureMenu > li.selectedFeaturePreview
+span.liContainer:hover,
+span#selectedFeaturePreview
 {
-  margin-left: 0.5rex;
+  margin-left: 0rex;
+}
+
+span.liContainer {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 5rex;
+  border: solid var(--white);
+  border-width: 1px 0 1px 0;;
+
+  padding-left: 5px;
+  margin-left: -40px;
+  margin-top: -1px;
+
+  transition: margin-left 0.6s ease;
+}
+
+span.liContainer:first-child {
+  border-top: none;
+}
+
+span.liContainer:last-child {
+  border-bottom: none;
 }
 
 .featurePreviewIcon {
@@ -154,14 +173,15 @@ ul#featureMenu > li.selectedFeaturePreview
 
   /* this is supposed to decrease the icon's light weight */
   /* https://docs.fontawesome.com/web/style/custom */
-  font: var(--fa-font-thin);
+  /* font: var(--fa-font-thin); */
   
   font-size: 30px;
   /* font-weight doesn't work. How do I change the line-weight? >:( */
   /* font-weight: 300; */
   vertical-align: middle;
-  margin-right: 8px;
-  margin-bottom: 5px;
+  margin-top: 0.5rem;
+  /* margin-right: 8px;
+  margin-bottom: 5px; */
 }
 
 img.neuronIcon {

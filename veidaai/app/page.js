@@ -116,35 +116,33 @@ export default function Home() {
           <div className="feature-column-text">
             <ul id={styles.featureMenu}>
 
-              <li id="flashcardPreview" 
-                  // assign className only if this li is currently selected
-                  className={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                  onClick={()=>setPreviewedFeatureId('flashcardPreview')}
+              <span className={styles.liContainer}
+                // assign id only if this span is currently selected
+                id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                onClick={()=>setPreviewedFeatureId('flashcardPreview')}
               >
-                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
                 <FaRegLightbulb className={styles.featurePreviewIcon} />
-                flashcards
-              </li>
-
-              <li id="mcqPreview"
-                  // assign className only if this li is currently selected
-                  className={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                  onClick={()=>setPreviewedFeatureId('mcqPreview')}
+                <li>flashcards</li>
+              </span>
+              
+              <span className={styles.liContainer}
+                // assign id only if this span is currently selected
+                id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                onClick={()=>setPreviewedFeatureId('mcqPreview')}
               >
-                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
                 <FaRegQuestionCircle className={styles.featurePreviewIcon} />
-                multiple choice questions
-              </li>
-
-              <li id="notesPreview" 
-                  // assign className only if this li is currently selected
-                  className={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                  onClick={()=>setPreviewedFeatureId('notesPreview')}
+                <li>multiple choice questions</li>
+              </span>
+              
+              <span
+                className={styles.liContainer} 
+                // assign id only if this span is currently selected
+                id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null} 
+                onClick={()=>setPreviewedFeatureId('notesPreview')}
               >
-                {/* <img className={styles.neuronIcon} src="/neuron.svg" alt="neuron icon" width={35} height={35}/> */}
                 <FaRegStickyNote className={styles.featurePreviewIcon} />
-                outlined notes
-              </li>
+                <li>outlined notes</li>
+              </span>
 
             </ul>
           </div>
