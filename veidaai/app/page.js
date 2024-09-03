@@ -55,11 +55,7 @@ export default function Home() {
           {/* <section className={styles.hookSection}> */}
             {/* <div className={styles.hookText}> */}
           <div className="feature-column-text">
-            <h1>
-              Professors Hate Us.<br/>
-              Skip Classes.<br/>
-              Ace Finals.
-            </h1>
+            <h1>{`Professors Hate Us.\nSkip Classes.\nAce Finals.`}</h1>
             <p>
               {`We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.
               
@@ -171,10 +167,37 @@ export default function Home() {
                 height={400}
               />
             </div>
-            {/* <div id={styles.captionSection}>
-              <p>[insert copy here]</p>
-              <button class="secondary">Generate your own</button>
-            </div> */}
+
+            <div 
+              id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+              className={styles.captionSection}
+            >
+              <p>generate flashcards on key ideas</p>
+              <button class="secondary" onClick={() => router.push('/client')}>
+                Generate your own
+              </button>
+            </div>
+
+            <div 
+              id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+              className={styles.captionSection}
+            >
+              <p>test your retention with 5 strategies: Synthesis, reorganization, comparison, application, and context.In-depth explanations provided with each solution</p>
+              <button class="secondary" onClick={() => router.push('/client')}>
+                Generate your own
+              </button>
+            </div>
+
+            <div 
+              id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+              className={styles.captionSection}
+            >
+              <p>test your retention with 5 strategies: Synthesis, reorganization, comparison, application, and context.In-depth explanations provided with each solution</p>
+              <button class="secondary" onClick={() => router.push('/client')}>
+                Generate your own
+              </button>
+            </div>
+
           </div>
         </div>
 
@@ -193,10 +216,7 @@ export default function Home() {
           <div className="feature-column-text right-align">
             <h2>Stay on schedule</h2>
             <p>We send study reminders so you can memorize the content in time for your exam</p>
-            <button 
-              className="secondary"
-              onClick={() => router.push('/client')}
-            >
+            <button className="secondary" onClick={() => router.push('/client')}>
               Get Started
             </button>
           </div>
