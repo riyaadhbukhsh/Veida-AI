@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
+import Loading from './loading';
 
 const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
   const [file, setFile] = useState(null);
@@ -99,9 +100,10 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
 
   return (
     <div className="course-create-course-overlay">
+      {isUploading && <Loading />}
       <div className="course-create-course-form">
         <h2>Add to {courseName}</h2>
-        <p className="form-description">Add a concept to your course and our AI will generate flashcards, summary notes, and MCQs for you.</p>
+        <p className="form-description">Add a set to your course and our AI will generate flashcards, summary notes, and MCQs for you.</p>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="conceptName">Concept Name:</label>

@@ -10,12 +10,16 @@ import Loading from '../../../components/loading';
 import { formatURL } from '@/app/helpers';
 import './details.css'; 
 import './concept-details.css';
+import "../../../components/course-details.css"
+
+import AddContentModal from '../../../components/AddContentModal';
 
 
 
 const ConceptDetailsPage = () => {
   const { userId } = useAuth();
   const params = useParams();
+  const [showAddContentModal, setShowAddContentModal] = useState(false);
   const [pageExists, setPageExists] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -74,6 +78,14 @@ const ConceptDetailsPage = () => {
     };
   }, [conceptName, userId]);
 
+  const handleAddContent = () => {
+    setShowAddContentModal(true);
+  };
+
+  const handleContentAdded = () => {
+    fetchCourseObj(); // Refresh the course data after adding content
+  };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -103,11 +115,19 @@ const ConceptDetailsPage = () => {
 
   <div className= "concept-details-container">
     <Link href={`/${formatCourseName(courseName)}`} title={'back to your courses'} className="course-back-arrow-link"><FaArrowLeft/></Link>
-    <div id="concept-page">
+      <div id="concept-page">
 
-          <h2 className="concept-title">Course Name: {courseName}</h2>
-      <h3 className="concept-title">{conceptName}</h3>
-      
+          <h2 className="concept-title">{courseName}: {conceptName}</h2>
+          {/*courseObj.exam_date && (
+            <p className="course-exam-date">Exam Date: {formatDate(courseObj.exam_date)}</p>
+          )*/}
+          {/*courseObj.description && (
+            <p className="course-description">{courseObj.description}</p>
+          )*/}
+
+          <button id="add-content-btn" onClick={handleAddContent} className="concept-add-content-btn">
+            Add Content
+          </button>
           
           <div className="concept-content">
             <Link href={`/flashcards/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
@@ -132,6 +152,12 @@ const ConceptDetailsPage = () => {
               <p>Test your knowledge with multiple choice questions</p>
             </Link>
           </div>
+
+          { showAddContentModal && <AddContentModal
+            courseName={conceptName}
+            onClose={() => setShowAddContentModal(false)}
+            onContentAdded={handleContentAdded}
+          />}
         </div>
     </div>
   

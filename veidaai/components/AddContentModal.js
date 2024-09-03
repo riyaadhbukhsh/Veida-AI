@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
+import Loading from './loading';
 
 const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   const [file, setFile] = useState(null);

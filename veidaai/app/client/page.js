@@ -151,6 +151,7 @@ const ClientPage = () => {
 
       {showCreateForm && (
         <div className="create-course-overlay">
+          {loading && <Loading />}
           <div className="create-course-form">
             <button className="close-button" onClick={() => setShowCreateForm(false)}>×</button>
             <CreateCourse 
@@ -163,6 +164,7 @@ const ClientPage = () => {
 
       {showEditForm && (
         <div className="create-course-overlay">
+          {loading && <Loading />}
           <div className="create-course-form">
             <button className="close-button" onClick={() => setShowEditForm(false)}>×</button>
             <EditCourse 
