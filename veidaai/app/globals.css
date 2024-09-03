@@ -132,20 +132,26 @@ p {
   margin-bottom: 0.5rem;
 }
 
-/* h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-} */
+}
+
+/* commenting this out for damage control */
+/*
 h1, h2, h3, h4 {
-  /* font-family: 'Monument Extended', 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif; */
+  /* font-family: 'Monument Extended', 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif; *//*
   font-family: 'Geologica', 'Merriweather Sans', 'Radio Canada', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  /* letter-spacing: 0.35rex; */
+  /* letter-spacing: 0.35rex; *//*
 
   margin-bottom: 1rem;
 }
+*/
 
+
+/* commenting this out for damage control */
 /* h1 {
   font-size: var(--h1);
 }
@@ -171,12 +177,13 @@ p.subtitle {
   margin-bottom: 1rem;
 }
 
-button {
+button.primary,
+button.secondary,
+button.tertiary {
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   
-  /* padding: 1rem 2rem; */
   padding: 0.5rem 2rem;
   margin: 1rem 0rem;
 
@@ -186,25 +193,15 @@ button {
   cursor: pointer;
   --anim: 0.2s ease;
   -webkit-transition: -webkit-transform var(--anim);
-  transition: transform var(--anim), font-size var(--anim), color var(--anim), background-color var(--anim);
+  transition: transform var(--anim);
 }
 
-button:hover {
-  /* font-size: 1.05rem; */
+button.primary:hover,
+button.secondary:hover, 
+button.tertiary:hover {
   --scaleVal: 1.05;
   -webkit-transform: scale(var(--scaleVal), var(--scaleVal));
   transform: scale(var(--scaleVal), var(--scaleVal));
-}
-
-.basic-button {
-  cursor: pointer;
-  padding: 0.2rem 1rem;
-  background-color: white;
-}
-
-.basic-button:hover {
-  transform: translate(1.5px, 1.5px);
-  background-color: #EAEAEA;
 }
 
 button.primary {
@@ -224,6 +221,18 @@ button.tertiary {
   background-color: none;
   border-color: none;
 }
+
+.basic-button {
+  cursor: pointer;
+  padding: 0.2rem 1rem;
+  background-color: white;
+}
+
+.basic-button:hover {
+  transform: translate(1.5px, 1.5px);
+  background-color: #EAEAEA;
+}
+
 
 .back-arrow-link {
   position: absolute;
