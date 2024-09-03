@@ -19,6 +19,8 @@ const ClientPage = () => {
   const [courseToEdit, setCourseToEdit] = useState(null);
   const { setHasNotification, setFlashcardsDue } = useNotification();
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (!isSignedIn) {
       router.push('/sign-in');
@@ -151,7 +153,7 @@ const ClientPage = () => {
 
       {showCreateForm && (
         <div className="create-course-overlay">
-          {loading && <Loading />}
+          {/* {loading && <Loading />} */}
           <div className="create-course-form">
             <button className="close-button" onClick={() => setShowCreateForm(false)}>×</button>
             <CreateCourse 
@@ -164,7 +166,7 @@ const ClientPage = () => {
 
       {showEditForm && (
         <div className="create-course-overlay">
-          {loading && <Loading />}
+          {/* {loading && <Loading />} */}
           <div className="create-course-form">
             <button className="close-button" onClick={() => setShowEditForm(false)}>×</button>
             <EditCourse 
