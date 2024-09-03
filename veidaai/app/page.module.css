@@ -5,6 +5,8 @@
 /* allow section images to position relative to section divs */
 #siteWrapper > div {
   position: relative;
+  padding-left: 3rem;
+  padding-right: 3rem;
 }
 
 /* alternate background-colors between black & black2*/
@@ -36,20 +38,20 @@
   letter-spacing: 1px;
 }
 
-#siteWrapper h1 {
-  font-family: var(--h1);
+#siteWrapper > div h1 {
+  font-size: var(--h1);
 }
 
-#siteWrapper h2 {
-  font-family: var(--h2);
+#siteWrapper > div h2 {
+  font-size: var(--h2);
 }
 
-#siteWrapper h3 {
-  font-family: var(--h3);
+#siteWrapper > div h3 {
+  font-size: var(--h3);
 }
 
-#siteWrapper h4 {
-  font-family: var(--h4);
+#siteWrapper > div h4 {
+  font-size: var(--h4);
 }
 
 /**************************************/
@@ -102,13 +104,17 @@
 
 /* column sections */
 /* #siteWrapper > div:nth-child(3) > div {
-
+  border: 1px solid red;
 } */
 
 ul#featureMenu {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center; 
+  overflow-x: hidden;
+  
   height: 15rem;
   list-style-type: none;
-  overflow-x: hidden;
 }
 
 ul#featureMenu > li {
