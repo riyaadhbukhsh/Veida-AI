@@ -234,7 +234,7 @@ def update_course():
         return jsonify({"error": "Missing required fields"}), 400
 
     # Fetch the existing course data
-    existing_course = db.courses.find_one(
+    existing_course = db.courses_test_3.find_one(
         {"clerk_id": clerk_id, "courses.course_name": original_course_name},
         {"courses.$": 1}
     )
@@ -258,16 +258,13 @@ def update_course():
         "course_name": course_name,
         "description": description,
         "exam_date": exam_date,
-        "review_dates": review_dates,  # Add review dates
-        "notes": course_data.get('notes', {}),
-        "flashcards": course_data.get('flashcards', []),
-        "mc_questions": course_data.get('mc_questions', []),
-        "course_schedule": course_data.get('course_schedule', {}),
+        "concepts": course_data.get('concepts', []),
         "created_at": course_data.get('created_at', datetime.now()),
         "updated_at": datetime.now()
     }
     try:
-        result = db.courses.update_one(
+        result = db.courses_test_3.update_one(
+
             {"clerk_id": clerk_id},
             {"$addToSet": {"courses": new_course}},
             upsert=True
@@ -280,7 +277,7 @@ def update_course():
     if result.modified_count > 0 or result.upserted_id is not None:
         return jsonify({"message": "Course updated successfully"}), 200
     else:
-        return jsonify({"error": "Failed to create new course"}), 500
+        return jsonify({"error": "Failed to update course"}), 500
 
 @app.route('/api/create_course_concept', methods=['POST'])
 def create_course_concept():
@@ -448,10 +445,6 @@ def route_create_course():
     course_name = data.get('course_name')
     description = data.get('description', '')
     exam_date_str = data.get('exam_date', '')
-    notes = data.get('notes', {})
-    mc_questions = data.get('mc_questions', [])
-    flashcards = data.get('flashcards', [])
-    course_schedule = data.get('course_schedule', {})
 
     if not all([clerk_id, course_name, description, exam_date_str]):
         return jsonify({"error": "Missing required fields"}), 400
@@ -470,14 +463,11 @@ def route_create_course():
         return jsonify({"error": "Invalid exam date format"}), 400
 
     start_date = datetime.now()
-    review_dates = generate_review_dates(start_date, exam_date)
+    
 
-    #Add review_dates and times_seen to each flashcard
-    for flashcard in flashcards:
-        flashcard['review_dates'] = review_dates
-        flashcard['times_seen'] = 0
+    
 
-    make_course(clerk_id, course_name, description, exam_date_str, notes, flashcards, course_schedule, mc_questions)
+    make_course(clerk_id, course_name, description, exam_date_str)
     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])

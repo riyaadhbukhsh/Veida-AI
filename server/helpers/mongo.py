@@ -304,7 +304,7 @@ def delete_user(user_data):
     users_collection.delete_one({'clerk_id': user_data['id']})
 
 
-def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
+def make_course(clerk_id, course_name, description, exam_date ):
     """
     Create a new course for a user.
 
@@ -322,27 +322,10 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         None
     """
 
-    # Ensure each MCQ has a correct_answer_index
-    for mcq in multiple_choice_questions:
-        if 'correct_answer' in mcq and 'possible_answers' in mcq:
-            try:
-                mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
-            except ValueError:
-                # Skip this MCQ and continue with the next one
-                continue
-        else:
-            # Skip this MCQ if it doesn't have 'correct_answer' or 'possible_answers' fields
-            continue
-
     new_course = {
         "course_name": course_name,
         "description": description,
-        "notes": notes,
         "exam_date": exam_date,
-        "course_schedule": course_schedule,
-        "flashcards": flashcards,
-        "review_dates": generate_review_dates(datetime.datetime.now(), exam_date),  # for spaced intervals of the content
-        "multiple_choice_questions": multiple_choice_questions,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now(),
         "push_notifications": False
