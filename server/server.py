@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import pymongo
 from dotenv import load_dotenv
 import os
+import sys
 from helpers.mongo import (
     create_user,
     delete_user,
@@ -31,7 +32,9 @@ from helpers.mongo import (
     update_subscription_id,
     add_concept,
     remove_today_review_dates,
-    get_course
+    get_course,
+    get_course_exam_date,
+    get_course_concepts
 )
 from helpers.ai import (
     generate_flashcards,
@@ -50,15 +53,22 @@ import numpy as np
 import cv2
 
 from paddleocr import PaddleOCR
+import logging
+
+app = Flask(__name__)
+# Configure logging
+logging.basicConfig(level=logging.CRITICAL)
+app.logger.setLevel(logging.CRITICAL)
 
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
+
 load_dotenv()
 
-app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
@@ -224,7 +234,7 @@ def update_course():
         return jsonify({"error": "Missing required fields"}), 400
 
     # Fetch the existing course data
-    existing_course = db.courses.find_one(
+    existing_course = db.courses_test_3.find_one(
         {"clerk_id": clerk_id, "courses.course_name": original_course_name},
         {"courses.$": 1}
     )
@@ -248,16 +258,13 @@ def update_course():
         "course_name": course_name,
         "description": description,
         "exam_date": exam_date,
-        "review_dates": review_dates,  # Add review dates
-        "notes": course_data.get('notes', {}),
-        "flashcards": course_data.get('flashcards', []),
-        "mc_questions": course_data.get('mc_questions', []),
-        "course_schedule": course_data.get('course_schedule', {}),
+        "concepts": course_data.get('concepts', []),
         "created_at": course_data.get('created_at', datetime.now()),
         "updated_at": datetime.now()
     }
     try:
-        result = db.courses.update_one(
+        result = db.courses_test_3.update_one(
+
             {"clerk_id": clerk_id},
             {"$addToSet": {"courses": new_course}},
             upsert=True
@@ -270,17 +277,42 @@ def update_course():
     if result.modified_count > 0 or result.upserted_id is not None:
         return jsonify({"message": "Course updated successfully"}), 200
     else:
-        return jsonify({"error": "Failed to create new course"}), 500
+        return jsonify({"error": "Failed to update course"}), 500
 
-@app.route('/api/add_course_concept', methods=['POST'])
-def add_course_concept():
+@app.route('/api/create_course_concept', methods=['POST'])
+def create_course_concept():
     data = request.json
     clerk_id = data.get('clerk_id')
     course_name = data.get('course_name')
     concept_name = data.get('concept_name')
     concept_description = data.get('concept_description')
+    concept_mcqs = data.get('concept_mcqs')
+    concept_flashcards = data.get('concept_flashcards', [])
+    concept_notes = data.get('concept_notes')
+
+    start_date = datetime.now()
+    exam_date_str = get_course_exam_date(clerk_id, course_name).get('exam_date', '')
+
+    if not exam_date_str:  # Check if the string is empty
+        return jsonify({"error": "Exam date is missing."}), 400  # Return an error response
+
     try:
-        add_concept(clerk_id, course_name, concept_name, concept_description)
+        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
+    except ValueError as e:
+        return jsonify({"error": "Invalid exam date format."}), 400    
+    review_dates = generate_review_dates(start_date, exam_date)
+
+    #Add review_dates and times_seen to each flashcard
+
+    try:
+        for flashcard in concept_flashcards:
+            flashcard['review_dates'] = review_dates
+            flashcard['times_seen'] = 0
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    try:
+        add_concept(clerk_id, course_name, concept_name, concept_description, concept_mcqs, concept_flashcards, concept_notes)
+
         return jsonify({"message": "Concept added successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -305,6 +337,9 @@ def extract_text():
         tuple: A JSON response containing the extracted text and HTTP status code.
     """
 
+    #!Debugging Protocol
+    #return jsonify({"notes": "notes", "flashcards": "flashcards", "mc_questions": "mc_questions"}), 200
+    
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -410,10 +445,6 @@ def route_create_course():
     course_name = data.get('course_name')
     description = data.get('description', '')
     exam_date_str = data.get('exam_date', '')
-    notes = data.get('notes', {})
-    mc_questions = data.get('mc_questions', [])
-    flashcards = data.get('flashcards', [])
-    course_schedule = data.get('course_schedule', {})
 
     if not all([clerk_id, course_name, description, exam_date_str]):
         return jsonify({"error": "Missing required fields"}), 400
@@ -432,14 +463,11 @@ def route_create_course():
         return jsonify({"error": "Invalid exam date format"}), 400
 
     start_date = datetime.now()
-    review_dates = generate_review_dates(start_date, exam_date)
+    
 
-    #Add review_dates and times_seen to each flashcard
-    for flashcard in flashcards:
-        flashcard['review_dates'] = review_dates
-        flashcard['times_seen'] = 0
+    
 
-    make_course(clerk_id, course_name, description, exam_date_str, notes, flashcards, course_schedule, mc_questions)
+    make_course(clerk_id, course_name, description, exam_date_str)
     return jsonify({"message": "Course created successfully"}), 201
 
 @app.route('/api/create_or_update_notes', methods=['POST'])
@@ -580,11 +608,11 @@ def route_get_mcqs():
 
     clerk_id = request.args.get('clerk_id')
     course_name = request.args.get('course_name')
-
-    if not all([clerk_id, course_name]):
+    concept_name = request.args.get('concept_name')
+    if not all([clerk_id, course_name,concept_name]):
         return jsonify({"error": "Missing required parameters"}), 400
     
-    mcqs = get_mcqs(clerk_id, course_name)
+    mcqs = get_mcqs(clerk_id, course_name,concept_name)
     return jsonify({"mcqs":mcqs}), 200
 
 @app.route('/api/get_flashcards', methods=['GET'])
@@ -599,11 +627,13 @@ def route_get_flashcards():
     """
     clerk_id = request.args.get('clerk_id')
     course_name = request.args.get('course_name')
+    concept_name = request.args.get('concept_name')
+
 
     if not all([clerk_id, course_name]):
         return jsonify({"error": "Missing required parameters"}), 400
 
-    flashcards = get_flashcards(clerk_id, course_name)
+    flashcards = get_flashcards(clerk_id, course_name,concept_name)
     return jsonify({"flashcards": flashcards}), 200
 
 @app.route('/api/get_courses', methods=['GET'])
@@ -623,6 +653,25 @@ def route_get_courses():
 
     courses = get_courses(clerk_id)
     return jsonify({"courses": courses}), 200
+
+@app.route('/api/get_course_concepts', methods=['GET'])
+def route_get_course_concepts():
+    """
+    Retrieves all concepts for a course.
+
+    This endpoint accepts a GET request with query parameters clerk_id and course_name. It returns a list of concepts for the specified course.
+    """
+
+    clerk_id = request.args.get('clerk_id')
+    course_name = request.args.get('course_name')
+
+    if not all([clerk_id, course_name]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    concepts = get_course_concepts(clerk_id, course_name)
+    print(concepts)
+    sys.stdout.flush()
+    return jsonify({"concepts": concepts}), 200
 
 @app.route('/api/delete_course', methods=['DELETE'])
 def route_delete_course():

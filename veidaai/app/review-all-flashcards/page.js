@@ -90,6 +90,9 @@ function ReviewAllFlashcardsPage() {
 
                 setReviewFlashcards(sanitizedFlashcards);
                 setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                
+                // setReviewFlashcards(data.due_flashcards);
+                // setCurrentCard({ card: data.due_flashcards[0] || null, index: 0 });
             } else {
                 setError('Failed to fetch flashcards');
             }

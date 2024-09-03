@@ -68,7 +68,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
             name.trim() !== "" &&
             description.trim() !== "" &&
             examDate.trim() !== "" &&
-            file !== null &&
             (isPremium || courseCount < 2)
         );
     }, [name, description, examDate, file, isPremium, courseCount]);
@@ -135,20 +134,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         formData.append("exam_date", examDate);
 
         try {
-            const extractResponse = await fetch("http://localhost:8080/api/extract_text", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!extractResponse.ok) {
-                const errorData = await extractResponse.json();
-                setError(errorData.error || "An error occurred while processing the file.");
-                setLoading(false);
-                return;
-            }
-
-            const extractedData = await extractResponse.json();
-            const { notes = {}, flashcards = [], mc_questions = [] } = extractedData;
 
             const createResponse = await fetch("http://localhost:8080/api/create_course", {
                 method: "POST",
@@ -160,9 +145,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     course_name: name,
                     description,
                     exam_date: examDate,
-                    notes,
-                    flashcards,
-                    mc_questions,
                 }),
             });
 
@@ -172,9 +154,6 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     course_name: name,
                     description,
                     exam_date: examDate,
-                    notes,
-                    flashcards,
-                    mc_questions,
                 });
                 setName("");
                 setDescription("");
@@ -226,17 +205,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     required
                     min={tomorrow} // Disable dates before tomorrow
                 />
-                <div className="file-input-wrapper">
-                    <div className="file-input-button">
-                        {fileName || "Choose Course Content (PDF, PNG, JPEG, TXT)"}
-                    </div>
-                    <input
-                        type="file"
-                        accept=".pdf,.png,.jpg,.jpeg,.txt"
-                        onChange={handleFileChange}
-                        required
-                    />
-                </div>
+                
                 {error && <p className="error">{error}</p>}
                 <div className="form-buttons">
                     <button type="submit" disabled={!isFormValid || loading}>

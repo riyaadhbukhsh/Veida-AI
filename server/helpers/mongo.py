@@ -5,16 +5,54 @@ from .util import generate_review_dates
 import os
 import datetime
 import openai
+import urllib.parse
+
 load_dotenv()
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
-courses_collection = db['courses']
+courses_collection = db['courses_test_3']
+
+#!Database reformate purposes
+#courses_collection = db["courses_test"]
+
 
 openai_api_key = os.getenv('OPENAI_API_KEY')
 openai_client = openai.OpenAI(api_key=openai_api_key)
+
+def reformat_courses_collection_user(clerk_id):
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+
+    new_courses = []
+    if user_courses:
+        for course in user_courses['courses']:
+            
+            new_course = {
+                "course_name": course['course_name'],
+                "description": course['description'],
+                "exam_date": course['exam_date'],
+                "concepts": [
+                    {
+                        "concept_name": f"{course['course_name']} First Concept",
+                        "concept_description": "No Description",
+                        "concept_flashcards": course['flashcards'],
+                        "review_dates": course['review_dates'],
+                        "concept_multiple_choice_questions": course['multiple_choice_questions'],
+                        "concept_notes": course['notes']
+                    }
+                ],
+                "course_schedule": course['course_schedule'],
+                "created_at": course['created_at'],
+                "updated_at": course['updated_at'],
+                "push_notifications": False
+
+            }
+            new_courses.append(new_course)
+    courses_collection.update_one({"clerk_id": clerk_id}, {"$set": {"courses": new_courses}})
+            
+            
 
 
 def generate_notes(extracted_text):
@@ -266,7 +304,7 @@ def delete_user(user_data):
     users_collection.delete_one({'clerk_id': user_data['id']})
 
 
-def make_course(clerk_id, course_name, description, exam_date, notes, flashcards, course_schedule, multiple_choice_questions):
+def make_course(clerk_id, course_name, description, exam_date ):
     """
     Create a new course for a user.
 
@@ -284,27 +322,10 @@ def make_course(clerk_id, course_name, description, exam_date, notes, flashcards
         None
     """
 
-    # Ensure each MCQ has a correct_answer_index
-    for mcq in multiple_choice_questions:
-        if 'correct_answer' in mcq and 'possible_answers' in mcq:
-            try:
-                mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
-            except ValueError:
-                # Skip this MCQ and continue with the next one
-                continue
-        else:
-            # Skip this MCQ if it doesn't have 'correct_answer' or 'possible_answers' fields
-            continue
-
     new_course = {
         "course_name": course_name,
         "description": description,
-        "notes": notes,
         "exam_date": exam_date,
-        "course_schedule": course_schedule,
-        "flashcards": flashcards,
-        "review_dates": generate_review_dates(datetime.datetime.now(), exam_date),  # for spaced intervals of the content
-        "multiple_choice_questions": multiple_choice_questions,
         "created_at": datetime.datetime.now(),
         "updated_at": datetime.datetime.now(),
         "push_notifications": False
@@ -428,31 +449,34 @@ def remove_flashcard(clerk_id, course_name, card_id):
     )
     
     
-def get_mcqs(clerk_id, course_name):
-    user = courses_collection.find_one({"clerk_id": clerk_id})
-    if not user:
+def get_mcqs(clerk_id, course_name,concept_name):
+    
+    user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    if not user_courses:
         print(f"User not found for clerk_id: {clerk_id}")
         return []
 
     # Check if the user is premium
-    is_premium = user.get('premium', False)
+    is_premium = user_courses.get('premium', False)
+    concept_name = decode_url_like_string(concept_name)
+    course_name = decode_url_like_string(course_name)
 
-    user_course = next((course for course in user.get('courses', []) if course['course_name'] == course_name), None)
-    if not user_course:
-        print(f"Course {course_name} not found for user {clerk_id}")
-        return []
+    if user_courses and 'courses' in user_courses:
+        for course in user_courses['courses']:
+            if course['course_name'] == course_name:
+                for concept in course['concepts']:
+                    if concept['concept_name'] == concept_name:
 
-    mcqs = user_course.get('multiple_choice_questions', [])
-
-    # If the user is not premium, return only the first 3 MCQs
-    if not is_premium:
-        mcqs = mcqs[:3]
-
-    return mcqs
-
+                        if not is_premium:
+                            return concept['concept_multiple_choice_questions'][:3]
+                        else:
+                            return concept['concept_multiple_choice_questions']
+    return []
 
 
-def get_flashcards(clerk_id, course_name):
+
+
+def get_flashcards(clerk_id, course_name,concept_name):
     """
     Retrieve all flashcards for a specific course.
 
@@ -462,29 +486,36 @@ def get_flashcards(clerk_id, course_name):
 
     Returns:
         list: A list of flashcards, or None if not found.
+
     """
+    concept_name = decode_url_like_string(concept_name)
+    course_name = decode_url_like_string(course_name)
+    
     user_courses = courses_collection.find_one({"clerk_id": clerk_id})
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course['course_name'] == course_name:
-                return course['flashcards']
+                for concept in course['concepts']:
+                    if concept['concept_name'] == concept_name:
+                        return concept['concept_flashcards']
     return None
+
+def decode_url_like_string(url_like_string):
+    decoded = urllib.parse.unquote(url_like_string)
+    return decoded
+
+
 
 def get_due_flashcards(clerk_id):
     today = datetime.datetime.now().date().strftime("%Y-%m-%d") 
-    user = courses_collection.find_one({"clerk_id": clerk_id})
-
-    if not user:
-        print(f"No user found with clerk_id: {clerk_id}")
-        return []
-
+    user = courses_collection.find_one({"clerk_id":clerk_id})
+    
     due_flashcards = []
     for course in user['courses']:
-        for flashcard in course.get('flashcards', []):
-            if 'review_dates' not in flashcard:
-                continue
-            if today in flashcard['review_dates']:
-                due_flashcards.append(flashcard)
+        for concept in course['concepts']:
+            for flashcard in concept['concept_flashcards']:
+                if today in flashcard.get('review_dates', []):
+                    due_flashcards.append(flashcard)
 
     return due_flashcards
 
@@ -504,10 +535,12 @@ import traceback
 
 
 
-def add_concept(clerk_id,course_name,concept_name,concept_description):
+def add_concept(clerk_id,course_name,concept_name,concept_description,concept_mcqs,concept_flashcards,concept_notes):
     courses_collection.update_one(
         {"clerk_id": clerk_id, "courses.course_name": course_name},
-        {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description}}}
+        {"$push": {"courses.$.concepts": {"concept_name": concept_name, "concept_description": concept_description,
+         "concept_multiple_choice_questions": concept_mcqs, "concept_flashcards": concept_flashcards, "concept_notes": concept_notes}}}
+
     )
 
 def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
@@ -723,13 +756,23 @@ def get_course(clerk_id, course_name):
             'course_name': course['course_name'],
             'description': course.get('description', ''),
             'exam_date': course.get('exam_date', ''),
-            'notes': course.get('notes', {}),
-            'flashcards': course.get('flashcards', []),
-            'mc_questions': course.get('mc_questions', [])
+            'concepts': course.get('concepts', []),
+            
         }
     else:
         return None
-    
+
+def get_course_exam_date(clerk_id, course_name):
+    course = courses_collection.find_one({
+        'clerk_id': clerk_id,
+        'courses': {"$elemMatch": {"course_name": course_name}}
+    })
+
+    if course and 'courses' in course:
+        for course_info in course['courses']:
+            if course_info['course_name'] == course_name:
+                return {'exam_date': course_info.get('exam_date', '')}
+    return None
     
 def remove_today_review_dates(clerk_id, course_name):
     """
@@ -762,7 +805,7 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     Returns:
         list: A list of flashcards with today's next study date.
     """
-    today = datetime.datetime.now().date()
+    today = datetime.datetime.now().date().strftime("%Y-%m-%d")
     query = {"clerk_id": clerk_id}
     if course_name:
         query["courses.course_name"] = course_name
@@ -773,12 +816,10 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course_name is None or course['course_name'] == course_name:
-                for card in course['flashcards']:
-                    if 'review_dates' in card:
-                        for review_date in card['review_dates']:
-                            if datetime.datetime.strptime(review_date, '%Y-%m-%d').date() == today:
-                                flashcards_today.append(card)
-                                break
+                for concept in course['concepts']:
+                    for card in concept['concept_flashcards']:
+                        if today in card.get('review_dates', []):
+                            flashcards_today.append(card)
 
     return flashcards_today
 
@@ -822,3 +863,13 @@ def get_times_seen(clerk_id, course_name, card_id):
                     if card['id'] == card_id:
                         return card.get('times_seen', 0)  # Return 0 if not found
     return 0
+
+
+def get_course_concepts(clerk_id, course_name):
+
+    concepts = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
+    if concepts and 'courses' in concepts:
+        for course in concepts['courses']:
+            if course['course_name'] == course_name:
+                return course['concepts']
+    return []

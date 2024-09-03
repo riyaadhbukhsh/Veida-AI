@@ -1,4 +1,4 @@
-.course-details-container {
+.concept-details-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,7 +10,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.course-title {
+.concept-title {
   font-size: 2.5rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -19,7 +19,7 @@
   color: #fff;
 }
 
-.course-exam-date {
+.concept-exam-date {
   margin: 10px 0;
   max-width: 800px;
   font-size: 1.2rem;
@@ -27,7 +27,7 @@
   text-align: center;
 }
 
-.course-description {
+.concept-description {
   font-size: 1.2rem;
   color: #d1d5db;
   text-align: center;
@@ -35,7 +35,7 @@
   margin-bottom: 3rem;
 }
 
-.course-content {
+.concept-content {
   display: flex;
   justify-content: center;
   gap: 1.5rem;
@@ -44,7 +44,7 @@
   margin-bottom: 2rem;
 }
 
-.course-study-container {
+.concept-study-container {
   background-color: #27272a;
   border-radius: 12px;
   padding: 3rem;
@@ -61,19 +61,19 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.course-study-container:hover {
+.concept-study-container:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   background-color: #3f3f46;
 }
 
-.course-study-container h3 {
+.concept-study-container h3 {
   font-size: 2rem;
   color: #6d9dc5;
   margin: 0 auto 0.25rem auto;
 }
 
-.course-study-container p {
+.concept-study-container p {
   font-size: 1.3rem;
   padding-top: 1rem;
   color: #d1d5db;
@@ -82,13 +82,13 @@
   overflow: hidden;
 }
 
-.course-study-icon {
+.concept-study-icon {
   font-size: 3.5rem;
   margin-bottom: 0.5rem;
   color: #6d9dc5;
 }
 
-.course-add-content-btn {
+.concept-add-content-btn {
   width: 100%;
   max-width: 1200px;
   padding: 1rem;
@@ -103,29 +103,29 @@
   margin-bottom: 2rem;
 }
 
-.course-add-content-btn:hover {
+.concept-add-content-btn:hover {
   background-color: #478fca;
   transform: translateY(-2px);
 }
 
 @media (max-width: 1200px) {
-  .course-content {
+  .concept-content {
     flex-direction: column;
     align-items: center;
   }
 
-  .course-study-container {
+  .concept-study-container {
     width: 100%;
     max-width: 600px;
   }
 
-  .course-add-content-btn {
+  .concept-add-content-btn {
     max-width: 600px;
   }
 }
 
 /* New styles for AddContentModal */
-.course-create-course-overlay {
+.concept-create-concept-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -144,7 +144,7 @@
   to { opacity: 1; }
 }
 
-.course-create-course-form {
+.concept-create-concept-form {
   background-color: #2d3748;
   padding: 2.5rem;
   border-radius: 12px;
@@ -164,7 +164,7 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-.course-create-course-form h2 {
+.concept-create-concept-form h2 {
   margin-top: 0;
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
@@ -174,20 +174,20 @@
   font-weight: 600;  /* Added for better visibility */
 }
 
-.course-create-course-form label  {
+.concept-create-concept-form label  {
   padding-left: 0.1ch;
   color: #bbb;
 }
 
-.course-create-course-form #course-description-input {
+.concept-create-concept-form #concept-description-input {
   margin-bottom: 0.5rem;
 }
 
-.course-create-course-form #course-name-input {
+.concept-create-concept-form #concept-name-input {
   margin-bottom: 0.8rem;
 }
 
-.course-file-input-wrapper {
+.concept-file-input-wrapper {
   position: relative;
   overflow: hidden;
   display: inline-block;
@@ -195,7 +195,7 @@
   margin-bottom: 0.5rem;
 }
 
-.course-file-input-wrapper input[type=file] {
+.concept-file-input-wrapper input[type=file] {
   font-size: 100px;
   position: absolute;
   left: 0;
@@ -204,7 +204,7 @@
   cursor: pointer;
 }
 
-.course-file-input-wrapper .file-input-button {
+.concept-file-input-wrapper .file-input-button {
   background-color: #3a4556;
   color: #f0f0f0;
   padding: 0.8rem;
@@ -216,30 +216,30 @@
   transition: all 0.3s ease;
 }
 
-.course-file-input-wrapper:hover .file-input-button {
+.concept-file-input-wrapper:hover .file-input-button {
   background-color: #4a5568;
 }
 
-.course-create-course-form .form-description {
+.concept-create-concept-form .form-description {
   margin-bottom: 3rem;
   color: #d1d5db;
   text-align: center;
 }
 
-.course-create-course-form .error {
+.concept-create-concept-form .error {
   color: #fc8181;
   margin: 0.6rem 0 1rem 0;
   font-size: 0.9rem;
   text-align: center;
 }
 
-.course-form-buttons {
+.concept-form-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 1.5rem;
 }
 
-.course-form-buttons button {
+.concept-form-buttons button {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 6px;
@@ -251,33 +251,33 @@
   letter-spacing: 1px;
 }
 
-.course-form-buttons button[type="submit"] {
+.concept-form-buttons button[type="submit"] {
   background-color: #6d9dc5;
   color: #1e1e1e;
   flex-grow: 1;
   margin-right: 10px;
 }
 
-.course-form-buttons button[type="submit"]:hover {
+.concept-form-buttons button[type="submit"]:hover {
   background-color: #478fca;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.course-form-buttons button[type="button"] {
+.concept-form-buttons button[type="button"] {
   background-color: #4b5563;
   color: #f0f0f0;
   flex-grow: 1;
 }
 
-.course-form-buttons button[type="button"]:hover {
+.concept-form-buttons button[type="button"]:hover {
   background-color: #6b7280;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.course-form-buttons button:disabled,
-.course-form-buttons button:disabled:hover {
+.concept-form-buttons button:disabled,
+.concept-form-buttons button:disabled:hover {
   background-color: #a9a9a9;
   color: #555555;
   cursor: not-allowed;
@@ -285,7 +285,7 @@
   transform: none;
 }
 
-.course-close-button {
+.concept-close-button {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -297,27 +297,27 @@
   transition: all 0.3s ease;
 }
 
-.course-close-button:hover {
+.concept-close-button:hover {
   color: #6d9dc5;
   transform: rotate(90deg);
 }
 
 @media only screen and (max-width: 781px) {
-  .course-title {
+  .concept-title {
     font-size: 2rem;
   }
 
-  .course-create-course-form {
+  .concept-create-concept-form {
     padding: 2.5rem 1.5rem;
   }
 }
 
 @media only screen and (max-width: 500px) {
-  .course-form-buttons {
+  .concept-form-buttons {
     flex-direction: column;
   }
 
-  .course-form-buttons button[type="submit"] {
+  .concept-form-buttons button[type="submit"] {
     margin: 0 0 10px 0;
   }
 }
@@ -329,4 +329,3 @@
   color: #6d9dc5;
   font-size: 2.6rem;
 }
-

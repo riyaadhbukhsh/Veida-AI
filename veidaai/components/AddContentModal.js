@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
-import Loading from './loading'; // Import the Loading component
 
 const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   const [file, setFile] = useState(null);
@@ -29,7 +28,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsUploading(true); // Set uploading to true when submitting
+    setIsUploading(true);
 
     if (!file) {
       setError('Please select a file to upload');
@@ -42,8 +41,9 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
     formData.append('clerk_id', userId);
     formData.append('course_name', courseName);
 
+    
     try {
-      const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
+      const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {
         method: 'POST',
         body: formData,
       });
@@ -62,7 +62,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
         flashcards: extractedData.flashcards,
       };
 
-      const addContentResponse = await fetch('http://localhost:8080/api/add_course_content', {
+      const addContentResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/add_course_content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
       console.error('Error in handleSubmit:', error);
       setError(error.message || 'An error occurred while adding content');
     } finally {
-      setIsUploading(false); // Reset uploading state
+      setIsUploading(false);
     }
   };
 

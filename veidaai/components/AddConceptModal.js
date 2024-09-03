@@ -6,6 +6,8 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isFileSelected, setIsFileSelected] = useState(false);
+  const [conceptDescription, setConceptDescription] = useState('');
+  const [conceptName, setConceptName] = useState('');
   const { userId } = useAuth();
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
     formData.append('clerk_id', userId);
     formData.append('course_name', courseName);
 
+  
     try {
       const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
         method: 'POST',
@@ -49,6 +52,7 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
 
       if (!extractResponse.ok) {
         const errorData = await extractResponse.json();
+        console.error('Error response:', errorData);
         throw new Error(errorData.error || 'An error occurred while extracting text.');
       }
 
@@ -60,9 +64,14 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
         notes: extractedData.notes,
         flashcards: extractedData.flashcards,
         mc_questions: extractedData.mc_questions,
+        concept_description: conceptDescription,
+        concept_name: conceptName,
+        concept_mcqs: extractedData.mc_questions,
+        concept_flashcards: extractedData.flashcards,
+        concept_notes: extractedData.notes,
       };
 
-      const addConceptResponse = await fetch('http://localhost:8080/api/add_course_concept', {
+      const addConceptResponse = await fetch('http://localhost:8080/api/create_course_concept', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,10 +101,29 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
     <div className="course-create-course-overlay">
       <div className="course-create-course-form">
         <h2>Add to {courseName}</h2>
-        <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existingconcept.</p>
+        <p className="form-description">Add a concept to your course and our AI will generate flashcards, summary notes, and MCQs for you.</p>
         <form onSubmit={handleSubmit}>
-          <div className="course-file-input-wrapper">
-            <div className="course-file-input-button">Upload concept File (PDF, PNG, JPG, TXT)</div>
+          <div>
+            <label htmlFor="conceptName">Concept Name:</label>
+            <input
+              type="text"
+              id="conceptName"
+              value={conceptName}
+              onChange={(e) => setConceptName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="conceptDescription">Concept Description:</label>
+            <textarea
+              id="conceptDescription"
+              value={conceptDescription}
+              onChange={(e) => setConceptDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div className="file-input-wrapper">
+            <div className="file-input-button">Upload concept File (PDF, PNG, JPG, TXT)</div>
             <input
               type="file"
               onChange={handleFileChange}

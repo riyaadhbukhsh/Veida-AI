@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import './mcqs-page.css';
@@ -20,13 +20,20 @@ function McqsPage() {
     const [isPremium, setIsPremium] = useState(false);
     const router = useRouter();
 
+    function unformatConceptName(urlConceptName) {
+        let decoded = decodeURIComponent(urlConceptName);
+        let unhyphenated = decoded.replace(/-/g, ' ');
+        return unhyphenated.trim();
+      }
     const params = useParams();
-    const urlCourseName = params['course-name'];
-    const courseName = unformatURL(urlCourseName);
+    const courseName = useSearchParams().get('courseName');
+    const urlConceptName = params.conceptName;
+    const decodedConceptName = unformatConceptName(urlConceptName);
+    console.log(decodedConceptName);
 
     const fetchMcqs = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_mcqs?clerk_id=${userId}&course_name=${courseName}`, {
+            const response = await fetch(`http://localhost:8080/api/get_mcqs?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -132,7 +139,7 @@ function McqsPage() {
 
     return (
         <div className="mcqs-container">
-            <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
+            <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
             <h1 className="mcqs-header">Your MCQs for {courseName}</h1>
             {error && <p className="error-message">{error}</p>}
             <div className="question-container">

@@ -1,0 +1,141 @@
+"use client";
+
+import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useAuth } from "@clerk/nextjs";
+import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
+import NotFound from '../../not-found';
+import Loading from '../../../components/loading';
+import { formatURL } from '@/app/helpers';
+import './details.css'; 
+import './concept-details.css';
+
+
+
+const ConceptDetailsPage = () => {
+  const { userId } = useAuth();
+  const params = useParams();
+  const [pageExists, setPageExists] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  // Access the dynamic route parameter
+  const urlConceptName = params.conceptName;
+  
+  // Access the query parameter from the URL
+  const courseName = useSearchParams().get('courseName');
+
+
+
+  function unformatConceptName(urlConceptName) {
+    let decoded = decodeURIComponent(urlConceptName);
+    let unhyphenated = decoded.replace(/-/g, ' ');
+    return unhyphenated.trim();
+  }
+  
+  const conceptName = unformatConceptName(urlConceptName);
+
+  useEffect(() => {
+    let isMounted = true;
+  
+    const checkPageExists = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          const exists = data.courses.some(course => {
+            return course.course_name.toLowerCase() === conceptName.toLowerCase();
+          });
+          if (isMounted) {
+            setPageExists(true);
+            setIsLoading(false);
+          }
+        } else {
+          if (isMounted) {
+            setPageExists(false);
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          setPageExists(false);
+          setIsLoading(false);
+        }
+      }
+    };
+  
+    if (userId) {
+      checkPageExists();
+    }
+  
+    return () => {
+      isMounted = false;
+    };
+  }, [conceptName, userId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+  
+  if (pageExists === false) {
+    return <NotFound />;
+  }
+  
+  if (pageExists === null) {
+    return (
+      <div className="course-container">
+        <h1 className="course-title">404</h1>
+        <h2 className="course-subtitle">Page Not Found</h2>
+        <p className="course-message">The resource you are looking for does not exist.</p>
+        <button onClick={() => window.location.href = '/'} className="course-returnButton">Return Home</button>
+      </div>
+    );
+  }
+  function formatCourseName(courseName) {
+    if (!courseName) return '';
+    let hyphenated = courseName.replace(/\s+/g, '-').toLowerCase();
+    let encoded = encodeURIComponent(hyphenated);
+    return encoded;
+  }
+
+  return (
+
+  <div className= "concept-details-container">
+    <Link href={`/${formatCourseName(courseName)}`} title={'back to your courses'} className="course-back-arrow-link"><FaArrowLeft/></Link>
+    <div id="concept-page">
+
+          <h2 className="concept-title">Course Name: {courseName}</h2>
+      <h3 className="concept-title">{conceptName}</h3>
+      
+          
+          <div className="concept-content">
+            <Link href={`/flashcards/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
+              <div>
+                <FaRegLightbulb className="concept-study-icon" />
+                <h3>Flashcards</h3>
+              </div>
+              <p>Study with interactive flashcards to reinforce key concepts</p>
+            </Link>
+            <Link href={`/notes/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
+              <div>
+                <FaRegStickyNote className="concept-study-icon" />
+                <h3>Notes</h3>
+              </div>
+              <p>Review and organize your course notes efficiently</p>
+            </Link>
+            <Link href={`/mcqs/${formatURL(conceptName)}?courseName=${courseName}`} className="concept-study-container">
+              <div>
+                <FaRegQuestionCircle className="concept-study-icon" />
+                <h3>MCQs</h3>
+              </div>
+              <p>Test your knowledge with multiple choice questions</p>
+            </Link>
+          </div>
+        </div>
+    </div>
+  
+    
+  );
+}
+export default ConceptDetailsPage;

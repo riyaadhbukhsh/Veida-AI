@@ -52,29 +52,20 @@ const ClientPage = () => {
 
   const handleCourseCreated = async (newCourse) => {
     setShowCreateForm(false);
-    await fetchAndSetCourses(); // Fetch courses again after creating a new one
-    await checkFlashcardsDueToday(); // Check for flashcards due today
+    await fetchAndSetCourses();
+    await checkFlashcardsDueToday();
   };
 
   const checkFlashcardsDueToday = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/check_flashcards_due_today?clerk_id=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const hasDueFlashcards = data.flashcardsDueToday;
-        setHasNotification(hasDueFlashcards);
-        setFlashcardsDue(hasDueFlashcards ? data.flashcards.length : 0);
-      } else {
-        console.error('Failed to check flashcards due today');
-      }
+        const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`);
+        if (response.ok) {
+            const data = await response.json();
+            setHasNotification(data.flashcards.length > 0);
+            setFlashcardsDue(data.flashcards.length);
+        }
     } catch (error) {
-      console.error('Error checking flashcards due today:', error);
+        console.error('Error checking flashcards:', error);
     }
   };
 
@@ -116,7 +107,7 @@ const ClientPage = () => {
 
   function formatCourseName(courseName) {
     if (!courseName) return '';
-    let hyphenated = courseName.replace(/\s+/g, '-').toLowerCase();
+    let hyphenated = courseName.replace(/\s+/g, '-')
     let encoded = encodeURIComponent(hyphenated);
     return encoded;
   }

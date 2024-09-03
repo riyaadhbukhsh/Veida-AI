@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
-import { useParams } from 'next/navigation';
+import { useParams,useSearchParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
 import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -23,21 +23,26 @@ function FlashcardPage() {
     const [backReviewSize, setBackReviewSize] = useState('2.2rem');
     const [frontReviewIndex, setFrontReview] = useState(null);
     const [backReviewIndex, setBackReview] = useState(null);
-    const { userId } = useAuth();
-    const flashcardRef = useRef();
-
-    const params = useParams();
-    const urlCourseName = params['course-name'];
-    const courseName = unformatURL(urlCourseName);
-
     const [studyingToday, setStudyingToday] = useState(false);
     const [flashcardsDueToday, setFlashcardsDueToday] = useState(false);
-
     const { setHasNotification, setFlashcardsDue } = useNotification();
+    const { userId } = useAuth();
+    const flashcardRef = useRef();
+    
 
-    const sanitizeFlashcardContent = (text) => {
-        return text.replace(/\*\*/g, '');
-    };
+
+
+    function unformatConceptName(urlConceptName) {
+        let decoded = decodeURIComponent(urlConceptName);
+        let unhyphenated = decoded.replace(/-/g, ' ');
+        return unhyphenated.trim();
+      }
+    const params = useParams();
+    const courseName = useSearchParams().get('courseName');
+    const urlConceptName = params.conceptName;
+    const decodedConceptName = unformatConceptName(urlConceptName);
+
+
 
     const fetchFlashcardsDueToday = async () => {
         try {
@@ -50,22 +55,12 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-
-                const sanitizedFlashcards = data.flashcards.map(card => ({
-                    ...card,
-                    front: sanitizeFlashcardContent(card.front),
-                    back: sanitizeFlashcardContent(card.back),
-                }));
-
-                console.log('Flashcards due today:', sanitizedFlashcards);
-
-                setFlashcards(sanitizedFlashcards);
-                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                setFlashcards(data.flashcards);
+                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
                 setReviewing(true);
                 setStudyingToday(true);
-                const hasDueFlashcards = sanitizedFlashcards.length > 0;
+                const hasDueFlashcards = data.flashcards.length > 0;
                 setFlashcardsDueToday(hasDueFlashcards);
-                console.log('Flashcards due today status:', hasDueFlashcards);
             } else {
                 setError('Failed to fetch flashcards due today');
                 setFlashcardsDueToday(false);
@@ -92,7 +87,6 @@ function FlashcardPage() {
                 if (!response.ok) {
                     console.error('Failed to remove today\'s review dates');
                 } else {
-                    console.log('Successfully removed today\'s review dates');
                 }
             } catch (error) {
                 console.error('Error removing today\'s review dates:', error);
@@ -142,7 +136,7 @@ function FlashcardPage() {
 
     const fetchFlashcards = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}`, {
+            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -151,15 +145,8 @@ function FlashcardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-
-                const sanitizedFlashcards = data.flashcards.map(card => ({
-                    ...card,
-                    front: sanitizeFlashcardContent(card.front),
-                    back: sanitizeFlashcardContent(card.back),
-                }));
-
-                setFlashcards(sanitizedFlashcards);
-                setCurrentCard({ card: sanitizedFlashcards[0] || null, index: 0 });
+                setFlashcards(data.flashcards);
+                setCurrentCard({ card: data.flashcards[0] || null, index: 0 });
             } else {
                 setError('Failed to fetch flashcards');
             }
@@ -232,18 +219,19 @@ function FlashcardPage() {
 
     useEffect(() => {
       if (userId) {
+        
           fetchFlashcards();
       }
-    }, [userId]);
+  }, [userId]);
 
     return (
         <div className="flashcard-page">
             {reviewing ? (
-                <Link href={`/flashcards/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/flashcards/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={handleEndSession} />
                 </Link>
             ) : (
-                <Link href={`/${urlCourseName}`} title={`back to ${courseName}`} className="back-arrow-link">
+                <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${decodedConceptName}`} className="back-arrow-link">
                     <FaArrowLeft onClick={() => setReviewing(false)} />
                 </Link>
             )}
@@ -287,7 +275,6 @@ function FlashcardPage() {
                                 <button
                                 className="start-review-button"
                                 onClick={() => {
-                                    console.log('Button clicked'); // Debugging
                                     fetchFlashcardsDueToday();
                                 }}
                             >
