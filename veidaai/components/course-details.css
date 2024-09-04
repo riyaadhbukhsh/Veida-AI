@@ -6,7 +6,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-h1,
 .course-title {
   text-align: center;
   margin-top: 4rem;
@@ -399,7 +398,6 @@ h1,
 }
 
 @media (max-width: 781px) {
-  h1,
   .course-title {
     font-size: 2rem;
   }
