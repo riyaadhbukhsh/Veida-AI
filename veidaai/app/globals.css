@@ -76,11 +76,21 @@ html, body {
   gap: 1rem;
   padding: 5rem 1rem;
   --column-width: calc(50% - 1rem);
+  max-width: 1600px;
+  margin: auto;
 }
 
 .feature-column-text {
   width: var(--column-width);
   padding: 0.5rem;
+}
+
+.feature-column-text h1 {
+  text-align: left;
+}
+
+.feature-column-text p {
+  margin-bottom: 1rem;
 }
 
 .feature-column-media {
@@ -175,6 +185,7 @@ h4 {
 .subtitle {
   margin-top: 0;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 button {

@@ -6,7 +6,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-h1 {
+.client-page h1 {
   text-align: center;
   margin-bottom: 2rem;
   margin-top: 4rem;
@@ -340,7 +340,7 @@ h1 {
 }
 
 @media (max-width: 781px) {
-  h1 {
+  .client-page h1 {
     font-size: 2rem;
   }
 

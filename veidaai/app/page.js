@@ -52,15 +52,14 @@ export default function Home() {
       {/* <div className={styles.main}> */}
         {/* <div ref={vantaRef} className={styles.vantaContainer}></div> */}
         {/* <div className={styles.contentContainer}> */}
-        <div className="container double-column-container" id={styles.landingSection}>  
+        <div className="container" id={styles.landingSection}>  
+          <div className="double-column-container">
           {/* <section className={styles.hookSection}> */}
             {/* <div className={styles.hookText}> */}
           <div className="feature-column-text">
             <h1>{`Professors Hate Us.\nSkip Classes.\nAce Finals.`}</h1>
             <p>
-              {`We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.
-              
-              Revolutionize your learning experience!`}
+              {`We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.`}
             </p>
             <button  
               // className={styles.ctaButton}
@@ -81,165 +80,172 @@ export default function Home() {
             />
           </div>
           {/* </section> */}
+          </div>
         </div>
 
         {/*1st feature section*/}
-        <div className="container double-column-container" id={styles.uploadFeatureSection}>
-          <div className="feature-column-text">
-            <h2>Upload Your Lecture Material</h2>
-            <p>We accept:<br/>txt, pdf, jpg, png</p>
-            <button 
-              className="secondary" 
-              onClick={() => router.push('/client')} 
-            >
-              Upload your file
-            </button>
-          </div>
-          <div className="feature-column-media">
-            <img 
-              id={styles.uploadImg}
-              className={styles.sectionImg}
-              src="illustrations/data-or-cloud-migration.svg"
-              alt="data-or-cloud-migration-illustration"
-              width={630} 
-              height={340}
-            />
+        <div className="container" id={styles.uploadFeatureSection}>
+          <div className="double-column-container">
+            <div className="feature-column-text right-align">
+              <h2>Upload Your Lecture Material</h2>
+              <p>We accept files in:<br/>.txt, .pdf, .jpg, .png</p>
+              <button 
+                className="secondary" 
+                onClick={() => router.push('/client')} 
+              >
+                Upload your file
+              </button>
+            </div>
+            <div className="feature-column-media">
+              <img 
+                id={styles.uploadImg}
+                className={styles.sectionImg}
+                src="illustrations/data-or-cloud-migration.svg"
+                alt="data-or-cloud-migration-illustration"
+                width={630} 
+                height={340}
+              />
+            </div>
           </div>
         </div>
 
         {/*2nd feature section*/}
-        <div className="container double-column-container" id={styles.featurePreviewSection}>
-          <h2 className="center">AI Generates your study material</h2>
-          <p className="subtitle center">main ideas & key details are identified to create your interactive study methods</p>
+        <div className="container" id={styles.featurePreviewSection}>
+          <div className="double-column-container">
+            <h2 className="center">AI Generates your study material</h2>
+            <p className="subtitle center">Main ideas & key details are identified to create your interactive study methods</p>
 
-          {isMobile ? 
-            // return this jsx if screen-size is mobile
-            <>
-              <div id={styles.galleryNav}>
-                <div className={styles.galleryFeature}>
-                  <img />
-                  <h3 className={styles.galleryTitle}>Feature Title</h3>
-                  <p className={styles.galleryDescr}>feature description</p>
-                  <button></button>
+            {isMobile ? 
+              // return this jsx if screen-size is mobile
+              <>
+                <div id={styles.galleryNav}>
+                  <div className={styles.galleryFeature}>
+                    <img />
+                    <h3 className={styles.galleryTitle}>Feature Title</h3>
+                    <p className={styles.galleryDescr}>feature description</p>
+                    <button></button>
+                  </div>
                 </div>
-              </div>
-            </> 
-          :
-            //return this jsx if screen-size is not mobile
-            <>
-              <div id={styles.featureMenuContainer} className="feature-column-text">
-                <ul id={styles.featureMenu}>
+              </> 
+            :
+              //return this jsx if screen-size is not mobile
+              <>
+                <div id={styles.featureMenuContainer} className="feature-column-text">
+                  <ul id={styles.featureMenu}>
 
-                  <span className={styles.liContainer}
-                    // assign id only if this span is currently selected
-                    id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                    onClick={()=>setPreviewedFeatureId('flashcardPreview')}
+                    <span className={styles.liContainer}
+                      // assign id only if this span is currently selected
+                      id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                      onClick={()=>setPreviewedFeatureId('flashcardPreview')}
+                      >
+                      <FaRegLightbulb className={styles.featurePreviewIcon} />
+                      <li>flashcards</li>
+                    </span>
+                    
+                    <span className={styles.liContainer}
+                      // assign id only if this span is currently selected
+                      id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                      onClick={()=>setPreviewedFeatureId('mcqPreview')}
                     >
-                    <FaRegLightbulb className={styles.featurePreviewIcon} />
-                    <li>flashcards</li>
-                  </span>
-                  
-                  <span className={styles.liContainer}
-                    // assign id only if this span is currently selected
-                    id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                    onClick={()=>setPreviewedFeatureId('mcqPreview')}
+                      <FaRegQuestionCircle className={styles.featurePreviewIcon} />
+                      <li>multiple choice questions</li>
+                    </span>
+                    
+                    <span
+                      className={styles.liContainer} 
+                      // assign id only if this span is currently selected
+                      id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null} 
+                      onClick={()=>setPreviewedFeatureId('notesPreview')}
+                    >
+                      <FaRegStickyNote className={styles.featurePreviewIcon} />
+                      <li>outlined notes</li>
+                    </span>
+
+                  </ul>
+                </div>
+              
+                <div className="feature-column-media">
+                  <div id={styles.featureImgContainer}>
+                    <img 
+                      id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                      className={styles.featureImg} 
+                      src="feature-flashcards.png" 
+                      alt="preview of flashcards feature" width={500} height={400}></img>
+                    <img 
+                      id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                      className={styles.featureImg}
+                      src="feature-mcqs.png" 
+                      alt="preview of flashcards feature" 
+                      width={500} 
+                      height={400}
+                    />
+                    <img 
+                      id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                      className={styles.featureImg} 
+                      src="feature-notes.png" 
+                      alt="preview of flashcards feature" 
+                      width={500} 
+                      height={400}
+                    />
+                  </div>
+
+                  <div 
+                    id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                    className={styles.captionSection}
                   >
-                    <FaRegQuestionCircle className={styles.featurePreviewIcon} />
-                    <li>multiple choice questions</li>
-                  </span>
-                  
-                  <span
-                    className={styles.liContainer} 
-                    // assign id only if this span is currently selected
-                    id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null} 
-                    onClick={()=>setPreviewedFeatureId('notesPreview')}
+                    <p style={{padding: 0}}>Test your memory on key ideas & important vocabulary</p>
+                    <button class="secondary" onClick={() => router.push('/client')}>
+                      Generate your own
+                    </button>
+                  </div>
+
+                  <div 
+                    id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                    className={styles.captionSection}
                   >
-                    <FaRegStickyNote className={styles.featurePreviewIcon} />
-                    <li>outlined notes</li>
-                  </span>
+                    <p>MCQs test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
+                    <button class="secondary" onClick={() => router.push('/client')}>
+                      Generate your own
+                    </button>
+                  </div>
 
-                </ul>
-              </div>
-            
-              <div className="feature-column-media">
-                <div id={styles.featureImgContainer}>
-                  <img 
-                    id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                    className={styles.featureImg} 
-                    src="feature-flashcards.png" 
-                    alt="preview of flashcards feature" width={500} height={400}></img>
-                  <img 
-                    id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                    className={styles.featureImg}
-                    src="feature-mcqs.png" 
-                    alt="preview of flashcards feature" 
-                    width={500} 
-                    height={400}
-                  />
-                  <img 
-                    id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                    className={styles.featureImg} 
-                    src="feature-notes.png" 
-                    alt="preview of flashcards feature" 
-                    width={500} 
-                    height={400}
-                  />
+                  <div 
+                    id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                    className={styles.captionSection}
+                  >
+                    <p>Outlined summaries focus on main ideas, sub-concepts, key details, and definitions.</p>
+                    <button class="secondary" onClick={() => router.push('/client')}>
+                      Generate your own
+                    </button>
+                  </div>
+
                 </div>
-
-                <div 
-                  id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-                  className={styles.captionSection}
-                >
-                  <p>test your memory on key ideas & important vocabulary</p>
-                  <button class="secondary" onClick={() => router.push('/client')}>
-                    Generate your own
-                  </button>
-                </div>
-
-                <div 
-                  id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-                  className={styles.captionSection}
-                >
-                  <p>questions test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
-                  <button class="secondary" onClick={() => router.push('/client')}>
-                    Generate your own
-                  </button>
-                </div>
-
-                <div 
-                  id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-                  className={styles.captionSection}
-                >
-                  <p>outlined summaries focus on main ideas, sub-concepts, key details, and important vocabulary</p>
-                  <button class="secondary" onClick={() => router.push('/client')}>
-                    Generate your own
-                  </button>
-                </div>
-
-              </div>
-            </> //end of non-mobile jsx
-          }
-
+              </> //end of non-mobile jsx
+            }
+          </div>
         </div> {/* end of 2nd feature section */}
 
         {/*3rd feature section*/}
-        <div className="container double-column-container" id={styles.notiFeatureSection}>
-          <div className="feature-column-media" >
-            <img 
-              className={styles.sectionImg} 
-              src="illustrations/personal-workplace.svg" 
-              alt="personal-workplace-illustration" 
-              width={630} 
-              height={340}
-            />
-          </div>
+        <div className="container" id={styles.notiFeatureSection}>
+          <div className="double-column-container">
+            <div className="feature-column-media" >
+              <img 
+                id={styles.scheduleImg}
+                className={styles.sectionImg} 
+                src="illustrations/personal-workplace.svg" 
+                alt="personal-workplace-illustration" 
+                width={630} 
+                height={340}
+              />
+            </div>
 
-          <div className="feature-column-text right-align">
-            <h2>Stay on schedule</h2>
-            <p>We send study reminders so you can memorize the content in time for your exam</p>
-            <button className="secondary" onClick={() => router.push('/client')}>
-              Get Started
-            </button>
+            <div className="feature-column-text right-align">
+              <h2>Stay on schedule</h2>
+              <p>We send study reminders so you can memorize the content in time for your exam</p>
+              <button className="secondary" onClick={() => router.push('/client')}>
+                Get Started
+              </button>
+            </div>
           </div>
         </div>
 
