@@ -63,7 +63,7 @@ const CourseDetails = ({ courseName }) => {
     
     <div className="course-details-container">
       <Link href={`/client`} title={'back to your courses'} className="course-back-arrow-link"><FaArrowLeft/></Link>
-      <h1>{courseName}</h1>
+      <h1 className="course-title">{courseName}</h1>
       {courseObj.exam_date && (
         <p className="course-exam-date">Exam Date: {formatDate(courseObj.exam_date)}</p>
       )}
