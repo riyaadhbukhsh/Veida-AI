@@ -108,7 +108,7 @@ export default function Home() {
         {/*2nd feature section*/}
         <div className="container double-column-container">
           <h2 className="center">AI Generates your study material</h2>
-          <p className="subtitle center">main ideas & key details are identified to be used to create your interactive study methods</p>
+          <p className="subtitle center">main ideas & key details are identified to create your interactive study methods</p>
           <div id={styles.featureMenuContainer} className="feature-column-text">
             <ul id={styles.featureMenu}>
 
