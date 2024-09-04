@@ -1,5 +1,6 @@
 #siteWrapper {
   padding-top: 60px; /* avoid overlap with the nav bar */
+  font-size: var(--default-font-size);
 }
 
 /* allow section images to position relative to section divs */
@@ -99,14 +100,24 @@
 /************************************************/
 /* Section 3 - AI GENERATES YOUR STUDY MATERIAL */
 /************************************************/
-/* #siteWrapper > div:nth-child(3) {
-
-} */
+#siteWrapper > div:nth-child(3) {
+  justify-content: center;
+}
 
 /* column sections */
 /* #siteWrapper > div:nth-child(3) > div {
   border: 1px solid red;
 } */
+
+/* left-side column */
+#featureMenuContainer {
+  width: min(500px, calc(35% - 0.5rem));
+}
+
+/* right side column */
+#siteWrapper > div:nth-child(3) > div:last-child {
+  width: min(900px, calc(65% - 0.5rem));
+}
 
 ul#featureMenu {
   display: flex;
@@ -119,24 +130,30 @@ ul#featureMenu {
 }
 
 ul#featureMenu li {
-  font-size: calc(var(--h2) * 0.9);
+  /* font-size: calc(var(--h2) * 0.9); */
+  font-size: calc(var(--h2) * 0.8);
   text-transform: uppercase;
   
   vertical-align: middle;
-  margin-top: -1px;
   margin-left: -35px;
   line-height: 2.7rem;
 
   transition: margin-left 0.6s ease;
 }
 
-ul#featureMenu li:first-child {
-  border-top: none;
-  margin-top: 1px;
-}
+span.liContainer {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 5rex;
 
-ul#featureMenu li:last-child {
-  border-bottom: none;
+  padding-left: 5px;
+  margin-left: -40px;
+  margin-top: -1px;
+  
+  border: solid var(--white);
+  border-width: 1px 0;
+
+  transition: margin-left 0.6s ease;
 }
 
 span.liContainer:hover,
@@ -145,44 +162,25 @@ span#selectedFeaturePreview
   margin-left: 0rex;
 }
 
-span.liContainer {
-  display: flex;
-  flex-flow: row nowrap;
-  gap: 5rex;
-  border: solid var(--white);
-  border-width: 1px 0 1px 0;;
-
-  padding-left: 5px;
-  margin-left: -40px;
-  margin-top: -1px;
-
-  transition: margin-left 0.6s ease;
-}
-
 span.liContainer:first-child {
   border-top: none;
+  margin-top: 0;
 }
 
 span.liContainer:last-child {
   border-bottom: none;
 }
 
-.featurePreviewIcon {
-  /* display: inline-block;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased; */
-
-  /* this is supposed to decrease the icon's light weight */
-  /* https://docs.fontawesome.com/web/style/custom */
-  /* font: var(--fa-font-thin); */
-  
+.featurePreviewIcon { 
   font-size: 30px;
-  /* font-weight doesn't work. How do I change the line-weight? >:( */
-  /* font-weight: 300; */
   vertical-align: middle;
   margin-top: 0.5rem;
-  /* margin-right: 8px;
-  margin-bottom: 5px; */
+}
+
+/* question circle needs some extra attention */
+span.liContainer:nth-child(2) > .featurePreviewIcon {
+  font-size: 40px;
+  margin-top: 0.3rem;
 }
 
 img.neuronIcon {
@@ -203,14 +201,13 @@ img.neuronIcon {
 
 #featureImgContainer {
   height: 15rem;
-  border: 1px solid white;
+  border: 1px solid var(--gray);
 }
 
 .featureImg {
   object-fit: contain;
   height: 100%;
   width: 100%;
-  
   display: none;
   transition: display 2s ease; /* this doesn't work, but it was worth a shot */
 }
@@ -221,12 +218,17 @@ img.neuronIcon {
 }
 
 .captionSection {
-  text-align: center;
-  display: none;
+  display: none; /*hide a caption until it is #selectedCaption*/
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 1rem;
+
+  margin-top: 1rem;
 }
 
 #selectedCaption {
-  display: inline;
+  display: flex;
 }
 
 /********************************/

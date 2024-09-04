@@ -108,8 +108,8 @@ export default function Home() {
         {/*2nd feature section*/}
         <div className="container double-column-container">
           <h2 className="center">AI Generates your study material</h2>
-          <p className="subtitle">main ideas & key details are identified to be used to create your interactive study methods</p>
-          <div className="feature-column-text">
+          <p className="subtitle center">main ideas & key details are identified to be used to create your interactive study methods</p>
+          <div id={styles.featureMenuContainer} className="feature-column-text">
             <ul id={styles.featureMenu}>
 
               <span className={styles.liContainer}
@@ -172,7 +172,7 @@ export default function Home() {
               id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
               className={styles.captionSection}
             >
-              <p>generate flashcards on key ideas</p>
+              <p>test your memory on key ideas & important vocabulary</p>
               <button class="secondary" onClick={() => router.push('/client')}>
                 Generate your own
               </button>
@@ -182,7 +182,7 @@ export default function Home() {
               id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
               className={styles.captionSection}
             >
-              <p>test your retention with 5 strategies: Synthesis, reorganization, comparison, application, and context.In-depth explanations provided with each solution</p>
+              <p>questions test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
               <button class="secondary" onClick={() => router.push('/client')}>
                 Generate your own
               </button>
@@ -192,7 +192,7 @@ export default function Home() {
               id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
               className={styles.captionSection}
             >
-              <p>test your retention with 5 strategies: Synthesis, reorganization, comparison, application, and context.In-depth explanations provided with each solution</p>
+              <p>outlined summaries focus on main ideas, sub-concepts, key details, and important vocabulary</p>
               <button class="secondary" onClick={() => router.push('/client')}>
                 Generate your own
               </button>

@@ -14,6 +14,7 @@ body {
 
   /* Typography */
   /* font-size: 25px; */
+  --default-font-size: 25px;
   /* --h1: 1.60rem; 40px */
   --h1: 2rem;
   /* --h2: 1.20rem; 30px */
@@ -125,7 +126,7 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-p.global {
+p.default {
   font-size: var(--p);
   white-space: 'pre-line';
   margin-top: 0.5rem;
@@ -168,7 +169,7 @@ h4 {
   font-size: var(--h4);
 } */
 
-h2.center {
+.center {
   text-align: center;
 }
 
