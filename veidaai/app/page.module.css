@@ -6,6 +6,8 @@
 /* allow section images to position relative to section divs */
 #siteWrapper > div {
   position: relative;
+
+  /*create site gutters - we pad these divs to ensure their bg-color stretches 100% wide*/
   padding-left: 3rem;
   padding-right: 3rem;
 }
@@ -63,7 +65,7 @@
 /**************************************/
 /* Section 1 -  PROFESSORS HATE US... */
 /**************************************/
-#siteWrapper > div:first-child {
+#landingSection {
   /* background: linear-gradient(90deg, #1e1e1e, transparent 55%); */
   padding-top: 2rem;
   padding-bottom: 0;
@@ -104,12 +106,12 @@
 /************************************************/
 /* Section 3 - AI GENERATES YOUR STUDY MATERIAL */
 /************************************************/
-#siteWrapper > div:nth-child(3) {
+#featurePreviewSection {
   justify-content: center;
 }
 
-#siteWrapper > div:nth-child(3) > h2,
-#siteWrapper > div:nth-child(3) > p {
+#featurePreviewSection > h2,
+#featurePreviewSection > p {
   width: 100%;
 }
 
@@ -124,7 +126,7 @@
 }
 
 /* right side column */
-#siteWrapper > div:nth-child(3) > div:last-child {
+#featurePreviewSection > div:last-child {
   width: min(900px, calc(65% - 1rem));
 }
 
@@ -247,6 +249,108 @@ img.neuronIcon {
   position: relative; /* so the section img can use position: absolute */
 }
 
+/*********************/
+/* MOBILE FORMATTING */
+/*********************/
+@media screen and (max-width: 781px) {
+  
+  /* smaller site gutters */
+  #siteWrapper > div {
+    --gutter-width: 1rex;
+    /* padding-left: var(--gutter-width);
+    padding-right: var(--gutter-width); */
+    padding: 2.5rem var(--gutter-width);
+  }
+
+  /* for some reason this lines the gutter up with the rest of the sections */
+  /* #landingSection{
+    padding-left: 0px;
+    padding-right: 0px;
+  } */
+
+  /* left-align EVERYTHING */
+  #siteWrapper > div h1,
+  #siteWrapper > div h2,
+  #siteWrapper > div p {
+    text-align: left;
+  }
+
+  #siteWrapper button {
+    margin-top: 2rem;
+  }
+
+  /* column divs */
+  #siteWrapper > div > div {
+    width: 100% !important; /* OVERRIDE */
+  }
+
+  /* keep the images in their div containers */
+  .sectionImg {
+    position: static;
+    object-fit: cover;
+    margin: 0;
+    padding: 0;
+
+    /* clear transformations */
+    --scaleVal: 1.5;
+    --webkit-transform: scale(var(--scaleVal));
+    transform: scale(var(--scaleVal));
+  }
+
+  /* activate borders for dev */
+  /* #siteWrapper > div { border: 1px solid red }
+  #siteWrapper > div > div { border: 1px solid yellow } */
+  
+  /**********************************/
+  /* Section 1 - PROFESSORS HATE US */
+  /**********************************/
+
+  /* put the image first! */
+  #landingSection {
+    display: flex;
+    flex-direction: column;
+    /* padding-top: 0 !important;
+    padding-bottom: 1rem; */
+    padding: 2.5rem var(--gutterWidth);
+    padding-top: 0.5REM !important; /* OVERRIDE */
+  }
+
+  #landingSection > div:last-child {
+    order: -1;
+    padding: 0;
+    /* margin-bottom: 1.5rem; */
+
+    /* overflow acting weird! >:( */
+    /* overflow: hidden; */
+    /* overflow-y: hidden; */
+    overflow-x: visible;
+  }
+
+  /* scale it up for some punch! */
+  #landingImg {
+    margin: 0;
+    object-fit: cover;
+
+    --scaleVal: 1.3;
+    -webkit-transform: scale(var(--scaleVal));
+    transform: scale(var(--scaleVal));
+  }
+
+  #landingSection h1 {
+    white-space: pre-line;
+  }
+
+  /************************************/
+  /* Section 3 - AI GENERATES YOUR... */
+  /************************************/
+  /* add paddings to these since they aren't in column containers */
+  #featurePreviewSection h2,
+  #featurePreviewSection p {
+    padding: 0 2rex;
+  }
+
+}
+
 /********************************/
 /* experimenting with gradients */
 /********************************/
@@ -283,10 +387,9 @@ img.neuronIcon {
         }
 }
 
-/********************************************************************************************************************/
-/* CSS for Everett's original homepage design ***********************************************************************/
-/********************************************************************************************************************/
-
+/**********************************************/
+/* CSS for Everett's original homepage design */
+/**********************************************/
 .main {
   position: fixed;
   top: 0;

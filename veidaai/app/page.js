@@ -12,6 +12,7 @@ import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } fro
 export default function Home() {
   const router = useRouter();
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
+  const [isMobile, setIsMobile] = useState(false);
   // const vantaRef = useRef(null);
   // useEffect(() => {
   //   const vantaEffect = RINGS({
@@ -97,6 +98,7 @@ export default function Home() {
           <div className="feature-column-media">
             <img 
               id={styles.uploadImg}
+              className={styles.sectionImg}
               src="illustrations/data-or-cloud-migration.svg"
               alt="data-or-cloud-migration-illustration"
               width={630} 
@@ -106,9 +108,18 @@ export default function Home() {
         </div>
 
         {/*2nd feature section*/}
-        <div className="container double-column-container">
+        <div className="container double-column-container" id={styles.featurePreviewSection}>
           <h2 className="center">AI Generates your study material</h2>
           <p className="subtitle center">main ideas & key details are identified to create your interactive study methods</p>
+
+          {isMobile ? 
+            // return this jsx if screen-size is mobile
+            <></> 
+          :
+            //return this jsx if screen-size is not mobile
+            <></>
+          }
+          
           <div id={styles.featureMenuContainer} className="feature-column-text">
             <ul id={styles.featureMenu}>
 

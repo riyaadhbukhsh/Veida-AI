@@ -76,16 +76,11 @@ html, body {
   gap: 1rem;
   padding: 5rem 1rem;
   --column-width: calc(50% - 1rem);
-  /* border: 1px solid white; */
 }
 
 .feature-column-text {
   width: var(--column-width);
   padding: 0.5rem;
-}
-
-.right-align {
-  text-align: right;
 }
 
 .feature-column-media {
@@ -173,6 +168,10 @@ h4 {
   text-align: center;
 }
 
+.right-align {
+  text-align: right;
+}
+
 .subtitle {
   margin-top: 0;
   margin-bottom: 2rem;
@@ -248,7 +247,33 @@ button.tertiary {
   font-size: 2.6rem;
 }
 
+/* mobile formatting */
 @media screen and (max-width: 781px) {
+
+  /*smaller site gutters*/
+  .double-column-container, .feature-column-text, .feature-column-media {
+    padding: 0;
+  }
+
+  /* stack the column sections for mobile*/
+  .double-column-container {
+    padding: 1rem 2rex;
+    flex-direction: column;
+    gap: 1.5rem; /*probably tweak the gap later*/
+    --column-width: 100%;
+  }
+
+  .feature-column-text, .feature-column-media {
+    padding: 0 2rex;
+    width: var(--column-width);
+  }
+
+  button.primary,
+  button.secondary, 
+  button.tertiary {
+    width: 100%;
+  }
+
   .back-arrow-link {
     top: 75px;
     font-size: 1.8rem;
