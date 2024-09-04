@@ -337,6 +337,7 @@ img.neuronIcon {
   }
 
   #landingSection h1 {
+    font-size: var(--h2) !important;
     white-space: pre-line;
   }
 
