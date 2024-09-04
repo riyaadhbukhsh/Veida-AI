@@ -126,7 +126,7 @@ const ConceptDetailsPage = () => {
           )*/}
 
           <button id="add-content-btn" onClick={handleAddContent} className="concept-add-content-btn">
-            Add Content
+            <h2>Add Content</h2>
           </button>
           
           <div className="concept-content">

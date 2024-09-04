@@ -103,6 +103,14 @@
   margin-bottom: 2rem;
 }
 
+.concept-add-content-btn h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  text-align: center;
+  width: 100%;
+}
+
+
 .concept-add-content-btn:hover {
   background-color: #478fca;
   transform: translateY(-2px);
@@ -164,7 +172,6 @@
   color: #f0f0f0;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
-  font-family: 'Poppins', sans-serif;
   max-height: 90vh;
   overflow-y: auto; 
 }

@@ -61,6 +61,10 @@ function FlashcardPage() {
                 setStudyingToday(true);
                 const hasDueFlashcards = data.flashcards.length > 0;
                 setFlashcardsDueToday(hasDueFlashcards);
+
+                if (!hasDueFlashcards) {
+                    setReviewing(false);
+                }
             } else {
                 setError('Failed to fetch flashcards due today');
                 setFlashcardsDueToday(false);
@@ -274,9 +278,7 @@ function FlashcardPage() {
                                 </button>
                                 <button
                                 className="start-review-button"
-                                onClick={() => {
-                                    fetchFlashcardsDueToday();
-                                }}
+                                onClick={() => { fetchFlashcardsDueToday(); }}
                             >
                                 Study Today's Flashcards
                             </button>
