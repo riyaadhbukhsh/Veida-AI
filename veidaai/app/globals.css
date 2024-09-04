@@ -75,7 +75,7 @@ html, body {
   align-items: flex-start;
   gap: 1rem;
   padding: 5rem 1rem;
-  --column-width: calc(50% - 0.5rem);
+  --column-width: calc(50% - 1rem);
   /* border: 1px solid white; */
 }
 
@@ -173,9 +173,9 @@ h4 {
   text-align: center;
 }
 
-p.subtitle {
+.subtitle {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 button.primary,

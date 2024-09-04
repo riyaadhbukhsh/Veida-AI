@@ -104,6 +104,11 @@
   justify-content: center;
 }
 
+#siteWrapper > div:nth-child(3) > h2,
+#siteWrapper > div:nth-child(3) > p {
+  width: 100%;
+}
+
 /* column sections */
 /* #siteWrapper > div:nth-child(3) > div {
   border: 1px solid red;
@@ -111,12 +116,12 @@
 
 /* left-side column */
 #featureMenuContainer {
-  width: min(500px, calc(35% - 0.5rem));
+  width: min(500px, calc(35% - 1rem));
 }
 
 /* right side column */
 #siteWrapper > div:nth-child(3) > div:last-child {
-  width: min(900px, calc(65% - 0.5rem));
+  width: min(900px, calc(65% - 1rem));
 }
 
 ul#featureMenu {
