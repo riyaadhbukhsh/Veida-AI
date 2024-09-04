@@ -42,10 +42,14 @@
 
 #siteWrapper > div h1 {
   font-size: var(--h1);
+  line-height: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 #siteWrapper > div h2 {
   font-size: var(--h2);
+  line-height: 2rem;
+  margin-bottom: 1rem;
 }
 
 #siteWrapper > div h3 {
