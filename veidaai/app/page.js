@@ -114,103 +114,113 @@ export default function Home() {
 
           {isMobile ? 
             // return this jsx if screen-size is mobile
-            <></> 
+            <>
+              <div id={styles.galleryNav}>
+                <div className={styles.galleryFeature}>
+                  <img />
+                  <h3 className={styles.galleryTitle}>Feature Title</h3>
+                  <p className={styles.galleryDescr}>feature description</p>
+                  <button></button>
+                </div>
+              </div>
+            </> 
           :
             //return this jsx if screen-size is not mobile
-            <></>
+            <>
+              <div id={styles.featureMenuContainer} className="feature-column-text">
+                <ul id={styles.featureMenu}>
+
+                  <span className={styles.liContainer}
+                    // assign id only if this span is currently selected
+                    id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                    onClick={()=>setPreviewedFeatureId('flashcardPreview')}
+                    >
+                    <FaRegLightbulb className={styles.featurePreviewIcon} />
+                    <li>flashcards</li>
+                  </span>
+                  
+                  <span className={styles.liContainer}
+                    // assign id only if this span is currently selected
+                    id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
+                    onClick={()=>setPreviewedFeatureId('mcqPreview')}
+                  >
+                    <FaRegQuestionCircle className={styles.featurePreviewIcon} />
+                    <li>multiple choice questions</li>
+                  </span>
+                  
+                  <span
+                    className={styles.liContainer} 
+                    // assign id only if this span is currently selected
+                    id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null} 
+                    onClick={()=>setPreviewedFeatureId('notesPreview')}
+                  >
+                    <FaRegStickyNote className={styles.featurePreviewIcon} />
+                    <li>outlined notes</li>
+                  </span>
+
+                </ul>
+              </div>
+            
+              <div className="feature-column-media">
+                <div id={styles.featureImgContainer}>
+                  <img 
+                    id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                    className={styles.featureImg} 
+                    src="feature-flashcards.png" 
+                    alt="preview of flashcards feature" width={500} height={400}></img>
+                  <img 
+                    id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                    className={styles.featureImg}
+                    src="feature-mcqs.png" 
+                    alt="preview of flashcards feature" 
+                    width={500} 
+                    height={400}
+                  />
+                  <img 
+                    id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
+                    className={styles.featureImg} 
+                    src="feature-notes.png" 
+                    alt="preview of flashcards feature" 
+                    width={500} 
+                    height={400}
+                  />
+                </div>
+
+                <div 
+                  id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                  className={styles.captionSection}
+                >
+                  <p>test your memory on key ideas & important vocabulary</p>
+                  <button class="secondary" onClick={() => router.push('/client')}>
+                    Generate your own
+                  </button>
+                </div>
+
+                <div 
+                  id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                  className={styles.captionSection}
+                >
+                  <p>questions test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
+                  <button class="secondary" onClick={() => router.push('/client')}>
+                    Generate your own
+                  </button>
+                </div>
+
+                <div 
+                  id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
+                  className={styles.captionSection}
+                >
+                  <p>outlined summaries focus on main ideas, sub-concepts, key details, and important vocabulary</p>
+                  <button class="secondary" onClick={() => router.push('/client')}>
+                    Generate your own
+                  </button>
+                </div>
+
+              </div>
+            </> //end of non-mobile jsx
           }
-          
-          <div id={styles.featureMenuContainer} className="feature-column-text">
-            <ul id={styles.featureMenu}>
 
-              <span className={styles.liContainer}
-                // assign id only if this span is currently selected
-                id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                onClick={()=>setPreviewedFeatureId('flashcardPreview')}
-              >
-                <FaRegLightbulb className={styles.featurePreviewIcon} />
-                <li>flashcards</li>
-              </span>
-              
-              <span className={styles.liContainer}
-                // assign id only if this span is currently selected
-                id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null}
-                onClick={()=>setPreviewedFeatureId('mcqPreview')}
-              >
-                <FaRegQuestionCircle className={styles.featurePreviewIcon} />
-                <li>multiple choice questions</li>
-              </span>
-              
-              <span
-                className={styles.liContainer} 
-                // assign id only if this span is currently selected
-                id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeaturePreview : null} 
-                onClick={()=>setPreviewedFeatureId('notesPreview')}
-              >
-                <FaRegStickyNote className={styles.featurePreviewIcon} />
-                <li>outlined notes</li>
-              </span>
-
-            </ul>
-          </div>
-          
-          <div className="feature-column-media">
-            <div id={styles.featureImgContainer}>
-              <img 
-                id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                className={styles.featureImg} 
-                src="feature-flashcards.png" 
-                alt="preview of flashcards feature" width={500} height={400}></img>
-              <img 
-                id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                className={styles.featureImg}
-                src="feature-mcqs.png" 
-                alt="preview of flashcards feature" 
-                width={500} 
-                height={400}
-              />
-              <img 
-                id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
-                className={styles.featureImg} 
-                src="feature-notes.png" 
-                alt="preview of flashcards feature" 
-                width={500} 
-                height={400}
-              />
-            </div>
-
-            <div 
-              id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-              className={styles.captionSection}
-            >
-              <p>test your memory on key ideas & important vocabulary</p>
-              <button class="secondary" onClick={() => router.push('/client')}>
-                Generate your own
-              </button>
-            </div>
-
-            <div 
-              id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-              className={styles.captionSection}
-            >
-              <p>questions test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
-              <button class="secondary" onClick={() => router.push('/client')}>
-                Generate your own
-              </button>
-            </div>
-
-            <div 
-              id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedCaption : null}
-              className={styles.captionSection}
-            >
-              <p>outlined summaries focus on main ideas, sub-concepts, key details, and important vocabulary</p>
-              <button class="secondary" onClick={() => router.push('/client')}>
-                Generate your own
-              </button>
-            </div>
-
-          </div>
-        </div>
+        </div> {/* end of 2nd feature section */}
 
         {/*3rd feature section*/}
         <div className="container double-column-container" id={styles.notiFeatureSection}>

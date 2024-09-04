@@ -6,6 +6,7 @@
 /* allow section images to position relative to section divs */
 #siteWrapper > div {
   position: relative;
+  overflow: hidden;
 
   /*create site gutters - we pad these divs to ensure their bg-color stretches 100% wide*/
   padding-left: 3rem;
@@ -348,6 +349,18 @@ img.neuronIcon {
   #featurePreviewSection h2,
   #featurePreviewSection p {
     padding: 0 2rex;
+  }
+
+  #featurePreviewSection > h2 {
+    margin-bottom: 1rem;
+  }
+
+  /* #featurePreviewSection > * {
+    border: 1px solid red;
+  } */
+
+  #featurePreviewSection {
+    gap: 0;
   }
 
 }
