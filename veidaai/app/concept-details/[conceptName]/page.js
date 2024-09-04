@@ -106,7 +106,7 @@ const ConceptDetailsPage = () => {
   }
   function formatCourseName(courseName) {
     if (!courseName) return '';
-    let hyphenated = courseName.replace(/\s+/g, '-').toLowerCase();
+    let hyphenated = courseName.replace(/\s+/g, '-');
     let encoded = encodeURIComponent(hyphenated);
     return encoded;
   }
