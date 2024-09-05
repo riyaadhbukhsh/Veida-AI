@@ -233,7 +233,7 @@ function FlashcardPage() {
                 </Link>
             )}
             <h1 className="flashcard-title">
-                {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
+                {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${decodedConceptName}`}
             </h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
 

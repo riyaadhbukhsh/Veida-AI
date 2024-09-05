@@ -135,7 +135,7 @@ function McqsPage() {
     return (
         <div className="mcqs-container">
             <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
-            <h1 className="mcqs-header">Your MCQs for {courseName}</h1>
+            <h1 className="mcqs-header">Your MCQs for {decodedConceptName}</h1>
             {error && <p className="error-message">{error}</p>}
             <div className="question-container">
                 {mcqs.length > 0 ? (

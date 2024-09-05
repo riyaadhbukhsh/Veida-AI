@@ -129,7 +129,7 @@ const NotesPage = () => {
     <div className="main-inline">
       <div className="notes-container">
         <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft /></Link>
-        <h1 className="title">Your Notes for {courseName}</h1>
+        <h1 className="title">Your Notes for {decodedConceptName}</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div id="notes-content" style={{ backgroundColor: '#1e1e1e', color: 'white' }}>
           {parsedNotes ? (
