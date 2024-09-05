@@ -645,6 +645,25 @@ def delete_course(clerk_id, course_name):
     )
     return result.modified_count > 0
 
+def delete_concept(clerk_id, course_name, concept_name):
+    """
+    Delete a concept from a course for a user.
+
+    Args:
+        clerk_id (str): The Clerk ID of the user.
+        course_name (str): The name of the course containing the concept.
+        concept_name (str): The name of the concept to be deleted.
+
+    Returns:
+        bool: True if the operation was successful, False otherwise.
+    """
+    print(f"Deleting concept '{concept_name}' from course '{course_name}' for user '{clerk_id}'")
+    result = courses_collection.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"$pull": {"courses.$.concepts": {"concept_name": concept_name}}}
+    )
+    return result.modified_count > 0
+
 
 def update_lastseen(clerk_id, course_name, card_id):
     """

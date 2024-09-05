@@ -12,14 +12,14 @@ import './details.css';
 import './concept-details.css';
 import "../../../components/course-details.css"
 
-import AddContentModal from '../../../components/AddContentModal';
+import AddContent from '../../../components/AddContent';
 
 
 
 const ConceptDetailsPage = () => {
   const { userId } = useAuth();
   const params = useParams();
-  const [showAddContentModal, setShowAddContentModal] = useState(false);
+  const [showAddContent, setShowAddContent] = useState(false);
   const [pageExists, setPageExists] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -72,7 +72,7 @@ const ConceptDetailsPage = () => {
   }, [conceptName, userId]);
 
   const handleAddContent = () => {
-    setShowAddContentModal(true);
+    setShowAddContent(true);
   };
 
   const handleContentAdded = () => {
@@ -140,9 +140,9 @@ const ConceptDetailsPage = () => {
             </Link>
           </div>
 
-          { showAddContentModal && <AddContentModal
+          { showAddContent && <AddContent
             courseName={conceptName}
-            onClose={() => setShowAddContentModal(false)}
+            onClose={() => setShowAddContent(false)}
             onContentAdded={handleContentAdded}
           />}
         </div>

@@ -88,7 +88,7 @@ function McqsPage() {
         if (!isPremium && currentQuestionIndex >= 2) { // 0-based index, so 2 is the 3rd question
             alert("You have reached your limit on the number of MCQs you can create/study. Upgrade to premium for unlimited access to creating MCQs!");
         }
-        router.push(`/${urlConceptName}`);
+        router.push(`/concept-details/${urlConceptName}?courseName=${courseName}`);
     };
 
     const convertMath = (text) => {

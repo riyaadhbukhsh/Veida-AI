@@ -196,7 +196,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <label htmlFor="date" className="for-date">Exam Date</label>
+                <label htmlFor="date-input" className="for-date">Exam Date</label>
                 <input
                     id="date-input"
                     type="date"

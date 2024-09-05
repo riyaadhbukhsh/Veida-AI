@@ -18,6 +18,7 @@ from helpers.mongo import (
     get_courses,
     get_mcqs,
     delete_course,
+    delete_concept,
     get_due_flashcards,
     edit_flashcard,
     edit_note,
@@ -315,6 +316,91 @@ def create_course_concept():
         return jsonify({"message": "Concept added successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/update_course_concept', methods=['PUT'])
+def update_course_concept():
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    original_concept_name = data.get('original_concept_name')
+    concept_name = data.get('concept_name')
+    concept_description = data.get('concept_description')
+
+    # Debugging logs
+    print(f"Received data: {data}")
+    print(f"clerk_id: {clerk_id}, course_name: {course_name}, original_concept_name: {original_concept_name}, concept_name: {concept_name}, concept_description: {concept_description}")
+
+    if not all([clerk_id, course_name, original_concept_name, concept_name, concept_description]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Fetch the existing course with the concept data
+    existing_course = db.courses.find_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"courses.$": 1}
+    )
+
+    if not existing_course or 'courses' not in existing_course:
+        return jsonify({"error": "Course or concept not found"}), 404
+
+    # Extract the course data
+    course_data = existing_course['courses'][0]
+
+    # Find the existing concept within the course
+    concept_data = next((concept for concept in course_data.get('concepts', []) if concept['concept_name'] == original_concept_name), None)
+    if not concept_data:
+        return jsonify({"error": "Concept not found"}), 404
+
+    # Delete the original concept
+    delete_result = delete_concept(clerk_id, course_name, original_concept_name)
+    if not delete_result:
+        return jsonify({"error": "Failed to delete existing concept"}), 500
+
+    # Prepare the updated concept data
+    updated_concept = {
+        "concept_name": concept_name,
+        "concept_description": concept_description,
+        "concept_flashcards": concept_data.get('concept_flashcards', []),
+        "concept_notes": concept_data.get('concept_notes', []),
+        "concept_multiple_choice_questions": concept_data.get('concept_multiple_choice_questions', []),
+        "review_dates": concept_data.get('review_dates', []),
+    }
+
+    # Add the updated concept back into the course
+    result = db.courses.update_one(
+        {"clerk_id": clerk_id, "courses.course_name": course_name},
+        {"$addToSet": {"courses.$.concepts": updated_concept}}
+    )
+
+    if result.modified_count > 0:
+        return jsonify({"message": "Concept updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update concept"}), 500
+
+@app.route('/api/delete_concept', methods=['DELETE'])
+def route_delete_concept():
+    """
+    Deletes a concept from a course for a user.
+
+    This endpoint accepts a DELETE request with JSON data containing the clerk_id, course_name, and concept_name. 
+    It deletes the specified concept from the given course for the user.
+
+    Returns:
+        tuple: A JSON response indicating success and HTTP status code 200 or 404 if the concept is not found.
+    """
+    data = request.json
+    clerk_id = data.get('clerk_id')
+    course_name = data.get('course_name')
+    concept_name = data.get('concept_name')
+
+    if not all([clerk_id, course_name, concept_name]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    result = delete_concept(clerk_id, course_name, concept_name)
+    if result:
+        return jsonify({"message": "Concept deleted successfully"}), 200
+    else:
+        return jsonify({"error": "Concept not found"}), 404
+
     
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():

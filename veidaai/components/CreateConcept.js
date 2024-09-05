@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
 import Loading from './loading';
 
-const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
+const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -125,7 +125,7 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
             />
           </div>
           <div className="file-input-wrapper">
-            <div className="file-input-button">Upload concept File (PDF, PNG, JPG, TXT)</div>
+            <div className="file-input-button">Upload Concept File (PDF, PNG, JPG, TXT)</div>
             <input
               type="file"
               onChange={handleFileChange}
@@ -149,4 +149,4 @@ const AddConceptModal = ({ courseName, onClose, onConceptAdded }) => {
   );
 };
 
-export default AddConceptModal;
+export default CreateConcept;
