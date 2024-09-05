@@ -234,7 +234,7 @@ def update_course():
         return jsonify({"error": "Missing required fields"}), 400
 
     # Fetch the existing course data
-    existing_course = db.courses_test_3.find_one(
+    existing_course = db.courses.find_one(
         {"clerk_id": clerk_id, "courses.course_name": original_course_name},
         {"courses.$": 1}
     )
@@ -249,9 +249,6 @@ def update_course():
     if not delete_result:
         return jsonify({"error": "Failed to delete existing course"}), 500
 
-    # Generate new review dates based on the new exam date
-    start_date = datetime.now()
-    review_dates = generate_review_dates(start_date, exam_date)
 
     # Create a new course with the updated content and existing associated data
     new_course = {
@@ -263,7 +260,7 @@ def update_course():
         "updated_at": datetime.now()
     }
     try:
-        result = db.courses_test_3.update_one(
+        result = db.courses.update_one(
 
             {"clerk_id": clerk_id},
             {"$addToSet": {"courses": new_course}},
@@ -293,29 +290,32 @@ def create_course_concept():
     start_date = datetime.now()
     exam_date_str = get_course_exam_date(clerk_id, course_name).get('exam_date', '')
 
-    if not exam_date_str:  # Check if the string is empty
-        return jsonify({"error": "Exam date is missing."}), 400  # Return an error response
+    if not exam_date_str:
+        return jsonify({"error": "Exam date is missing."}), 400
 
     try:
-        exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
-    except ValueError as e:
-        return jsonify({"error": "Invalid exam date format."}), 400    
+        exam_date = exam_date_str
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": "Invalid exam date format or type."}), 400
+
+    # Generate review dates based on start date and exam date
     review_dates = generate_review_dates(start_date, exam_date)
 
-    #Add review_dates and times_seen to each flashcard
-
+    # Add review_dates and times_seen to each flashcard
     try:
         for flashcard in concept_flashcards:
             flashcard['review_dates'] = review_dates
             flashcard['times_seen'] = 0
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+    # Add the concept
     try:
         add_concept(clerk_id, course_name, concept_name, concept_description, concept_mcqs, concept_flashcards, concept_notes)
-
         return jsonify({"message": "Concept added successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/check_premium_status', methods=['GET'])
 def route_check_premium_status():
     clerk_id = request.args.get('clerk_id')
@@ -373,6 +373,18 @@ def extract_text():
         # Generate content
         notes = generate_notes(extracted_text)
         mc_questions = generate_mc_questions(notes)
+
+        for mcq in mc_questions:
+            if 'correct_answer' in mcq and 'possible_answers' in mcq:
+                try:
+                    mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+                except ValueError:
+                    # Skip this MCQ and continue with the next one
+                    continue
+            else:
+                # Skip this MCQ if it doesn't have 'correct_answer' or 'possible_answers' fields
+                continue
+
         flashcards = generate_flashcards(notes)
 
         # Check if generated content is empty

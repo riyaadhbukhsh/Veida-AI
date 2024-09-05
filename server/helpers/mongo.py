@@ -13,7 +13,7 @@ load_dotenv()
 mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
-courses_collection = db['courses_test_3']
+courses_collection = db['courses']
 
 #!Database reformate purposes
 #courses_collection = db["courses_test"]
@@ -28,6 +28,17 @@ def reformat_courses_collection_user(clerk_id):
     new_courses = []
     if user_courses:
         for course in user_courses['courses']:
+
+            for mcq in course['multiple_choice_questions']:
+                if 'correct_answer' in mcq and 'possible_answers' in mcq:
+                    try:
+                        mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
+                    except ValueError:
+                        print(f"Warning: Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'. Skipping this MCQ.")
+                        continue
+                else:
+                    print(f"Warning: MCQ is missing 'correct_answer' or 'possible_answers'. Skipping this MCQ.")
+                    continue
             
             new_course = {
                 "course_name": course['course_name'],
@@ -316,7 +327,6 @@ def make_course(clerk_id, course_name, description, exam_date ):
         exam_date (datetime): The due date for the course.
         flashcards (list): A list of flashcards for the course.
         course_schedule (list): A list of course schedules.
-        multiple_choice_questions (list): A list of MCQs for the course.
 
     Returns:
         None
@@ -464,7 +474,7 @@ def get_mcqs(clerk_id, course_name,concept_name):
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course['course_name'] == course_name:
-                for concept in course['concepts']:
+                for concept in course.get('concepts', []):
                     if concept['concept_name'] == concept_name:
 
                         if not is_premium:
@@ -495,7 +505,7 @@ def get_flashcards(clerk_id, course_name,concept_name):
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course['course_name'] == course_name:
-                for concept in course['concepts']:
+                for concept in course.get('concepts', []):
                     if concept['concept_name'] == concept_name:
                         return concept['concept_flashcards']
     return None
@@ -512,7 +522,7 @@ def get_due_flashcards(clerk_id):
     
     due_flashcards = []
     for course in user['courses']:
-        for concept in course['concepts']:
+        for concept in course.get('concepts', []):
             for flashcard in concept['concept_flashcards']:
                 if today in flashcard.get('review_dates', []):
                     due_flashcards.append(flashcard)
@@ -807,6 +817,7 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     """
     today = datetime.datetime.now().date().strftime("%Y-%m-%d")
     query = {"clerk_id": clerk_id}
+
     if course_name:
         query["courses.course_name"] = course_name
 
@@ -816,7 +827,7 @@ def get_flashcards_with_today_study_date(clerk_id, course_name=None):
     if user_courses and 'courses' in user_courses:
         for course in user_courses['courses']:
             if course_name is None or course['course_name'] == course_name:
-                for concept in course['concepts']:
+                for concept in course.get('concepts', []):
                     for card in concept['concept_flashcards']:
                         if today in card.get('review_dates', []):
                             flashcards_today.append(card)
@@ -870,6 +881,6 @@ def get_course_concepts(clerk_id, course_name):
     concepts = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
     if concepts and 'courses' in concepts:
         for course in concepts['courses']:
-            if course['course_name'] == course_name:
+            if course['course_name'] == course_name and course.get('concepts'):
                 return course['concepts']
     return []

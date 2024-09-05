@@ -7,7 +7,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { useParams,useSearchParams } from 'next/navigation';
-import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import 'katex/dist/katex.min.css';

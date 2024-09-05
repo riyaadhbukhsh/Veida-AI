@@ -149,8 +149,6 @@ def generate_mc_questions(notes):
 
     initial_content = """
             You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
-            
-            Each question should be followed by EXACTLY 4 answer options (no need to include an answer letter), a correct answer choice, and an in-depth, yet concise explanation of the right and wrong answer choices.
 
             For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
 
@@ -170,6 +168,10 @@ def generate_mc_questions(notes):
                 Example: How would you calculate the gravitational force between the Earth and the Moon using Newton's Law of Gravity?
 
             Please generate exactly 7 multiple-choice questions based on the provided concept and principles.
+                        
+            Each question should be followed by EXACTLY 4 answer options (do not include an answer letter), a correct answer choice. 
+            
+            For each answer choice, the "why" must be an in-depth and concise explanation of both the right and wrong answer choices.
 
             For the correct answer field, you are to copy the exact text from the correct "possible_answers" option to "correct_answer".
             

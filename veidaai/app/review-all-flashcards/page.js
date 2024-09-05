@@ -3,7 +3,6 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from "@clerk/nextjs";
-import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import FlashCard from '@/components/FlashCard';
 import './flashcards-page.css';
