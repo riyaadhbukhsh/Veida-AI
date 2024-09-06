@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
 import Loading from './loading';
 
-const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
+const AddContent = ({ courseName, onClose, onContentAdded }) => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -121,4 +121,4 @@ const AddContentModal = ({ courseName, onClose, onContentAdded }) => {
   );
 };
 
-export default AddContentModal;
+export default AddContent;

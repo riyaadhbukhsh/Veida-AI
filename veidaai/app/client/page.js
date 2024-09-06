@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from "@clerk/nextjs";
 import EditCourse from "../../components/EditCourse";
 import { useNotification } from "../../context/NotificationContext"; // Adjust the import path as necessary
+import { formatURL } from '@/app/helpers';
 
 const ClientPage = () => {
   const { isSignedIn, userId } = useAuth();
@@ -63,6 +64,7 @@ const ClientPage = () => {
         const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`);
         if (response.ok) {
             const data = await response.json();
+            console.log(data);
             setHasNotification(data.flashcards.length > 0);
             setFlashcardsDue(data.flashcards.length);
         }
@@ -107,13 +109,6 @@ const ClientPage = () => {
     }
   };
 
-  function formatCourseName(courseName) {
-    if (!courseName) return '';
-    let hyphenated = courseName.replace(/\s+/g, '-')
-    let encoded = encodeURIComponent(hyphenated);
-    return encoded;
-  }
-
   if (!isSignedIn) {
     return null; // Return null to avoid rendering anything while redirecting
   }
@@ -129,7 +124,7 @@ const ClientPage = () => {
         {courses.length > 0 ? (
           courses.map((course, index) => (
             <div key={index} className="course-card">
-              <Link href={`/${formatCourseName(course.course_name)}`} className="course-link">
+              <Link href={`/${formatURL(course.course_name)}`} className="course-link">
                 <h2>{course.course_name || 'Unnamed Course'}</h2>
               </Link>
               <button className="edit-course-button" onClick={() => handleEditCourse(course)}>

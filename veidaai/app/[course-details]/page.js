@@ -7,6 +7,7 @@ import CourseDetails from '../../components/CourseDetails';
 import NotFound from '../not-found';
 import Loading from '../../components/loading';
 import './details.css'; // Ensure this import is correct
+import { unformatURL } from '@/app/helpers';
 
 export default function CourseDetailsPage() {
   const { userId } = useAuth();
@@ -17,14 +18,8 @@ export default function CourseDetailsPage() {
   
 
   const urlCourseName = params['course-details'];
-
-  function unformatCourseName(urlCourseName) {
-    let decoded = decodeURIComponent(urlCourseName);
-    let unhyphenated = decoded.replace(/-/g, ' ');
-    return unhyphenated.trim();
-  }
   
-  const courseName = unformatCourseName(urlCourseName);
+  const courseName = unformatURL(urlCourseName);
 
   useEffect(() => {
     let isMounted = true;

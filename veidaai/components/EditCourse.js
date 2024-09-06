@@ -127,20 +127,26 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Edit Course</h2>
+      <label htmlFor="course-name-input">Course Name</label>
       <input
+        id="course-name-input"
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Course Name"
         required
       />
+      <label htmlFor="course-description-input">Course Description</label>
       <textarea
+        id="course-description-input"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Course Description"
         required
       />
+      <label htmlFor="date-input" className="for-date">Exam Date</label>
       <input
+        id="date-input"
         type="date"
         value={examDate}
         onChange={(e) => setExamDate(e.target.value)}

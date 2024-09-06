@@ -7,19 +7,19 @@ import { useAuth } from "@clerk/nextjs";
 import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
 import NotFound from '../../not-found';
 import Loading from '../../../components/loading';
-import { formatURL } from '@/app/helpers';
+import { formatURL, unformatURL } from '@/app/helpers';
 import './details.css'; 
 import './concept-details.css';
 import "../../../components/course-details.css"
 
-import AddContentModal from '../../../components/AddContentModal';
+import AddContent from '../../../components/AddContent';
 
 
 
 const ConceptDetailsPage = () => {
   const { userId } = useAuth();
   const params = useParams();
-  const [showAddContentModal, setShowAddContentModal] = useState(false);
+  const [showAddContent, setShowAddContent] = useState(false);
   const [pageExists, setPageExists] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,15 +30,8 @@ const ConceptDetailsPage = () => {
   // Access the query parameter from the URL
   const courseName = useSearchParams().get('courseName');
 
-
-
-  function unformatConceptName(urlConceptName) {
-    let decoded = decodeURIComponent(urlConceptName);
-    let unhyphenated = decoded.replace(/-/g, ' ');
-    return unhyphenated.trim();
-  }
   
-  const conceptName = unformatConceptName(urlConceptName);
+  const conceptName = unformatURL(urlConceptName);
 
   useEffect(() => {
     let isMounted = true;
@@ -79,7 +72,7 @@ const ConceptDetailsPage = () => {
   }, [conceptName, userId]);
 
   const handleAddContent = () => {
-    setShowAddContentModal(true);
+    setShowAddContent(true);
   };
 
   const handleContentAdded = () => {
@@ -104,17 +97,11 @@ const ConceptDetailsPage = () => {
       </div>
     );
   }
-  function formatCourseName(courseName) {
-    if (!courseName) return '';
-    let hyphenated = courseName.replace(/\s+/g, '-');
-    let encoded = encodeURIComponent(hyphenated);
-    return encoded;
-  }
 
   return (
 
   <div className= "concept-details-container">
-    <Link href={`/${formatCourseName(courseName)}`} title={'back to your courses'} className="course-back-arrow-link"><FaArrowLeft/></Link>
+    <Link href={`/${formatURL(courseName)}`} title={'back to your courses'} className="course-back-arrow-link"><FaArrowLeft/></Link>
       <div id="concept-page">
 
           <h2 className="concept-title">{courseName}: {conceptName}</h2>
@@ -153,9 +140,9 @@ const ConceptDetailsPage = () => {
             </Link>
           </div>
 
-          { showAddContentModal && <AddContentModal
+          { showAddContent && <AddContent
             courseName={conceptName}
-            onClose={() => setShowAddContentModal(false)}
+            onClose={() => setShowAddContent(false)}
             onContentAdded={handleContentAdded}
           />}
         </div>

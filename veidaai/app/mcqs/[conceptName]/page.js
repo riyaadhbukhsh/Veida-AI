@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import './mcqs-page.css';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { unformatURL } from '@/app/helpers';
 
 function McqsPage() {
     const { userId } = useAuth();
@@ -20,16 +20,10 @@ function McqsPage() {
     const [isPremium, setIsPremium] = useState(false);
     const router = useRouter();
 
-    function unformatConceptName(urlConceptName) {
-        let decoded = decodeURIComponent(urlConceptName);
-        let unhyphenated = decoded.replace(/-/g, ' ');
-        return unhyphenated.trim();
-      }
     const params = useParams();
     const courseName = useSearchParams().get('courseName');
     const urlConceptName = params.conceptName;
-    const decodedConceptName = unformatConceptName(urlConceptName);
-    console.log(decodedConceptName);
+    const decodedConceptName = unformatURL(urlConceptName);
 
     const fetchMcqs = async () => {
         try {
@@ -94,7 +88,7 @@ function McqsPage() {
         if (!isPremium && currentQuestionIndex >= 2) { // 0-based index, so 2 is the 3rd question
             alert("You have reached your limit on the number of MCQs you can create/study. Upgrade to premium for unlimited access to creating MCQs!");
         }
-        router.push(`/${urlCourseName}`);
+        router.push(`/concept-details/${urlConceptName}?courseName=${courseName}`);
     };
 
     const convertMath = (text) => {
@@ -135,12 +129,13 @@ function McqsPage() {
     
 
     const currentQuestion = mcqs[currentQuestionIndex];
+    console.log(currentQuestion)
     const isCorrect = currentQuestion && selectedAnswer !== null && selectedAnswer === currentQuestion.correct_answer_index;
 
     return (
         <div className="mcqs-container">
             <Link href={`/concept-details/${urlConceptName}?courseName=${courseName}`} title={`back to ${courseName}`} className="back-arrow-link"><FaArrowLeft/></Link>
-            <h1 className="mcqs-header">Your MCQs for {courseName}</h1>
+            <h1 className="mcqs-header">Your MCQs for {decodedConceptName}</h1>
             {error && <p className="error-message">{error}</p>}
             <div className="question-container">
                 {mcqs.length > 0 ? (

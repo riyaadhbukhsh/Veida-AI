@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { useAuth } from "@clerk/nextjs";
 import { useParams,useSearchParams } from 'next/navigation';
 import FlashCard from '@/components/FlashCard';
-import { unformatURL } from '@/app/helpers';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNotification } from '../../../context/NotificationContext';
 import './flashcards-page.css';
+import { unformatURL } from '@/app/helpers';
 
 function FlashcardPage() {
     const [flashcards, setFlashcards] = useState([]);
@@ -30,17 +30,10 @@ function FlashcardPage() {
     const flashcardRef = useRef();
     
 
-
-
-    function unformatConceptName(urlConceptName) {
-        let decoded = decodeURIComponent(urlConceptName);
-        let unhyphenated = decoded.replace(/-/g, ' ');
-        return unhyphenated.trim();
-      }
     const params = useParams();
     const courseName = useSearchParams().get('courseName');
     const urlConceptName = params.conceptName;
-    const decodedConceptName = unformatConceptName(urlConceptName);
+    const decodedConceptName = unformatURL(urlConceptName);
 
 
 
@@ -240,7 +233,7 @@ function FlashcardPage() {
                 </Link>
             )}
             <h1 className="flashcard-title">
-                {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${courseName}`}
+                {reviewing ? `${courseName} Flashcard Review` : `Your Flashcards for ${decodedConceptName}`}
             </h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
