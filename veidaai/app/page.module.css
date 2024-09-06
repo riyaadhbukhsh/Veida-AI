@@ -394,8 +394,12 @@ img.neuronIcon {
     padding: 0 2rex;
   }
 
-  #featurePreviewSection > h2 {
-    margin-bottom: 1rem;
+  #featurePreviewSection > div > h2 {
+    margin-bottom: 0rem;
+  }
+
+  #featurePreviewSection > div > p {
+    margin-top: 0;
   }
 
   /* #featurePreviewSection > * {
@@ -483,8 +487,14 @@ img.neuronIcon {
     border: 1px solid cyan;
   } */
 
+  div.galleryFeature h3 {
+    padding: 0.7rem 0;
+  }
+
   div.galleryFeature p {
     font-size: var(--p2);
+    padding-left: 0 !important; /*I have no idea what specificity I'm overriding*/
+    /* border: 1px solid yellow; */
   }
 
   div.galleryFeature > img {
@@ -492,6 +502,7 @@ img.neuronIcon {
     width: var(--gallery-feature-width);
     height: 300px;
     border: 1px solid var(--gray);
+    border-radius: 8px;
   }
 
   /*target notes image for custom object-fit & object-position*/
