@@ -13,7 +13,13 @@ export default function Home() {
   const router = useRouter();
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
   const [isMobile, setIsMobile] = useState(true);
-  const [slide, setSlide] = useState(1);
+  const [slide, setSlide] = useState({num: null, ref: null});
+  const mobileGalleryRef = useRef(null);
+  const mobileFlashcardSlideRef = useRef(null);
+  const mobileMcqSlideRef = useRef(null);
+  const mobileNotesSlideRef = useRef(null);
+
+  useEffect(()=>setSlide({num: 1, ref: mobileFlashcardSlideRef}), []);
   // const vantaRef = useRef(null);
   // useEffect(() => {
   //   const vantaEffect = RINGS({
@@ -43,17 +49,42 @@ export default function Home() {
   // }, []);
 
   function galleryButtonOnClick(direction) {
-    if (direction.localeCompare('left') == 0) {
-      setSlide( slide == 1 ? 3 : slide -1 );
+    let newSlideNum;
+
+    if (direction === 'left') {
+      newSlideNum = slide.num === 1 ? 3 : slide.num -1;
     }
 
-    else if (direction.localeCompare('right') == 0){
-      setSlide( (slide % 3) + 1 );
+    else if (direction === 'right'){
+      newSlideNum = (slide.num % 3) + 1;
     }
 
     else {
       console.error('error: mobile gallery buttons');
+      return;
     }
+
+    let newRef;
+    switch(newSlideNum) {
+      case 1:
+        newRef = mobileFlashcardSlideRef;
+        break;
+      case 2: 
+        newRef = mobileMcqSlideRef;
+        break;
+      case 3: 
+        newRef = mobileNotesSlideRef;
+        break;
+    }
+
+    setSlide({ num: newSlideNum, ref: newRef });
+    newRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest'});
+    // mobileGalleryRef.current?.scrollTo({
+      // left: newRef.offsetLeft - (mobileGalleryRef.current.clientWidth - newRef.offsetLeft) / 2,
+    //   left: newRef.current.getBoundingClientRect().left,
+    //   behavior: 'smooth'
+    // });
+    // console.log(newRef.current.getBoundingClientRect().left);
   }
 
   return (
@@ -134,7 +165,7 @@ export default function Home() {
               // return this jsx if screen-size is mobile
               <>
                 <div className={styles.galleryNav}>
-                  <p>{`${slide}/3`}</p>
+                  <p>{`${slide.num}/3`}</p>
                   <div>
                     <button onClick={()=>galleryButtonOnClick('left')}>
                       &#65308;
@@ -145,8 +176,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div id={styles.gallery}>
-                  <div className={styles.galleryFeature}>
+                <div id={styles.gallery} ref={mobileGalleryRef}>
+                  <div className={styles.galleryFeature} ref={mobileFlashcardSlideRef}>
                     <img 
                         src="feature-flashcards.png" 
                         alt="preview of flashcards feature"
@@ -158,7 +189,7 @@ export default function Home() {
                     <button className="secondary">Generate your own</button>
                   </div>
 
-                  <div className={styles.galleryFeature}>
+                  <div className={styles.galleryFeature} ref={mobileMcqSlideRef}>
                     <img 
                       src="feature-mcqs.png" 
                       alt="preview of quiz feature" 
@@ -171,7 +202,7 @@ export default function Home() {
                   </div>
 
                   
-                  <div className={styles.galleryFeature}>
+                  <div className={styles.galleryFeature} ref={mobileNotesSlideRef}>
                     <img
                       id={styles.mobileGalleryNotesImg}
                       src="feature-notes.png" 

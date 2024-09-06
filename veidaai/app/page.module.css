@@ -463,15 +463,16 @@ img.neuronIcon {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
-    align-items: flex-start;
     overflow-x: scroll;
-    gap: 4rex;
+    align-items: flex-start;
+    gap: 3rex;
 
     position: relative;
     left: -3rex;
-    width: 100vw !important;
-    --gallery-feature-width: 81vw;
     padding: 0 2rex;
+    
+    width: 100vw !important;
+    --gallery-feature-width: 81vw; /*pass this var down to .galleryFeature children*/
 
     /*snap scrolling for children*/
     scroll-snap-type: x mandatory;
@@ -505,8 +506,8 @@ img.neuronIcon {
   img#mobileGalleryNotesImg {
     object-fit: cover;
     object-position: -20px top;
-    width: var(--gallery-feature-width);
-    height: 300px;
+    /* width: var(--gallery-feature-width);
+    height: 300px; */
   }
 }
 
