@@ -21,7 +21,7 @@ body {
   --h2: 1.8rem;
   --h3: 1.04rem; /*26px*/
   --p1: 1.00rem; /*25px*/
-  --p2: 0.88rem; /*22px*/
+  --p2: 0.95rem;
 
   color: var(--white);
   background-color: var(--black);

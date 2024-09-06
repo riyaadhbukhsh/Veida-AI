@@ -413,9 +413,7 @@ img.neuronIcon {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-
     width: 100%;
-
     /* border: 1px solid yellow; */
   }
 
@@ -426,30 +424,27 @@ img.neuronIcon {
     justify-content: space-evenly;
     align-items: center;
 
-    width: 33%;
+    width: 35%;
     padding: 0rem;
     margin: 0;
-
-    /* border: 1px solid cyan; */
   }
 
   /* arrow buttons */
   div.galleryNav button {
-    width: 3.5rex;
-    height: 3.5rex;
+    --size: 5rex;
+    width: var(--size);
+    height: var(--size);
     padding: 0;
     margin: 0;
     margin-top: 0px !important; /*override the the margin-top I set for #siteWrapper button*/
 
+    font-size: 1.4rem;
     font-weight: bold;
 
     color: var(--white);
     border: 2px solid var(--white);
     border-radius: 50%; /*circle mode*/
     background-color: transparent;
-
-    /*transition detracts instead of adding visual value*/
-    /* transition: color 0.6s ease, border-color 0.6s ease; */
   }
 
   div.galleryNav button:hover,
@@ -458,17 +453,55 @@ img.neuronIcon {
     border-color: var(--accent);
   }
 
+  /*let the gallery spill off-screen*/
+  div#featurePreviewSection,
+  div#featurePreviewSection > div
+   {
+    overflow-x: visible !important;
+  }
+  
+  div#gallery {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /* overflow-x: visible; */
+    overflow-x: scroll;
+    gap: 4rex;
+
+    position: relative;
+    left: -3rex;
+    /* width: calc(100vw - 3rex) !important; */
+    width: 100vw !important;
+    --gallery-feature-width: 81vw;
+    padding: 0 2rex;
+
+    /* border: 1px solid yellow; */
+  }
+
+  /* div.galleryFeature {
+    border: 1px solid cyan;
+  } */
+
+  div.galleryFeature p {
+    font-size: var(--p2);
+  }
+
   div.galleryFeature > img {
     object-fit: contain;
+    width: var(--gallery-feature-width);
+    height: 300px;
     border: 1px solid var(--gray);
   }
 
-  /* #siteWrapper > div:nth-child(3) {
-    border: 1px solid lime;
-  } */
-
-  /*target notes image for object-fit cover*/
-
+  /*target notes image for custom object-fit & object-position*/
+  img#mobileGalleryNotesImg {
+    object-fit: cover;
+    object-position: -20px top;
+    /* width: 100%; */
+    width: var(--gallery-feature-width);
+    height: 300px;
+  }
 }
 
 /********************************/

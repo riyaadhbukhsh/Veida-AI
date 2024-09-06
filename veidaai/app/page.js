@@ -145,41 +145,44 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className={styles.galleryFeature}>
-                  <h3 className={styles.galleryTitle}>Flashcards</h3>
-                  <p className={styles.galleryDescr}>Test your memory on key ideas & important vocabulary</p>
-                  <img 
-                      src="feature-flashcards.png" 
-                      alt="preview of flashcards feature"
-                      width={400}
+                <div id={styles.gallery}>
+                  <div className={styles.galleryFeature}>
+                    <img 
+                        src="feature-flashcards.png" 
+                        alt="preview of flashcards feature"
+                        width={400}
+                        height={400}
+                    />
+                    <h3 className={styles.galleryTitle}>Flashcards</h3>
+                    <p className={styles.galleryDescr}>Test your memory on key ideas & important vocabulary</p>
+                    <button className="secondary">Generate your own</button>
+                  </div>
+
+                  <div className={styles.galleryFeature}>
+                    <img 
+                      src="feature-mcqs.png" 
+                      alt="preview of quiz feature" 
+                      width={400} 
                       height={400}
-                  />
-                  <button className="secondary">Generate your own</button>
-                </div>
+                    />
+                    <h3 className={styles.galleryTitle}>Multiple Choice Questions</h3>
+                    <p className={styles.galleryDescr}>MCQs test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
+                    <button className="secondary">Generate your own</button>
+                  </div>
 
-                <div className={styles.galleryFeature}>
-                  <h3 className={styles.galleryTitle}>Multiple Choice Questions</h3>
-                  <p className={styles.galleryDescr}>MCQs test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
-                  <img 
-                    src="feature-mcqs.png" 
-                    alt="preview of quiz feature" 
-                    width={400} 
-                    height={400}
-                  />
-                  <button className="secondary">Generate your own</button>
-                </div>
-
-                
-                <div className={styles.galleryFeature}>
-                  <h3 className={styles.galleryTitle}>Outlined Notes</h3>
-                  <p className={styles.galleryDescr}>Outlined summaries focus on main ideas, sub-concepts, key details, and definitions.</p>
-                  <img 
-                    src="feature-notes.png" 
-                    alt="preview of notes feature" 
-                    width={400} 
-                    height={400}
-                  />
-                  <button className="secondary">Generate your own</button>
+                  
+                  <div className={styles.galleryFeature}>
+                    <img
+                      id={styles.mobileGalleryNotesImg}
+                      src="feature-notes.png" 
+                      alt="preview of notes feature" 
+                      width={400} 
+                      height={400}
+                    />
+                    <h3 className={styles.galleryTitle}>Outlined Notes</h3>
+                    <p className={styles.galleryDescr}>Outlined summaries focus on main ideas, sub-concepts, key details, and definitions.</p>
+                    <button className="secondary">Generate your own</button>
+                  </div>
                 </div>
               </> 
             :
