@@ -6,8 +6,6 @@ import Head from 'next/head';
 import styles from './page.module.css';
 import "./globals.css";
 import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } from 'react-icons/fa';
-// import * as THREE from 'three';
-// import RINGS from 'vanta/dist/vanta.rings.min';
 
 export default function Home() {
   const router = useRouter();
@@ -20,33 +18,6 @@ export default function Home() {
   const mobileNotesSlideRef = useRef(null);
 
   useEffect(()=>setSlide({num: 1, ref: mobileFlashcardSlideRef}), []);
-  // const vantaRef = useRef(null);
-  // useEffect(() => {
-  //   const vantaEffect = RINGS({
-  //     el: vantaRef.current,
-  //     THREE: THREE,
-  //     mouseControls: true,
-  //     touchControls: true,
-  //     gyroControls: false,
-  //     minHeight: 200.00,
-  //     minWidth: 200.00,
-  //     scale: 1.00,
-  //     scaleMobile: 1.00,
-  //     color: 0x1e1e1e,
-  //     backgroundColor: 0x1e1e1e
-  //   });
-
-  //   const resizeVanta = () => {
-  //     vantaEffect.resize();
-  //   };
-
-  //   window.addEventListener('resize', resizeVanta);
-
-  //   return () => {
-  //     if (vantaEffect) vantaEffect.destroy();
-  //     window.removeEventListener('resize', resizeVanta);
-  //   };
-  // }, []);
 
   function galleryButtonOnClick(direction) {
     let newSlideNum;
@@ -79,12 +50,6 @@ export default function Home() {
 
     setSlide({ num: newSlideNum, ref: newRef });
     newRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest'});
-    // mobileGalleryRef.current?.scrollTo({
-      // left: newRef.offsetLeft - (mobileGalleryRef.current.clientWidth - newRef.offsetLeft) / 2,
-    //   left: newRef.current.getBoundingClientRect().left,
-    //   behavior: 'smooth'
-    // });
-    // console.log(newRef.current.getBoundingClientRect().left);
   }
 
   return (
@@ -95,20 +60,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div id={styles.siteWrapper}> 
-      {/* <div className={styles.main}> */}
-        {/* <div ref={vantaRef} className={styles.vantaContainer}></div> */}
-        {/* <div className={styles.contentContainer}> */}
         <div className="container" id={styles.landingSection}>  
           <div className="double-column-container">
-          {/* <section className={styles.hookSection}> */}
-            {/* <div className={styles.hookText}> */}
           <div className="feature-column-text">
             <h1>{`Professors Hate Us.\nSkip Classes.\nAce Finals.`}</h1>
             <p>
               {`We\'re your all-in-one academic weapon. Summarize your lectures, generate study plans, and track your progress. No more stress. No more confusion.`}
             </p>
             <button  
-              // className={styles.ctaButton}
               className="primary"
               onClick={() => router.push('/client')}
             >
@@ -125,7 +84,6 @@ export default function Home() {
               height={340}
             />
           </div>
-          {/* </section> */}
           </div>
         </div>
 
