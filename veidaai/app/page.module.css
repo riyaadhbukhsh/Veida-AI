@@ -394,17 +394,13 @@ img.neuronIcon {
     padding: 0 2rex;
   }
 
-  #featurePreviewSection > div > h2 {
+  #featurePreviewSection h2:first-child {
     margin-bottom: 0rem;
   }
 
   #featurePreviewSection > div > p {
     margin-top: 0;
   }
-
-  /* #featurePreviewSection > * {
-    border: 1px solid red;
-  } */
 
   #featurePreviewSection {
     gap: 0;
@@ -418,7 +414,6 @@ img.neuronIcon {
     flex-flow: row nowrap;
     justify-content: space-between;
     width: 100%;
-    /* border: 1px solid yellow; */
   }
 
   /* arrow buttons container */
@@ -457,7 +452,7 @@ img.neuronIcon {
     border-color: var(--accent);
   }
 
-  /*let the gallery spill off-screen*/
+  /* let the gallery spill off-screen */
   div#featurePreviewSection,
   div#featurePreviewSection > div
    {
@@ -469,23 +464,24 @@ img.neuronIcon {
     flex-flow: row nowrap;
     justify-content: flex-start;
     align-items: flex-start;
-    /* overflow-x: visible; */
     overflow-x: scroll;
     gap: 4rex;
 
     position: relative;
     left: -3rex;
-    /* width: calc(100vw - 3rex) !important; */
     width: 100vw !important;
     --gallery-feature-width: 81vw;
     padding: 0 2rex;
 
-    /* border: 1px solid yellow; */
+    /*snap scrolling for children*/
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
   }
 
-  /* div.galleryFeature {
-    border: 1px solid cyan;
-  } */
+  div.galleryFeature {
+    flex: 0 0 var(--gallery-feature-width); /*rigid size, no shrink, no grow*/
+    scroll-snap-align: center; /*snap to center of viewport*/
+  }
 
   div.galleryFeature h3 {
     padding: 0.7rem 0;
@@ -494,22 +490,21 @@ img.neuronIcon {
   div.galleryFeature p {
     font-size: var(--p2);
     padding-left: 0 !important; /*I have no idea what specificity I'm overriding*/
-    /* border: 1px solid yellow; */
   }
 
   div.galleryFeature > img {
     object-fit: contain;
     width: var(--gallery-feature-width);
     height: 300px;
+
     border: 1px solid var(--gray);
     border-radius: 8px;
   }
 
-  /*target notes image for custom object-fit & object-position*/
+  /* target notes image for custom object-fit & object-position */
   img#mobileGalleryNotesImg {
     object-fit: cover;
     object-position: -20px top;
-    /* width: 100%; */
     width: var(--gallery-feature-width);
     height: 300px;
   }
