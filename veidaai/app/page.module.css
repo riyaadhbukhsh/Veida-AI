@@ -245,9 +245,8 @@ img.neuronIcon {
 }
 
 /*********************/
-/* MOBILE FORMATTING */
+/* TABLET FORMATTING */
 /*********************/
-
 @media screen and (max-width: 1200px) {
   ul#featureMenu li {
     font-size: calc(var(--h2) * 0.6);
@@ -270,6 +269,9 @@ img.neuronIcon {
   }
 }
 
+/*********************/
+/* MOBILE FORMATTING */
+/*********************/
 @media screen and (max-width: 781px) {
   ul#featureMenu {
     height: 10rem;
@@ -342,9 +344,9 @@ img.neuronIcon {
   /* #siteWrapper > div { border: 1px solid red }
   #siteWrapper > div > div { border: 1px solid yellow } */
   
-  /**********************************/
-  /* Section 1 - PROFESSORS HATE US */
-  /**********************************/
+  /*******************************************/
+  /* MOBILE - Section 1 - PROFESSORS HATE US */
+  /*******************************************/
 
   /* put the image first! */
   #landingSection {
@@ -382,9 +384,10 @@ img.neuronIcon {
     white-space: pre-line;
   }
 
-  /************************************/
-  /* Section 3 - AI GENERATES YOUR... */
-  /************************************/
+  /*********************************************/
+  /* MOBILE - Section 3 - AI GENERATES YOUR... */
+  /*********************************************/
+
   /* add paddings to these since they aren't in column containers */
   #featurePreviewSection h2,
   #featurePreviewSection p {
@@ -402,6 +405,69 @@ img.neuronIcon {
   #featurePreviewSection {
     gap: 0;
   }
+
+  /**************************/
+  /* mobile feature gallery */
+  /**************************/
+  div.galleryNav {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+
+    width: 100%;
+
+    /* border: 1px solid yellow; */
+  }
+
+  /* arrow buttons container */
+  div.galleryNav > div {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-evenly;
+    align-items: center;
+
+    width: 33%;
+    padding: 0rem;
+    margin: 0;
+
+    /* border: 1px solid cyan; */
+  }
+
+  /* arrow buttons */
+  div.galleryNav button {
+    width: 3.5rex;
+    height: 3.5rex;
+    padding: 0;
+    margin: 0;
+    margin-top: 0px !important; /*override the the margin-top I set for #siteWrapper button*/
+
+    font-weight: bold;
+
+    color: var(--white);
+    border: 2px solid var(--white);
+    border-radius: 50%; /*circle mode*/
+    background-color: transparent;
+
+    /*transition detracts instead of adding visual value*/
+    /* transition: color 0.6s ease, border-color 0.6s ease; */
+  }
+
+  div.galleryNav button:hover,
+  div.galleryNav button:active {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  div.galleryFeature > img {
+    object-fit: contain;
+    border: 1px solid var(--gray);
+  }
+
+  /* #siteWrapper > div:nth-child(3) {
+    border: 1px solid lime;
+  } */
+
+  /*target notes image for object-fit cover*/
 
 }
 

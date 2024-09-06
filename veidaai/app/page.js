@@ -12,7 +12,8 @@ import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } fro
 export default function Home() {
   const router = useRouter();
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const [slide, setSlide] = useState(1);
   // const vantaRef = useRef(null);
   // useEffect(() => {
   //   const vantaEffect = RINGS({
@@ -40,6 +41,20 @@ export default function Home() {
   //     window.removeEventListener('resize', resizeVanta);
   //   };
   // }, []);
+
+  function galleryButtonOnClick(direction) {
+    if (direction.localeCompare('left') == 0) {
+      setSlide( slide == 1 ? 3 : slide -1 );
+    }
+
+    else if (direction.localeCompare('right') == 0){
+      setSlide( (slide % 3) + 1 );
+    }
+
+    else {
+      console.error('error: mobile gallery buttons');
+    }
+  }
 
   return (
     <>
@@ -118,13 +133,53 @@ export default function Home() {
             {isMobile ? 
               // return this jsx if screen-size is mobile
               <>
-                <div id={styles.galleryNav}>
-                  <div className={styles.galleryFeature}>
-                    <img />
-                    <h3 className={styles.galleryTitle}>Feature Title</h3>
-                    <p className={styles.galleryDescr}>feature description</p>
-                    <button></button>
+                <div className={styles.galleryNav}>
+                  <p>{`${slide}/3`}</p>
+                  <div>
+                    <button onClick={()=>galleryButtonOnClick('left')}>
+                      &#65308;
+                    </button>
+                    <button onClick={()=>galleryButtonOnClick('right')}>
+                      &#65310;
+                    </button>
                   </div>
+                </div>
+
+                <div className={styles.galleryFeature}>
+                  <h3 className={styles.galleryTitle}>Flashcards</h3>
+                  <p className={styles.galleryDescr}>Test your memory on key ideas & important vocabulary</p>
+                  <img 
+                      src="feature-flashcards.png" 
+                      alt="preview of flashcards feature"
+                      width={400}
+                      height={400}
+                  />
+                  <button className="secondary">Generate your own</button>
+                </div>
+
+                <div className={styles.galleryFeature}>
+                  <h3 className={styles.galleryTitle}>Multiple Choice Questions</h3>
+                  <p className={styles.galleryDescr}>MCQs test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
+                  <img 
+                    src="feature-mcqs.png" 
+                    alt="preview of quiz feature" 
+                    width={400} 
+                    height={400}
+                  />
+                  <button className="secondary">Generate your own</button>
+                </div>
+
+                
+                <div className={styles.galleryFeature}>
+                  <h3 className={styles.galleryTitle}>Outlined Notes</h3>
+                  <p className={styles.galleryDescr}>Outlined summaries focus on main ideas, sub-concepts, key details, and definitions.</p>
+                  <img 
+                    src="feature-notes.png" 
+                    alt="preview of notes feature" 
+                    width={400} 
+                    height={400}
+                  />
+                  <button className="secondary">Generate your own</button>
                 </div>
               </> 
             :
@@ -170,12 +225,15 @@ export default function Home() {
                       id={'flashcardPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
                       className={styles.featureImg} 
                       src="feature-flashcards.png" 
-                      alt="preview of flashcards feature" width={500} height={400}></img>
+                      alt="preview of flashcards feature" 
+                      width={500} 
+                      height={400}
+                    />
                     <img 
                       id={'mcqPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
                       className={styles.featureImg}
                       src="feature-mcqs.png" 
-                      alt="preview of flashcards feature" 
+                      alt="preview of multiple choice questions feature" 
                       width={500} 
                       height={400}
                     />
@@ -183,7 +241,7 @@ export default function Home() {
                       id={'notesPreview'.localeCompare(previewedFeatureId) == 0 ? styles.selectedFeatureImg : null}
                       className={styles.featureImg} 
                       src="feature-notes.png" 
-                      alt="preview of flashcards feature" 
+                      alt="preview of summarized notes feature" 
                       width={500} 
                       height={400}
                     />
