@@ -12,7 +12,7 @@ import { FaRegLightbulb, FaRegStickyNote, FaRegQuestionCircle, FaArrowLeft } fro
 export default function Home() {
   const router = useRouter();
   const [previewedFeatureId, setPreviewedFeatureId] = useState('flashcardPreview');
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [slide, setSlide] = useState({num: null, ref: null});
   const mobileGalleryRef = useRef(null);
   const mobileFlashcardSlideRef = useRef(null);
