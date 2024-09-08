@@ -215,7 +215,6 @@ def update_premium_status(clerk_id, premium):
         print(f"Updated premium status for clerk_id: {clerk_id}")
         print(f"Update result: {result.raw_result}")
         
-        
 def check_premium_status(clerk_id):
     """
     Check the premium status of a user and update it if expired.
@@ -226,11 +225,26 @@ def check_premium_status(clerk_id):
     Returns:
         bool: True if the user is premium, False otherwise.
     """
+    print(f"Checking premium status for clerk_id: {clerk_id}")  # Add this line
     users_collection = db.users
     user = users_collection.find_one({'clerk_id': clerk_id})
 
     if user:
-        if user['premium'] == True:
+        print(f"User found: {user}")  # Add this line
+        if 'premium' in user and user['premium'] == True:
+            # Check if the premium status has expired
+            if 'premium_expiry' in user:
+                premium_expiry = user['premium_expiry']
+                if premium_expiry is not None:
+                    if isinstance(premium_expiry, str):
+                        premium_expiry = datetime.strptime(premium_expiry, '%Y-%m-%d')
+                    if premium_expiry < datetime.now():
+                        # Premium has expired, update the user's premium status
+                        users_collection.update_one(
+                            {'clerk_id': clerk_id},
+                            {'$set': {'premium': False, 'premium_expiry': None}}
+                        )
+                        return False
             return True
     return False
 

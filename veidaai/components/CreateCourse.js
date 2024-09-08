@@ -27,30 +27,31 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
     const tomorrow = getTomorrowDate();
 
     useEffect(() => {
-        // Perform initial checks on page load
         const fetchPremiumStatusAndCourses = async () => {
             try {
                 // Fetch the premium status
                 const premiumResponse = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
                 if (premiumResponse.ok) {
                     const premiumData = await premiumResponse.json();
+                    console.log('Premium status response:', premiumData); // Add this line
                     setIsPremium(premiumData.premium);
-                } else {
-                    console.error("Failed to fetch premium status.");
-                }
 
-                // Fetch the course count
-                const coursesResponse = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
-                if (coursesResponse.ok) {
-                    const coursesData = await coursesResponse.json();
-                    setCourseCount(coursesData.courses.length);
+                    // Fetch the course count
+                    const coursesResponse = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
+                    if (coursesResponse.ok) {
+                        const coursesData = await coursesResponse.json();
+                        console.log('Courses data response:', coursesData); // Add this line
+                        setCourseCount(coursesData.courses.length);
 
-                    // If not premium and course count is 2 or more, set an error
-                    if (!isPremium && coursesData.courses.length >= 2) {
-                        setError("You have reached the limit of 2 courses for free users. Upgrade to premium for unlimited courses.");
+                        // If not premium and course count is 2 or more, set an error
+                        if (!premiumData.premium && coursesData.courses.length >= 2) {
+                            setError("You have reached the limit of 2 courses for free users. Upgrade to premium for unlimited courses.");
+                        }
+                    } else {
+                        console.error("Failed to fetch course count.");
                     }
                 } else {
-                    console.error("Failed to fetch course count.");
+                    console.error("Failed to fetch premium status.");
                 }
             } catch (error) {
                 console.error("Error fetching premium status or course count:", error);

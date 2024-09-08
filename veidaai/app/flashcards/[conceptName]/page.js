@@ -27,7 +27,7 @@ function FlashcardPage() {
     const [flashcardsDueToday, setFlashcardsDueToday] = useState(false);
     const { setHasNotification, setFlashcardsDue } = useNotification();
     const { userId } = useAuth();
-    const flashcardRef = useRef();
+    const [isPremium, setIsPremium] = useState(false);
     
 
     const params = useParams();
@@ -83,7 +83,6 @@ function FlashcardPage() {
                 });
                 if (!response.ok) {
                     console.error('Failed to remove today\'s review dates');
-                } else {
                 }
             } catch (error) {
                 console.error('Error removing today\'s review dates:', error);
@@ -92,10 +91,12 @@ function FlashcardPage() {
         setReviewing(false);
         setStudyingToday(false);
         fetchFlashcards();
-
+    
         setHasNotification(false);
         setFlashcardsDue(0);
     };
+
+
 
     const handleNextCard = useCallback(() => {
         let newIndex = (currentCard.index + 1) % flashcards.length;
@@ -215,11 +216,27 @@ function FlashcardPage() {
     }, [flashcards, currentCard]);
 
     useEffect(() => {
-      if (userId) {
-        
-          fetchFlashcards();
-      }
-  }, [userId]);
+        const fetchPremiumStatus = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Premium status response:', data);
+                    setIsPremium(data.premium);
+                } else {
+                    console.error('Failed to fetch premium status:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching premium status:', error);
+            }
+        };
+    
+        if (userId) {
+            fetchPremiumStatus();
+            fetchFlashcards();
+        }
+    }, [userId]);
+
 
     return (
         <div className="flashcard-page">

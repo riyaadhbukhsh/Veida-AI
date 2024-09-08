@@ -27,7 +27,7 @@ from helpers.mongo import (
     get_flashcards_with_today_study_date,
     create_or_update_next_study_date,
     update_times_seen,
-    check_premium_status, 
+    check_premium_status,
     update_premium_status,
     add_course_content,
     update_subscription_id,
@@ -107,10 +107,8 @@ def clerk_webhook():
         existing_user = db.users.find_one({'clerk_id': user_data['id']})
         if not existing_user:
             create_user(user_data)
-        check_premium_status(user_data['id'])  # Check premium status on user creation
     elif event_type == 'user.updated':
         update_user(user_data)
-        check_premium_status(user_data['id'])  # Check premium status on user update
     elif event_type == 'user.deleted':
         delete_user(user_data)
 
@@ -400,17 +398,22 @@ def route_delete_concept():
         return jsonify({"message": "Concept deleted successfully"}), 200
     else:
         return jsonify({"error": "Concept not found"}), 404
-
     
 @app.route('/api/check_premium_status', methods=['GET'])
-def route_check_premium_status():
-    clerk_id = request.args.get('clerk_id')
-
+def check_premium_status(clerk_id=None):
     if not clerk_id:
-        return jsonify({"error": "Missing required parameter: clerk_id"}), 400
+        clerk_id = request.args.get('clerk_id')
+        if not clerk_id:
+            return jsonify({"error": "Missing required parameter: clerk_id"}), 400
 
-    is_premium = check_premium_status(clerk_id)
-    return jsonify({"premium": is_premium}), 200
+    print(f"API called with clerk_id: {clerk_id}")  # Add this line
+    user = db.users.find_one({'clerk_id': clerk_id})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    print(f"User found: {user}")  # Add this line
+    return jsonify({"premium": user.get('premium', False)})
+
 
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
@@ -535,7 +538,7 @@ def process_image(image):
         extracted_text = pytesseract.image_to_string(image) + "\n"
 
     return extracted_text + "\n"
-    
+
 @app.route('/api/create_course', methods=['POST'])
 def route_create_course():
     data = request.json
@@ -543,28 +546,20 @@ def route_create_course():
     course_name = data.get('course_name')
     description = data.get('description', '')
     exam_date_str = data.get('exam_date', '')
-
     if not all([clerk_id, course_name, description, exam_date_str]):
         return jsonify({"error": "Missing required fields"}), 400
     
-    is_premium = check_premium_status(clerk_id)
-
+    is_premium = check_premium_status(clerk_id).json['premium']  # Pass clerk_id as an argument
     user_courses = get_courses(clerk_id)
     course_count = len(user_courses)
     
     if not is_premium and course_count >= 2:
         return jsonify({"error": "Free users can only create up to 2 courses. Upgrade to premium for unlimited courses."}), 403
-
     try:
         exam_date = datetime.strptime(exam_date_str, '%Y-%m-%d')
     except ValueError:
         return jsonify({"error": "Invalid exam date format"}), 400
-
     start_date = datetime.now()
-    
-
-    
-
     make_course(clerk_id, course_name, description, exam_date_str)
     return jsonify({"message": "Course created successfully"}), 201
 

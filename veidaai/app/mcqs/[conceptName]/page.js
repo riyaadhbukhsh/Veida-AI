@@ -17,7 +17,7 @@ function McqsPage() {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [submitted, setSubmitted] = useState(false);
-    const [isPremium, setIsPremium] = useState(false);
+    const [isPremium, setIsPremium] = useState(false); // Initialize isPremium state
     const router = useRouter();
 
     const params = useParams();
@@ -50,7 +50,11 @@ function McqsPage() {
             const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
             if (response.ok) {
                 const data = await response.json();
-                setIsPremium(data.isPremium);
+                console.log('Premium status response:', data); // Add this line
+                setIsPremium(data.premium);
+                console.log('isPremium set to:', data.premium); // Add this line
+            } else {
+                console.error('Failed to fetch premium status:', response.statusText); // Add this line
             }
         } catch (error) {
             console.error('Error fetching premium status:', error);
@@ -59,6 +63,7 @@ function McqsPage() {
 
     useEffect(() => {
         if (userId) {
+            console.log('Fetching MCQs and premium status for user:', userId); // Add this line
             fetchMcqs();
             fetchPremiumStatus();
         }
@@ -85,11 +90,14 @@ function McqsPage() {
     };
 
     const handleEndSession = () => {
+        console.log('isPremium:', isPremium); // Add this line
         if (!isPremium && currentQuestionIndex >= 2) { // 0-based index, so 2 is the 3rd question
             alert("You have reached your limit on the number of MCQs you can create/study. Upgrade to premium for unlimited access to creating MCQs!");
+        } else {
+            router.push(`/concept-details/${urlConceptName}?courseName=${courseName}`);
         }
-        router.push(`/concept-details/${urlConceptName}?courseName=${courseName}`);
     };
+
 
     const convertMath = (text) => {
         if (typeof text !== 'string') return '';
