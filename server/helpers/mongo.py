@@ -566,81 +566,81 @@ def add_concept(clerk_id,course_name,concept_name,concept_description,concept_mc
          "concept_multiple_choice_questions": concept_mcqs, "concept_flashcards": concept_flashcards, "concept_notes": concept_notes}}}
 
     )
-
-def add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs):
+def add_course_concept_content(clerk_id, course_name, concept_name, new_notes, new_flashcards, new_mcqs):
     try:
-        # First, let's find the existing course
+        # First, find the existing course for the given clerk_id and course_name
         course = courses_collection.find_one({"clerk_id": clerk_id, "courses.course_name": course_name})
-        
+
         if not course:
             print(f"Course not found for clerk_id: {clerk_id} and course_name: {course_name}")
             return False
 
-        # Find the specific course in the courses array
-        target_course = next((c for c in course['courses'] if c['course_name'] == course_name), None)
-        
+        # Find the specific course and concept in the 'courses' array
+        target_course = next((c for c in course['courses'] if c['course_name'].lower() == course_name.lower()), None)
         if not target_course:
             print(f"Course {course_name} not found in user's courses")
             return False
 
-        # Prepare the update operation
-        update_operation = {}
+        target_concept = next((concept for concept in target_course.get('concepts', []) if concept['concept_name'].lower() == concept_name.lower()), None)
+        if not target_concept:
+            print(f"Concept {concept_name} not found in course {course_name}")
+            return False
 
-        # Handle notes
-        if isinstance(target_course.get('notes'), str):
-            update_operation["$set"] = {
-                "courses.$.notes": target_course['notes'] + "\n\n" + new_notes
-            }
-        else:
-            update_operation["$push"] = {
-                "courses.$.notes": new_notes
-            }
+        # Initialize update operations
+        update_operation = {"$set": {}, "$push": {}}
 
-        # Handle flashcards
+        # Handle new notes: Append if the notes are a string or push into the array if they are not
+        if new_notes:
+            if isinstance(target_concept.get('concept_notes'), str):
+                # If notes are a string, concatenate the new notes with a newline
+                update_operation["$set"]["courses.$[course].concepts.$[concept].concept_notes"] = target_concept['concept_notes'] + "\n\n" + new_notes
+            else:
+                # If notes are an array, push the new notes into it
+                update_operation["$push"]["courses.$[course].concepts.$[concept].concept_notes"] = new_notes
+
+        # Handle new flashcards: Add the new flashcards and initialize review dates and times_seen
         if new_flashcards:
-            if "$push" not in update_operation:
-                update_operation["$push"] = {}
-            update_operation["$push"]["courses.$.flashcards"] = {"$each": new_flashcards}
+            for flashcard in new_flashcards:
+                flashcard['review_dates'] = generate_review_dates(datetime.datetime.now(), target_course['exam_date'])
+                flashcard['times_seen'] = 0
+            update_operation["$push"]["courses.$[course].concepts.$[concept].concept_flashcards"] = {"$each": new_flashcards}
 
-        # Handle MCQs
+        # Handle new MCQs: Ensure each MCQ has a correct_answer_index, then push
         if new_mcqs:
-            # Ensure each MCQ has a correct_answer_index
             for mcq in new_mcqs:
                 if 'correct_answer' in mcq and 'possible_answers' in mcq:
                     try:
                         mcq['correct_answer_index'] = mcq['possible_answers'].index(mcq['correct_answer'])
                     except ValueError:
-                        print(f"Warning: Correct answer '{mcq['correct_answer']}' not found in possible answers for question '{mcq['question']}'. Skipping this MCQ.")
+                        print(f"Correct answer '{mcq['correct_answer']}' not found in possible answers. Skipping this MCQ.")
                         continue
                 else:
-                    print(f"Warning: MCQ is missing 'correct_answer' or 'possible_answers'. Skipping this MCQ.")
+                    print(f"MCQ is missing 'correct_answer' or 'possible_answers'. Skipping this MCQ.")
                     continue
+            if new_mcqs:  # Only add MCQs if we have valid ones left
+                update_operation["$push"]["courses.$[course].concepts.$[concept].concept_multiple_choice_questions"] = {"$each": new_mcqs}
 
-            if "$push" not in update_operation:
-                update_operation["$push"] = {}
-            update_operation["$push"]["courses.$.multiple_choice_questions"] = {"$each": new_mcqs}
-
-        print(f"Update operation: {update_operation}")  # Log the update operation
-
+        # Execute the update operation with array filters for course and concept
         result = courses_collection.update_one(
             {"clerk_id": clerk_id, "courses.course_name": course_name},
-            update_operation
+            update_operation,
+            array_filters=[{"course.course_name": course_name}, {"concept.concept_name": concept_name}]
         )
 
-        print(f"Update result: {result.raw_result}")  # Log the raw result
+        print(f"Update result: {result.raw_result}")  # Log the result of the operation
 
         if result.modified_count > 0:
-            print(f"Successfully added new content to course: {course_name}")
+            print(f"Successfully added new content to concept: {concept_name} in course: {course_name}")
             return True
         else:
-            print(f"No changes made to course: {course_name}")
+            print(f"No changes made to concept: {concept_name} in course: {course_name}")
             return False
 
     except Exception as e:
-        print(f"Error adding course content: {str(e)}")
+        print(f"Error adding course concept content: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return False
-
+    
 def delete_course(clerk_id, course_name):
     """
     Delete a course for a user.
@@ -788,22 +788,36 @@ def get_next_study_date(clerk_id, course_name, card_id):
 
 
 def get_course(clerk_id, course_name):
-    course = courses_collection.find_one({
+    print(f"Looking for course with clerk_id={clerk_id} and course_name={course_name}")  # Log the query
+    # Query to search inside the 'courses' array
+    course_data = courses_collection.find_one({
         'clerk_id': clerk_id,
-        'course_name': course_name
+        'courses': {
+            '$elemMatch': {
+                'course_name': {'$regex': f'^{course_name}$', '$options': 'i'}  # Case-insensitive match
+            }
+        }
     })
 
-    if course:
-        return {
-            'clerk_id': course['clerk_id'],
-            'course_name': course['course_name'],
-            'description': course.get('description', ''),
-            'exam_date': course.get('exam_date', ''),
-            'concepts': course.get('concepts', []),
-            
-        }
+    if course_data:
+        # Find the exact course from the array
+        course = next((course for course in course_data['courses'] if course['course_name'].lower() == course_name.lower()), None)
+        if course:
+            return {
+                'clerk_id': clerk_id,
+                'course_name': course['course_name'],
+                'description': course.get('description', ''),
+                'exam_date': course.get('exam_date', ''),
+                'concepts': course.get('concepts', []),
+            }
+        else:
+            print("Course not found in the array")
+            return None
     else:
+        print("No course data found for the clerk_id")
         return None
+
+
 
 def get_course_exam_date(clerk_id, course_name):
     course = courses_collection.find_one({

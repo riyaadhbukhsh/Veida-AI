@@ -92,7 +92,7 @@ const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
       onClose();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      setError(error.message || 'An error occurred while addingconcept');
+      setError(error.message || 'An error occurred while adding concept');
     } finally {
       setIsUploading(false);
     }

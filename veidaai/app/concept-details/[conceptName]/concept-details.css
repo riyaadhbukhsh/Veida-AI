@@ -28,11 +28,13 @@
 }
 
 .concept-description {
+  width: 100%;
   font-size: 1.2rem;
   color: #d1d5db;
+  max-width: 1200px;
   text-align: center;
-  max-width: 300px;
-  margin-bottom: 3rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .concept-content {
@@ -137,7 +139,8 @@
     max-width: 600px;
   }
 
-  .concept-add-content-btn {
+  .concept-add-content-btn,
+  .concept-description {
     max-width: 600px;
   }
 }

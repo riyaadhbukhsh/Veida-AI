@@ -29,7 +29,7 @@ from helpers.mongo import (
     update_times_seen,
     check_premium_status,
     update_premium_status,
-    add_course_content,
+    add_course_concept_content,
     update_subscription_id,
     add_concept,
     remove_today_review_dates,
@@ -560,6 +560,7 @@ def route_create_course():
     except ValueError:
         return jsonify({"error": "Invalid exam date format"}), 400
     start_date = datetime.now()
+    
     make_course(clerk_id, course_name, description, exam_date_str)
     return jsonify({"message": "Course created successfully"}), 201
 
@@ -976,44 +977,52 @@ def route_update_times_seen():
 import traceback
 from helpers.ai import generate_mc_questions
 
-@app.route('/api/add_course_content', methods=['POST'])
-def route_add_course_content():
+@app.route('/api/add_course_concept_content', methods=['POST'])
+def route_add_course_concept_content():
     try:
+        # Log the incoming data to inspect it
         data = request.json
-        print("Received data:", data)  # Log received data
-        
+        print(f"Received data: {data}")
+
         clerk_id = data.get('clerk_id')
         course_name = data.get('course_name')
-        new_notes = data.get('notes')
-        new_flashcards = data.get('flashcards')
+        concept_name = data.get('concept_name')
+        new_notes = data.get('notes', "")
+        new_flashcards = data.get('flashcards', [])
+        new_mc_questions = data.get('mcqs', [])  # This is the MCQs part
 
+        # Log each value to verify
+        print(f"Clerk ID: {clerk_id}")
+        print(f"Course Name: {course_name}")
+        print(f"Concept Name: {concept_name}")
+        print(f"Notes: {new_notes}")
+        print(f"Flashcards: {new_flashcards}")
+        print(f"MCQs: {new_mc_questions}")
+
+        # Check for missing fields
         missing_fields = []
         if not clerk_id:
             missing_fields.append('clerk_id')
         if not course_name:
             missing_fields.append('course_name')
-        if not new_notes:
-            missing_fields.append('notes')
-        if not new_flashcards:
-            missing_fields.append('flashcards')
+        if not concept_name:
+            missing_fields.append('concept_name')
 
         if missing_fields:
+            print(f"Missing fields: {missing_fields}")
             return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
-        # Generate new MCQs based on the new notes
-        new_mcqs = generate_mc_questions(new_notes)
+        # Process the content here
+        result = add_course_concept_content(clerk_id, course_name, concept_name, new_notes, new_flashcards, new_mc_questions)
 
-        result = add_course_content(clerk_id, course_name, new_notes, new_flashcards, new_mcqs)
-        
         if result:
-            return jsonify({"success": True, "message": "Content and MCQs added successfully"}), 200
+            return jsonify({"success": True, "message": "Content and MCQs added to concept successfully"}), 200
         else:
-            return jsonify({"success": False, "message": "Failed to add content and MCQs. Check server logs for details."}), 500
-    except Exception as e:
-        print(f"Unexpected error in route_add_course_content: {str(e)}")
-        print(f"Traceback: {traceback.format_exc()}")
-        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+            return jsonify({"error": "Failed to add content to the concept. Check server logs for details."}), 500
 
+    except Exception as e:
+        print(f"Unexpected error in route_add_course_concept_content: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 if __name__ == '__main__':
     

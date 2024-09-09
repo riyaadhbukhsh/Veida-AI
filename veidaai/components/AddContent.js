@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "@clerk/nextjs";
 import Loading from './loading';
 
-const AddContent = ({ courseName, onClose, onContentAdded }) => {
+const AddContent = ({ courseName, conceptName, onClose, onContentAdded }) => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -41,10 +41,10 @@ const AddContent = ({ courseName, onClose, onContentAdded }) => {
     formData.append('file', file);
     formData.append('clerk_id', userId);
     formData.append('course_name', courseName);
+    formData.append('concept_name', conceptName);
 
-    
     try {
-      const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {
+      const extractResponse = await fetch(`http://localhost:8080/api/extract_text`, {
         method: 'POST',
         body: formData,
       });
@@ -56,14 +56,20 @@ const AddContent = ({ courseName, onClose, onContentAdded }) => {
 
       const extractedData = await extractResponse.json();
 
+      if (!extractedData.notes || !extractedData.flashcards || !extractedData.mc_questions) {
+        throw new Error('Missing required data from extraction (notes, flashcards, or MCQs).');
+      }
+
       const requestBody = {
         clerk_id: userId,
         course_name: courseName,
+        concept_name: conceptName,
         notes: extractedData.notes,
         flashcards: extractedData.flashcards,
+        mcqs: extractedData.mc_questions, // Include MCQs in the request body
       };
 
-      const addContentResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/add_course_content', {
+      const addContentResponse = await fetch(`http://localhost:8080/api/add_course_concept_content`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,11 +79,8 @@ const AddContent = ({ courseName, onClose, onContentAdded }) => {
 
       if (!addContentResponse.ok) {
         const errorData = await addContentResponse.json();
-        console.error('Error response:', errorData);
         throw new Error(errorData.message || 'Failed to add content');
       }
-
-      const responseData = await addContentResponse.json();
 
       onContentAdded();
       onClose();
@@ -91,18 +94,23 @@ const AddContent = ({ courseName, onClose, onContentAdded }) => {
 
   return (
     <div className="course-create-course-overlay">
-      {isUploading && <Loading />} {/* Show loading animation */}
+      {isUploading && <Loading />}
       <div className="course-create-course-form">
-        <h2>Add to {courseName}</h2>
-        <p className="form-description">Our AI will add more flashcards, summary notes, and MCQs to your existing content.</p>
+        <h2>Add to {courseName}: {conceptName}</h2>
+        <p className="form-description">
+          Our AI will add more flashcards, summary notes, and MCQs to your existing content.
+        </p>
         <form onSubmit={handleSubmit}>
           <div className="course-file-input-wrapper">
-            <div className="file-input-button">Upload Content File (PDF, PNG, JPG, TXT)</div>
+            <label htmlFor="file-upload" className="file-input-button">
+              Upload Content File (PDF, PNG, JPG, TXT)
+            </label>
             <input
+              id="file-upload"
               type="file"
               onChange={handleFileChange}
               required
-              disabled={isUploading}
+              style={{ opacity: 0, position: 'absolute', zIndex: -1 }}
             />
           </div>
           {error && <p className="error">{error}</p>}

@@ -23,15 +23,17 @@ const CourseDetails = ({ courseName }) => {
 
   const fetchCourseObj = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_course_concepts?clerk_id=${userId}&course_name=${courseName}`, {
+      const response = await fetch(`http://localhost:8080/api/get_course?clerk_id=${userId}&course_name=${courseName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+  
       if (response.ok) {
         const data = await response.json();
-        setCourseConcepts(data.concepts);
+        setCourseObj(data.course); // Set the course object state from 'course' field
+        setCourseConcepts(data.course.concepts || []); // Set the concepts if available
       } else {
         console.error('Failed to fetch course.');
       }
@@ -39,6 +41,7 @@ const CourseDetails = ({ courseName }) => {
       console.error('Error fetching course details:', error);
     }
   };
+  
 
   const handleCreateConcept = () => {
     setShowCreateConcept(true);
