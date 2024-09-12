@@ -31,6 +31,7 @@ function FlashcardPage() {
     
 
     const params = useParams();
+    const flashcardRef = useRef();
     const courseName = useSearchParams().get('courseName');
     const urlConceptName = params.conceptName;
     const decodedConceptName = unformatURL(urlConceptName);

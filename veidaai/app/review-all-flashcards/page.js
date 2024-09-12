@@ -28,7 +28,6 @@ function ReviewAllFlashcardsPage() {
     const [backReviewSize, setBackReviewSize] = useState('2.2rem');
     const [frontReviewIndex, setFrontReview] = useState(null); 
     const [backReviewIndex, setBackReview] = useState(null); 
-    const params = useParams();
     const flashcardRef = useRef();
 
     const handleNextCard = useCallback(() => {
