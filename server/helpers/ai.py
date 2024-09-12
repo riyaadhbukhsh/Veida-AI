@@ -150,7 +150,7 @@ def generate_mc_questions(notes):
     initial_content = """
             You are an AI model designed to generate high-quality multiple-choice questions based on the principles of synthesis, reorganization, context, comparison, and application. 
 
-            For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX.
+            For business, science, technology, engineering, and math notes, focus on equations and calculations if there are. For ALL formulas or expressions, you must **strictly format them in LaTeX** and enclose the entire formula in `$...$` for inline expressions or `$$...$$` for block-level expressions. Strictly format such questions, possible answers, and explanations in LaTeX. You should make sure that the answers are not always the same, and that the correct answer is NOT always the first option, rather it should be a random option each time, and the correct answer should be different each time.
 
             1. **Synthesis:** Combining different pieces of information to create a new understanding.
                 Example: How does combining Newton's Law of Gravity with gravitational acceleration help in understanding how objects fall on Earth?
