@@ -112,9 +112,9 @@
 }
 
 /* column sections */
-#featurePreviewSection > div > div {
+/* #featurePreviewSection > div > div {
   border: 1px solid red;
-}
+} */
 
 /* left-side column */
 #featureMenuContainer {
@@ -134,7 +134,6 @@ ul#featureMenu {
   
   height: 15rem;
   list-style-type: none;
-  border: 1px solid yellow;
 }
 
 ul#featureMenu li {
@@ -183,7 +182,6 @@ span.liContainer:last-child {
   font-size: 24px;
   vertical-align: middle;
   margin: 0.5rem 20px 0 0;
-  /* visibility: hidden; */
 }
 
 /* question circle needs some extra attention */
@@ -406,8 +404,8 @@ img.neuronIcon {
   /* add paddings to these since they aren't in column containers */
   #featurePreviewSection h2,
   #featurePreviewSection p {
-    padding: 0 2rem; /*for Mozilla Firefox*/
-    padding: 0 2rex;
+    padding: 0 1rem;
+    /* padding: 0 2rex; */
   }
 
   #featurePreviewSection h2:first-child {
@@ -447,7 +445,7 @@ img.neuronIcon {
   /* arrow buttons */
   div.galleryNav button {
     /* --size: 5rex; */
-    --size: 5rem; /*for Mozilla Firefox*/
+    --size: 2.5rem; /*for Mozilla Firefox*/
     width: var(--size);
     height: var(--size);
     padding: 0;
@@ -482,14 +480,14 @@ img.neuronIcon {
     justify-content: flex-start;
     overflow-x: scroll;
     align-items: flex-start;
-    gap: 3rem; /*for Mozilla Firefox*/
+    gap: 1rem; /*for Mozilla Firefox*/
     gap: 3rex;
 
     position: relative;
-    left: -3rem; /*for Mozilla Firefox*/
+    left: -1rem; /*for Mozilla Firefox*/
     left: -3rex;
     padding: 0 2rem; /*for Mozilla Firefox*/
-    padding: 0 2rex;
+    /* padding: 0 2rex; */
     
     width: 100vw !important;
     --gallery-feature-width: 81vw; /*pass this var down to .galleryFeature children*/
