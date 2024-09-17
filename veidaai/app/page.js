@@ -33,6 +33,7 @@ export default function Home() {
 
     // the rest of this useEffect is a monster that cursor created
     // I asked the genie to update the slide useState as the user manually scrolled the gallery
+    
     // const options = {
     //   root: mobileGalleryRef.current,
     //   rootMargin: '0px',

@@ -112,9 +112,9 @@
 }
 
 /* column sections */
-/* #siteWrapper > div:nth-child(3) > div {
+#featurePreviewSection > div > div {
   border: 1px solid red;
-} */
+}
 
 /* left-side column */
 #featureMenuContainer {
@@ -134,6 +134,7 @@ ul#featureMenu {
   
   height: 15rem;
   list-style-type: none;
+  border: 1px solid yellow;
 }
 
 ul#featureMenu li {
@@ -150,7 +151,8 @@ ul#featureMenu li {
 span.liContainer {
   display: flex;
   flex-flow: row nowrap;
-  gap: 5rex;
+  gap: 3rem; /* for Mozilla firefox*/
+  gap: 5rex; /*for some odd reason, rex doesn't work in Mozilla Firefox...*/
 
   padding-left: 5px;
   margin-left: -40px;
@@ -165,7 +167,7 @@ span.liContainer {
 span.liContainer:hover,
 span#selectedFeaturePreview
 {
-  margin-left: 0rex;
+  margin-left: 0;
 }
 
 span.liContainer:first-child {
@@ -181,12 +183,23 @@ span.liContainer:last-child {
   font-size: 24px;
   vertical-align: middle;
   margin: 0.5rem 20px 0 0;
+  /* visibility: hidden; */
 }
 
 /* question circle needs some extra attention */
 span.liContainer:nth-child(2) > .featurePreviewIcon {
   font-size: 30px;
   margin-top: 0.5rem;
+}
+
+/* correct left margin for "MULTIPLE CHOICE QUESTIONS" from customization of question circle icon */
+span.liContainer:nth-child(2) {
+  margin-left: -2.8ch;
+}
+
+/* hover effect needs to be manually reset */
+span.liContainer:nth-child(2):hover {
+  margin-left: 0;
 }
 
 img.neuronIcon {
