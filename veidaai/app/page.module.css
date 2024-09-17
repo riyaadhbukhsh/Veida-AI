@@ -307,7 +307,8 @@ img.neuronIcon {
   
   /* smaller site gutters */
   #siteWrapper > div {
-    --gutter-width: 1rex;
+    --gutter-width: 1rem; /*for Mozilla Firefox*/
+    /* --gutter-width: 1rex; */
     /* padding-left: var(--gutter-width);
     padding-right: var(--gutter-width); */
     padding: 2.5rem var(--gutter-width);
@@ -405,6 +406,7 @@ img.neuronIcon {
   /* add paddings to these since they aren't in column containers */
   #featurePreviewSection h2,
   #featurePreviewSection p {
+    padding: 0 2rem; /*for Mozilla Firefox*/
     padding: 0 2rex;
   }
 
@@ -444,7 +446,8 @@ img.neuronIcon {
 
   /* arrow buttons */
   div.galleryNav button {
-    --size: 5rex;
+    /* --size: 5rex; */
+    --size: 5rem; /*for Mozilla Firefox*/
     width: var(--size);
     height: var(--size);
     padding: 0;
@@ -479,10 +482,13 @@ img.neuronIcon {
     justify-content: flex-start;
     overflow-x: scroll;
     align-items: flex-start;
+    gap: 3rem; /*for Mozilla Firefox*/
     gap: 3rex;
 
     position: relative;
+    left: -3rem; /*for Mozilla Firefox*/
     left: -3rex;
+    padding: 0 2rem; /*for Mozilla Firefox*/
     padding: 0 2rex;
     
     width: 100vw !important;
