@@ -65,8 +65,8 @@
         <path stroke="#f0f0f0" d="M871.4 346.72C881.93 346.72 881.93 367.87 892.37 367.87 902.9 367.87 902.9 346.72 913.34 346.72 923.78 346.72 923.87 367.87 934.49 367.87 945.02 367.87 945.02 346.72 955.46 346.72 965.9 346.72 965.99 367.87 976.61 367.87 987.24 367.87 987.15 346.72 997.77 346.72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
         <path stroke="#f0f0f0" d="M850.8 346.72H871.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
         <path stroke="#f0f0f0" d="M997.86 346.72H1018.65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
-        <path stroke="M842.95 412.86L855.05 391.33 867.33 412.86H842.95Z" d="#f0f0f0" fill="#2cadbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path>
-        <path stroke="M929.97 413.6C936.34 413.6 941.51 408.42 941.51 402.05 941.51 395.67 936.34 390.5 929.97 390.5 923.59 390.5 918.42 395.67 918.42 402.05 918.42 408.42 923.59 413.6 929.97 413.6Z" d="#f0f0f0" fill="#2cadbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path>
+        <path stroke="#f0f0f0" d="M842.95 412.86L855.05 391.33 867.33 412.86H842.95Z" fill="#2cadbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path>
+        <path stroke="#f0f0f0" d="M929.97 413.6C936.34 413.6 941.51 408.42 941.51 402.05 941.51 395.67 936.34 390.5 929.97 390.5 923.59 390.5 918.42 395.67 918.42 402.05 918.42 408.42 923.59 413.6 929.97 413.6Z" fill="#2cadbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path>
         <path stroke="#f0f0f0" d="M892.74 393.64V410.55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
         <path stroke="#f0f0f0" d="M901.24 402.05H884.24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
         <path stroke="#f0f0f0" d="M969.78 390.32H1013.66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none"></path>
