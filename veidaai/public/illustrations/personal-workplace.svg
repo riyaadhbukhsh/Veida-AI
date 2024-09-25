@@ -16,13 +16,13 @@
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M700.5 951.5H1403.97"></path>
 </g>
 <g>
-    <!-- ringer -->
+    <!-- ringer stroke-->
     <path fill="#1e1e1e" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M545.84 455.6C547.01 452.48 548.02 448.98 548.02 445.24V428.18H504.63V445.16C504.63 458.56 514.37 469.39 526.29 469.39 532.37 469.39 537.82 466.58 541.64 462.14 541.71 462.22 545.22 457.39 545.84 455.6Z"></path>
     
-    <!-- bell top -->
-    <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
+    <!-- bell top (stroke will need to be fixed within firam workspaces) -->
+    <path fill="#1e1e1e" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
     
-    <!-- bell bottom -->
+    <!-- bell bottom stroke-->
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M419.96 432.46H632.54"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 432.46V392.19"></path>
     
@@ -87,21 +87,21 @@
     <path fill="#1e1e1e" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M545.84 455.6C547.01 452.48 548.02 448.98 548.02 445.24V428.18H504.63V445.16C504.63 458.56 514.37 469.39 526.29 469.39 532.37 469.39 537.82 466.58 541.64 462.14 541.71 462.22 545.22 457.39 545.84 455.6Z"></path>
     
     <!-- bell body fill -->
-    <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
+    <path fill="#c5f4e0" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
     
     <!-- bell bottom -->
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M419.96 432.46H632.54"></path>
     
     <!-- bell shine -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 432.46V392.19"></path>
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 382.29V364.84"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 432.46V392.19"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 382.29V364.84"></path>
 </g>
 <g>
     <!-- ! bubble -->
     <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M1174.32 263.47C1143.09 263.47 1117.78 238.16 1117.78 206.93 1117.78 175.71 1143.09 150.4 1174.32 150.4 1205.55 150.4 1230.86 175.71 1230.86 206.93 1230.86 238.16 1205.55 263.47 1174.32 263.47Z"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1174.32 263.47V272.39C1174.32 286.41 1162.94 297.8 1148.92 297.8"></path>
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1174.32 242.17V228.24"></path>
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1174.32 218.77V171.7"></path>
+    <path stroke="#f0f0f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1174.32 242.17V228.24"></path>
+    <path stroke="#f0f0f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1174.32 218.77V171.7"></path>
 </g>
 <g>
     <!-- bg notes -->
@@ -156,7 +156,7 @@
     <path fill="#1e1e1e" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M572.29 932.87H340.35V952.33H572.29V932.87Z"></path>
     
     <!-- sand -->
-    <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M418.18 674.66C410.71 674.66 406.52 683.36 411.2 689.11 428.61 711.03 456.44 743.13 456.44 743.13 456.44 743.13 484.28 711.11 501.68 689.11 506.36 683.19 502.18 674.66 494.7 674.66H418.18Z"></path>
+    <path fill="#79d1cf" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M418.18 674.66C410.71 674.66 406.52 683.36 411.2 689.11 428.61 711.03 456.44 743.13 456.44 743.13 456.44 743.13 484.28 711.11 501.68 689.11 506.36 683.19 502.18 674.66 494.7 674.66H418.18Z"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M456.28 743.13V796.17"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M456.28 809.72V834.27"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M456.28 848.88V859.8"></path>
