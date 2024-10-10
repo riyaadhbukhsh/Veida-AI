@@ -344,7 +344,7 @@ export default function Home() {
               <img 
                 id={styles.scheduleImg}
                 className={styles.sectionImg} 
-                src="illustrations/personal-workplace.svg" 
+                src="illustrations/personal-workplace-figma.svg" 
                 alt="personal-workplace-illustration" 
                 width={630} 
                 height={340}

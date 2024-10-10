@@ -84,17 +84,17 @@
 </g>
 <g>
     <!-- bell ringer fill -->
-    <path fill="#1e1e1e" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M545.84 455.6C547.01 452.48 548.02 448.98 548.02 445.24V428.18H504.63V445.16C504.63 458.56 514.37 469.39 526.29 469.39 532.37 469.39 537.82 466.58 541.64 462.14 541.71 462.22 545.22 457.39 545.84 455.6Z"></path>
+    <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M545.84 455.6C547.01 452.48 548.02 448.98 548.02 445.24V428.18H504.63V445.16C504.63 458.56 514.37 469.39 526.29 469.39 532.37 469.39 537.82 466.58 541.64 462.14 541.71 462.22 545.22 457.39 545.84 455.6Z"></path>
     
     <!-- bell body fill -->
-    <path fill="#c5f4e0" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
+    <path fill="#2cadbd" stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" d="M526.21 251.97C480.64 251.97 443.71 288.97 443.71 334.46V432.7H608.79V334.46C608.79 288.74 571.94 251.97 526.21 251.97Z"></path>
     
     <!-- bell bottom -->
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M419.96 432.46H632.54"></path>
     
     <!-- bell shine -->
-    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 432.46V392.19"></path>
-    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 382.29V364.84"></path>
+    <path stroke="#f0f0f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 432.46V392.19"></path>
+    <path stroke="#f0f0f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M580.51 382.29V364.84"></path>
 </g>
 <g>
     <!-- ! bubble -->
@@ -105,35 +105,36 @@
 </g>
 <g>
     <!-- bg notes -->
-    <path fill="#2cadbd" opacity="1" stroke-width="2" stroke="none" d="M900.36 405.45V355.79H1225.08V695.07H900.36V452.38"></path><path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M900.36 405.45V355.79H1225.08V695.07H900.36V452.38"></path>
+    <path fill="#79d1cf" opacity="1" stroke-width="2" stroke="none" d="M900.36 405.45V355.79H1225.08V695.07H900.36V452.38"></path>
+    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M900.36 405.45V355.79H1225.08V695.07H900.36V452.38"></path>
     
     <!-- idk -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M900.36 418.19V440.12"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M900.36 418.19V440.12"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 417.39L961.51 429 984.65 409.81"></path>
     
     <!-- top line -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 429H1177.54"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 429H1177.54"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 468.58L961.51 480.2 984.65 460.84"></path>
     
     <!-- top-mid line -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 480.2H1177.54"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 480.2H1177.54"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 519.62L961.51 531.23 984.65 511.88"></path>
     
     <!-- middle line -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1078.86 531.23H1177.54"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1078.86 531.23H1177.54"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 531.23H1061.36"></path>
     
     <!-- idk -->
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 570.66L961.51 582.27 984.65 562.84"></path>
     
     <!-- bottom-mid line -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 582.27H1177.54"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 582.27H1177.54"></path>
     
     <!-- check -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 621.62L961.51 633.31 984.65 614.04"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M947.51 621.62L961.51 633.31 984.65 614.04"></path>
     
     <!-- bottom line -->
-    <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1144.48 633.31H1177.54"></path>
+    <path stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M1144.48 633.31H1177.54"></path>
     <path stroke="#f0f0f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="1" fill="none" d="M994.96 633.31H1127.76"></path>
 </g>
 <g>
