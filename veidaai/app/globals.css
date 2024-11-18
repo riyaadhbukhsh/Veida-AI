@@ -233,8 +233,8 @@ button.secondary {
 
 button.tertiary {
   color: var(--accent);
-  background-color: none;
-  border-color: none;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .basic-button {
