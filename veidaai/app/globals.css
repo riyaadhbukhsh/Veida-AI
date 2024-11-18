@@ -27,6 +27,8 @@ body {
   color: var(--white);
   background-color: var(--black);
   overflow-x: hidden;
+
+  --card-corner-radius: 10px;
 }
 
 html, body {

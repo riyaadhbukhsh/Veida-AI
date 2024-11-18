@@ -255,6 +255,81 @@ img.neuronIcon {
   position: relative; /* so the section img can use position: absolute */
 }
 
+/********************************/
+/* Section 5 - CHOOSE YOUR PLAN */
+/********************************/
+#choosePlanSection {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  /* background: red !important; */
+}
+
+div#choosePlanSection > h2 {
+  width: 100%;
+  margin-bottom: 3rem;
+  /* border: solid white 1px; */
+}
+
+#freePlan, #premiumPlan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  padding: 1.5rem;
+  border-radius: var(--card-corner-radius);
+}
+
+#choosePlanSection > div li {
+  font-size: var(--p2);
+  margin-left: 1.7rem;
+}
+
+#freePlan {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  width: 35%;
+  max-width: 400px;
+  background: var(--lesser-black);
+
+  color: gray;
+}
+
+/* "Free" */
+#freePlan > p:first-child {
+  color: white;
+}
+
+/* "$0" */
+#freePlan span.price {
+  color: white;
+}
+
+#choosePlanSection span.price {
+  font-size: var(--h2);
+  font-weight: bold;
+}
+
+#premiumPlan {
+  width: 45%;
+  max-width: 550px;
+  background: var(--accent);
+
+  color: var(--black);
+}
+
+
+#premiumPlan > button {
+  color: var(--white);
+  font-weight: 500;
+
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--black);
+}
+
+
 /*********************/
 /* TABLET FORMATTING */
 /*********************/
