@@ -381,7 +381,12 @@ export default function Home() {
               <li>outlined noted generation</li>
               <li>2 courses maximum</li>
             </ul>
-            <button className="tertiary">Get started</button>
+            <button 
+              className="tertiary"
+              onClick={() => router.push('/client')}
+            >
+              Get started
+            </button>
           </div>
           
           {/* premium plan */}
@@ -399,7 +404,12 @@ export default function Home() {
               <li>export options</li>
               <li>and more!</li> 
             </ul>
-            <button className="primary">SUBSCRIBE</button>
+            <button
+              className="primary"
+              onClick={() => router.push('/premium')}
+            >
+              SUBSCRIBE
+            </button>
           </div>
         </div>
       </div>
