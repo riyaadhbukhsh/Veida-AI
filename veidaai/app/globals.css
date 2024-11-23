@@ -100,6 +100,7 @@ html, body {
   width: var(--column-width);
   padding: 0.5rem;
 }
+
 .c2 {
   display: flex;
   flex-direction: column;
@@ -271,7 +272,7 @@ button.tertiary {
 
   /* stack the column sections for mobile*/
   .double-column-container {
-    padding: 1rem 2rex;
+    padding: 1rem 2rex; /*TODO: write this because Mozilla is allergic to rex  */
     flex-direction: column;
     gap: 1.5rem; /*probably tweak the gap later*/
     --column-width: 100%;
