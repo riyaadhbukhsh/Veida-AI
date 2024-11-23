@@ -263,7 +263,12 @@ img.neuronIcon {
   flex-flow: row wrap;
   justify-content: center;
   /* background: red !important; */
+  /* border: 3px solid red; */
 }
+/* 
+#choosePlanSection > * {
+  border: 2px solid yellow;
+} */
 
 div#choosePlanSection > h2 {
   width: 100%;
@@ -277,6 +282,7 @@ div#choosePlanSection > h2 {
   gap: 0.5rem;
 
   padding: 1.5rem;
+  padding-bottom: 0rem;
   border-radius: var(--card-corner-radius);
 }
 
@@ -305,6 +311,11 @@ div#choosePlanSection > h2 {
   color: white;
 }
 
+/* /month */
+span.grayText {
+  color: var(--gray);
+}
+
 #choosePlanSection span.price {
   font-size: var(--h2);
   font-weight: bold;
@@ -312,7 +323,7 @@ div#choosePlanSection > h2 {
 
 #premiumPlan {
   width: 45%;
-  max-width: 550px;
+  max-width: 500px;
   background: var(--accent);
 
   color: var(--black);
@@ -322,6 +333,8 @@ div#choosePlanSection > h2 {
 #premiumPlan > button {
   color: var(--white);
   font-weight: 500;
+
+  margin-top: 3rem;
 
   padding: 0.5rem;
   border: none;

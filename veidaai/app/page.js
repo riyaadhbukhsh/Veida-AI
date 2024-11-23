@@ -386,7 +386,10 @@ export default function Home() {
             {/* premium plan */}
             <div id={styles.premiumPlan}>
               <p>Premium</p>
-              <p><span className={styles.price}>$10</span>/month</p>
+              <p>
+                <span className={styles.price}>$10</span>
+                <span className={styles.grayText}>/month</span> 
+              </p>
               <p>Fully optimized studying with unlimited access to every Veida AI feature</p>
               <p>Everything in free, plus...</p>
               <ul>
