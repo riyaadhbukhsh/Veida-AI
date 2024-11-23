@@ -279,7 +279,7 @@ button.tertiary {
   }
 
   .feature-column-text, .feature-column-media {
-    padding: 0 2rex;
+    padding: 0 2rex; /*TODO: write this because Mozilla is allergic to rex  */
     width: var(--column-width);
   }
 
