@@ -377,11 +377,11 @@ export default function Home() {
             <ul>
               <li>unlimited flashcard generation</li>
               <li>flashcard review</li>
-              <li>max # of MCQ generations</li>
+              <li>max of 3 MCQ generations</li>
               <li>outlined noted generation</li>
               <li>2 courses maximum</li>
             </ul>
-            <button 
+            <button
               className="tertiary"
               onClick={() => router.push('/client')}
             >
@@ -400,7 +400,7 @@ export default function Home() {
             <p>Everything in free, plus...</p>
             <ul>
               <li>unlimited courses</li>
-              <li>max # of MCQ generations</li>
+              <li>unlimited MCQ generations</li>
               <li>export options</li>
               <li>and more!</li> 
             </ul>
