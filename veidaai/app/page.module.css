@@ -9,7 +9,8 @@
   position: relative;
   overflow: hidden;
   /*create site gutters - we pad these divs to ensure their bg-color stretches 100% wide*/
-  padding: 3rem;
+  --site-gutter: 3rem;
+  padding: var(--site-gutter);
 }
 
 /* alternate background-colors between black & black2*/
@@ -258,22 +259,15 @@ img.neuronIcon {
 /********************************/
 /* Section 5 - CHOOSE YOUR PLAN */
 /********************************/
-#choosePlanSection {
+div#choosePlanSection {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  /* background: red !important; */
-  /* border: 3px solid red; */
 }
-/* 
-#choosePlanSection > * {
-  border: 2px solid yellow;
-} */
 
 div#choosePlanSection > h2 {
   width: 100%;
   margin-bottom: 3rem;
-  /* border: solid white 1px; */
 }
 
 #freePlan, #premiumPlan {
@@ -371,6 +365,7 @@ span.grayText {
 /*********************/
 /* MOBILE FORMATTING */
 /*********************/
+
 @media screen and (max-width: 781px) {
   ul#featureMenu {
     height: 10rem;
@@ -615,6 +610,31 @@ span.grayText {
     /* width: var(--gallery-feature-width);
     height: 300px; */
   }
+
+  /* align margins for "CHOOSE YOUR PLAN" section 
+     because it's not in a .double-column-container */
+     div#choosePlanSection {
+      --adj-pad: calc( var(--gutter-width) + 4rex );
+      padding-left: var(--adj-pad);
+      padding-right: var(--adj-pad);
+     }
+}
+
+/* scale site gutters for smaller-er screens */
+@media screen and (max-width: 450px) {
+  #siteWrapper > div {
+    --gutter-width: 0;
+    padding-left: var(--gutter-width);
+    padding-right: var(--gutter-width);
+  }
+
+  div#choosePlanSection {
+    /* --adj-pad: calc( var(--gutter-width) + 4rex ); */
+    --adj-pad: 4rex;
+    padding-left: var(--adj-pad);
+    padding-right: var(--adj-pad);
+   }
+
 }
 
 /********************************/

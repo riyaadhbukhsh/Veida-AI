@@ -363,43 +363,44 @@ export default function Home() {
 
         {/*plan comparison section*/}
         <div className="container" id={styles.choosePlanSection}>
-            <h2 className="center">Choose your plan</h2>
-            
-            {/* free plan */}
-            <div id={styles.freePlan}>
-              <p>Free</p>
-              <p>
-                <span className={styles.price}>$0</span>
-                /month
-              </p>
-              <p>The perfect plan if you’re just getting started with Veida AI</p>
-              <ul>
-                <li>unlimited flashcard generation</li>
-                <li>flashcard review</li>
-                <li>max # of MCQ generations</li>
-                <li>outlined noted generation</li>
-                <li>2 courses maximum</li>
-              </ul>
-              <button className="tertiary">Get started</button>
-            </div>
-            
-            {/* premium plan */}
-            <div id={styles.premiumPlan}>
-              <p>Premium</p>
-              <p>
-                <span className={styles.price}>$10</span>
-                <span className={styles.grayText}>/month</span> 
-              </p>
-              <p>Fully optimized studying with unlimited access to every Veida AI feature</p>
-              <p>Everything in free, plus...</p>
-              <ul>
-                <li>unlimited courses</li>
-                <li>max # of MCQ generations</li>
-                <li>export options</li>
-                <li>and more!</li> 
-              </ul>
-              <button className="primary">SUBSCRIBE</button>
-            </div>
+          
+          <h2 className="center">Choose your plan</h2>
+          
+          {/* free plan */}
+          <div id={styles.freePlan}>
+            <p>Free</p>
+            <p>
+              <span className={styles.price}>$0</span>
+              /month
+            </p>
+            <p>The perfect plan if you’re just getting started with Veida AI</p>
+            <ul>
+              <li>unlimited flashcard generation</li>
+              <li>flashcard review</li>
+              <li>max # of MCQ generations</li>
+              <li>outlined noted generation</li>
+              <li>2 courses maximum</li>
+            </ul>
+            <button className="tertiary">Get started</button>
+          </div>
+          
+          {/* premium plan */}
+          <div id={styles.premiumPlan}>
+            <p>Premium</p>
+            <p>
+              <span className={styles.price}>$10</span>
+              <span className={styles.grayText}>/month</span> 
+            </p>
+            <p>Fully optimized studying with unlimited access to every Veida AI feature</p>
+            <p>Everything in free, plus...</p>
+            <ul>
+              <li>unlimited courses</li>
+              <li>max # of MCQ generations</li>
+              <li>export options</li>
+              <li>and more!</li> 
+            </ul>
+            <button className="primary">SUBSCRIBE</button>
+          </div>
         </div>
       </div>
     </>
