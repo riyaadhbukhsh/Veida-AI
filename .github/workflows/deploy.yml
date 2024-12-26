@@ -3,7 +3,7 @@ name: Test Deployment
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy-backend:
@@ -22,10 +22,10 @@ jobs:
             cd server
             git init
             git remote add productions ${{ secrets.BACKEND_PROD_REPO_URL }}
-            git checkout -b test
+            git checkout -b main
             git add .
             git commit -m "Deploying to backend"
-            git push -f productions test
+            git push -f productions main
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -49,7 +49,8 @@ jobs:
             cd veidaai
             git init
             git remote add productions ${{ secrets.FRONTEND_PROD_REPO_URL }}
-            git checkout -b test
+            git checkout -b main
             git add app/ components/ public/ .eslintrc.json .gitignore
             git commit -m "Deploying to frontend"
-            git push -f productions test
+            git push -f productions main
+
