@@ -14,6 +14,7 @@ mongo_uri = os.getenv('MONGO_URI')
 client = MongoClient(mongo_uri)
 db = client['VeidaAI']
 courses_collection = db['courses']
+users_collection = db['users']
 
 #!Database reformate purposes
 #courses_collection = db["courses_test"]
@@ -226,7 +227,7 @@ def check_premium_status(clerk_id):
         bool: True if the user is premium, False otherwise.
     """
     print(f"Checking premium status for clerk_id: {clerk_id}")  # Add this line
-    users_collection = db.users
+    #users_collection = db.users
     user = users_collection.find_one({'clerk_id': clerk_id})
 
     if user:
@@ -481,7 +482,9 @@ def get_mcqs(clerk_id, course_name,concept_name):
         return []
 
     # Check if the user is premium
-    is_premium = user_courses.get('premium', False)
+    #is_premium = user_courses.get('premium', False)
+    
+    is_premium = check_premium_status(clerk_id)
     concept_name = decode_url_like_string(concept_name)
     course_name = decode_url_like_string(course_name)
 
