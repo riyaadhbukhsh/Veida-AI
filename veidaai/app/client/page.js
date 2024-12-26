@@ -32,7 +32,7 @@ const ClientPage = () => {
 
   const fetchAndSetCourses = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`, {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const ClientPage = () => {
 
   const checkFlashcardsDueToday = async () => {
     try {
-        const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`);
+        const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards_today?clerk_id=${userId}`);
         if (response.ok) {
             const data = await response.json();
             console.log(data);
@@ -90,7 +90,7 @@ const ClientPage = () => {
   const handleDeleteCourse = async (courseName) => {
     if (window.confirm(`Are you sure you want to delete the course "${courseName}"?`)) {
       try {
-        const response = await fetch('http://localhost:8080/api/delete_course', {
+        const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/delete_course', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

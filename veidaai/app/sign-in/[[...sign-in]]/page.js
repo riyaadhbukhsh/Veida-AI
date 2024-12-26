@@ -1,11 +1,14 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignIn,ClerkProvider,SignedIn,SignedOut,UserButton } from "@clerk/nextjs";
 import "./page.css";
 
 export default function SignInPage() {
   return (
-    <div className="sign-in-page">
+    <ClerkProvider>
+       <div className="sign-in-page">
         <SignIn afterSignOutUrl="/"/>
-    </div>
+      </div>
+    </ClerkProvider>
+    
     
   );
 }

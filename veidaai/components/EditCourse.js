@@ -52,7 +52,7 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
 
   const checkDuplicateCourseName = async (courseName) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         return data.courses.some(
@@ -100,7 +100,7 @@ const EditCourse = ({ course, onCourseUpdated, onClose }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/update_course', {
+      const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/update_course', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

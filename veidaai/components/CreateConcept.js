@@ -46,7 +46,7 @@ const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
 
   
     try {
-      const extractResponse = await fetch('http://localhost:8080/api/extract_text', {
+      const extractResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/extract_text', {
         method: 'POST',
         body: formData,
       });
@@ -72,7 +72,7 @@ const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
         concept_notes: extractedData.notes,
       };
 
-      const addConceptResponse = await fetch('http://localhost:8080/api/create_course_concept', {
+      const addConceptResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/create_course_concept', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

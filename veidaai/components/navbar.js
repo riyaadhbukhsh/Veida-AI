@@ -38,7 +38,7 @@ export default function Navbar() {
         if (userId) {
             const checkFlashcards = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}`);
+                    const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards_today?clerk_id=${userId}`);
                     if (response.ok) {
                         const data = await response.json();
                         setHasNotification(data.flashcards.length > 0);

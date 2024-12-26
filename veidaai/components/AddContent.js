@@ -44,7 +44,7 @@ const AddContent = ({ courseName, conceptName, onClose, onContentAdded }) => {
     formData.append('concept_name', conceptName);
 
     try {
-      const extractResponse = await fetch(`http://localhost:8080/api/extract_text`, {
+      const extractResponse = await fetch(`https://veida-ai-backend-production.up.railway.app/api/extract_text`, {
         method: 'POST',
         body: formData,
       });
@@ -69,7 +69,7 @@ const AddContent = ({ courseName, conceptName, onClose, onContentAdded }) => {
         mcqs: extractedData.mc_questions, // Include MCQs in the request body
       };
 
-      const addContentResponse = await fetch(`http://localhost:8080/api/add_course_concept_content`, {
+      const addContentResponse = await fetch(`https://veida-ai-backend-production.up.railway.app/api/add_course_concept_content`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

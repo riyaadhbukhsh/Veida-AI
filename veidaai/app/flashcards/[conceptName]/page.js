@@ -40,7 +40,7 @@ function FlashcardPage() {
 
     const fetchFlashcardsDueToday = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
+            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards_today?clerk_id=${userId}&course_name=${courseName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ function FlashcardPage() {
     const handleEndSession = async () => {
         if (studyingToday) {
             try {
-                const response = await fetch(`http://localhost:8080/api/remove_today_review_dates`, {
+                const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/remove_today_review_dates`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ function FlashcardPage() {
 
     const fetchFlashcards = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
+            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_flashcards?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ function FlashcardPage() {
     useEffect(() => {
         const fetchPremiumStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
+                const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Premium status response:', data);

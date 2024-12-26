@@ -23,7 +23,7 @@ const CourseDetails = ({ courseName }) => {
 
   const fetchCourseObj = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/get_course?clerk_id=${userId}&course_name=${courseName}`, {
+      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_course?clerk_id=${userId}&course_name=${courseName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const CourseDetails = ({ courseName }) => {
   const handleDeleteConcept = async (conceptName) => {
     if (window.confirm(`Are you sure you want to delete the concept "${conceptName}"?`)) {
       try {
-        const response = await fetch('http://localhost:8080/api/delete_concept', {
+        const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/delete_concept', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

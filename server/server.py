@@ -80,7 +80,6 @@ db = client['VeidaAI']
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
-
 @app.route('/api/get_course', methods=['GET'])
 def get_course_route():
     clerk_id = request.args.get('clerk_id')

@@ -70,7 +70,7 @@ function ReviewAllFlashcardsPage() {
 
     const fetchDueFlashcards = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/get_due_flashcards?clerk_id=${userId}`, {
+            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_due_flashcards?clerk_id=${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
