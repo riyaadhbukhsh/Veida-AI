@@ -50,7 +50,7 @@ jobs:
             git init
             git remote add productions ${{ secrets.FRONTEND_PROD_REPO_URL }}
             git checkout -b main
-            git add app/ components/ public/ .eslintrc.json .gitignore
+            git add .
             git commit -m "Deploying to frontend"
             git push -f productions main
 
