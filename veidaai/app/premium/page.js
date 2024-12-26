@@ -23,7 +23,7 @@ const PremiumPage = () => {
 
   const fetchPremiumStatus = async () => {
     try {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
+      const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         console.log('Premium status response:', data); // Add this line

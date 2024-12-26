@@ -13,7 +13,7 @@ const CancelButton = ({ clerkId }) => {
     }
 
     try {
-      const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/cancel-subscription', {
+      const response = await fetch('http://localhost:8080/api/cancel-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

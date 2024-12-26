@@ -41,7 +41,7 @@ const EditConcept = ({ courseName, concept, onClose, onConceptUpdated }) => {
     };
 
     try {
-      const updateConceptResponse = await fetch('https://veida-ai-backend-production.up.railway.app/api/update_course_concept', {
+      const updateConceptResponse = await fetch('http://localhost:8080/api/update_course_concept', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

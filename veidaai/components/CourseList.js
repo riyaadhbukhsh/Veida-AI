@@ -9,7 +9,7 @@ const CourseList = ({ courses }) => {
 
   useEffect(() => {
     const checkPremiumStatus = async () => {
-      const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
+      const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
       const data = await response.json();
       setIsPremium(data.premium);
     };

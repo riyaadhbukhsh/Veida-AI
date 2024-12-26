@@ -27,7 +27,7 @@ function McqsPage() {
 
     const fetchMcqs = async () => {
         try {
-            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_mcqs?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
+            const response = await fetch(`http://localhost:8080/api/get_mcqs?clerk_id=${userId}&course_name=${courseName}&concept_name=${decodedConceptName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ function McqsPage() {
 
     const fetchPremiumStatus = async () => {
         try {
-            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
+            const response = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log('Premium status response:', data); // Add this line

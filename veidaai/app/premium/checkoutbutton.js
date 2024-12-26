@@ -7,7 +7,7 @@ const CheckoutButton = ({ clerkId }) => {
 
   console.log('The clerkId is responding',clerkId);
   const handleCheckout = async () => {
-    const response = await fetch('https://veida-ai-backend-production.up.railway.app/api/create-checkout-session', {
+    const response = await fetch('http://localhost:8080/api/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

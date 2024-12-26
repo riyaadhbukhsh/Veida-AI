@@ -30,14 +30,14 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
         const fetchPremiumStatusAndCourses = async () => {
             try {
                 // Fetch the premium status
-                const premiumResponse = await fetch(`https://veida-ai-backend-production.up.railway.app/api/check_premium_status?clerk_id=${userId}`);
+                const premiumResponse = await fetch(`http://localhost:8080/api/check_premium_status?clerk_id=${userId}`);
                 if (premiumResponse.ok) {
                     const premiumData = await premiumResponse.json();
                     console.log('Premium status response:', premiumData); // Add this line
                     setIsPremium(premiumData.premium);
 
                     // Fetch the course count
-                    const coursesResponse = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`);
+                    const coursesResponse = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
                     if (coursesResponse.ok) {
                         const coursesData = await coursesResponse.json();
                         console.log('Courses data response:', coursesData); // Add this line
@@ -75,7 +75,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
 
     const checkDuplicateCourseName = async (courseName) => {
         try {
-            const response = await fetch(`https://veida-ai-backend-production.up.railway.app/api/get_courses?clerk_id=${userId}`);
+            const response = await fetch(`http://localhost:8080/api/get_courses?clerk_id=${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 return data.courses.some(
@@ -136,7 +136,7 @@ const CreateCourse = ({ onCourseCreated, onClose }) => {
 
         try {
 
-            const createResponse = await fetch("https://veida-ai-backend-production.up.railway.app/api/create_course", {
+            const createResponse = await fetch("http://localhost:8080/api/create_course", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
