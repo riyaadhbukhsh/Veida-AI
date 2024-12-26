@@ -1,0 +1,44 @@
+name: Test Deployment
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dev Branch
+        uses: actions/checkout@v3
+       
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+    
+      - name: Push to backend
+        run: |
+            cd server
+            git init
+            git remote add productions ${{ secrets.BACKEND_PROD_REPO_URL }}
+            git checkout -b test
+            git add .
+            git commit -m "Deploying to backend"
+            git push -f productions test
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dev Branch
+        uses: actions/checkout@v3
+
+      - name: Push to frontend
+        run: |
+            cd veidaai
+            git init
+            git remote add productions ${{ secrets.FRONTEND_PROD_REPO_URL }}
+            git checkout -b test
+            git add .
+            git commit -m "Deploying to frontend"
+            git push -f productions test
