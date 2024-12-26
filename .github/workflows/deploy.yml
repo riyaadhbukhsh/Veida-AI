@@ -14,8 +14,8 @@ jobs:
        
       - name: Configure git
         run: |
-          git config  user.name "riyaadhbukhsh"
-          git config  user.email "rbukhsh@ucdavis.edu"
+          git config --global user.name "riyaadhbukhsh"
+          git config --global user.email "rbukhsh@ucdavis.edu"
     
       - name: Push to backend
         run: |
@@ -35,8 +35,8 @@ jobs:
     
       - name: Configure git
         run: |
-          git config  user.name "riyaadhbukhsh"
-          git config  user.email "rbukhsh@ucdavis.edu"
+          git config --global user.name "riyaadhbukhsh"
+          git config --global user.email "rbukhsh@ucdavis.edu"
 
       - name: Replace API endpoints
         run: |
