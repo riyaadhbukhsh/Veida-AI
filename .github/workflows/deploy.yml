@@ -32,6 +32,12 @@ jobs:
     steps:
       - name: Checkout Dev Branch
         uses: actions/checkout@v3
+    
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
 
       - name: Push to frontend
         run: |
