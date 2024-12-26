@@ -38,15 +38,12 @@ jobs:
           git config --global user.name "veidaai"
           git config --global user.email "veidaaicentral@gmail.com"
 
-      - name: Replace API endpoints
-        run: |
-            cd veidaai
-            find . -name "*.js" -exec sed -i 's/http:\/\/localhost:8080\/api/https:\/\/veida-ai-backend-production.up.railway.app/api/g' {} \;
-
+      
 
       - name: Push to frontend
         run: |
             cd veidaai
+            find . -name "*.js" -exec sed -i 's/http:\/\/localhost:8080\/api/https:\/\/veida-ai-backend-production.up.railway.app/api/g' {} \;
             git init
             git remote add productions ${{ secrets.FRONTEND_PROD_REPO_URL }}
             git checkout -b main
