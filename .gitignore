@@ -1,1 +1,3 @@
 *.pyc
+devToProd.sh
+prodToDev.sh

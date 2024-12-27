@@ -1,5 +1,5 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an official Python 3.10 runtime as a parent image
+FROM python:3.10-slim
 
 # Set the working directory
 WORKDIR /app
@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libtesseract-dev && \
     apt-get clean
+
+# Upgrade pip to ensure compatibility with the latest packages
+RUN pip install --upgrade pip
 
 # Copy the requirements file and install dependencies
 COPY requirements.txt ./
