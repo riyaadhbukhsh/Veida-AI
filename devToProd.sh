@@ -1,6 +1,3 @@
-git checkout temp-frontend
-
-
 #Replace API endpoint in the backend
 cd veidaai
 
