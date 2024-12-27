@@ -41,7 +41,7 @@ jobs:
       - name: Replace API endpoints
         run: |
           cd veidaai
-          find . -type f -name "*.js" -exec sed -i 's|http://localhost:8080|https://veida-ai-backend-production.up.railway.app|g' {} +
+          find . -type f -name "*.js" -exec sed -i 's|http://localhost:8080|https://veida-ai-backend-prod.up.railway.app|g' {} +
 
       - name: Push to frontend
         run: |
