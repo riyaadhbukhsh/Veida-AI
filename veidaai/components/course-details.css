@@ -326,6 +326,8 @@
   margin-bottom: 0.5rem;
 }
 
+
+
 .file-input-wrapper input[type=file],
 .course-file-input-wrapper input[type=file] {
   font-size: 100px;
@@ -347,6 +349,16 @@
   text-align: center;
   width: 100%;
   transition: all 0.3s ease;
+}
+
+.file-input-wrapper.file-selected .file-input-button,
+.course-file-input-wrapper.file-selected .file-input-button {
+  background-color: #478fca;
+}
+
+.file-input-wrapper.file-selected .file-input-button,
+.course-file-input-wrapper.file-selected .file-input-button {
+  background-color: #478fca;
 }
 
 .file-input-wrapper:hover .file-input-button,

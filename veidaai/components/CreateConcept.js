@@ -17,13 +17,13 @@ const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain','application/vnd.ms-powerpoint','application/vnd.openxmlformats-officedocument.presentationml.presentation'];
 
     if (selectedFile && allowedTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
       setError('');
     } else {
-      setError('Please select a valid file type: PDF, PNG, JPG, or TXT.');
+      setError('Please select a valid file type: PDF, PNG, JPG, TXT, or PPTX.');
       setFile(null);
     }
   };
@@ -124,8 +124,8 @@ const CreateConcept = ({ courseName, onClose, onConceptAdded }) => {
               required
             />
           </div>
-          <div className="file-input-wrapper">
-            <div className="file-input-button">Upload Concept File (PDF, PNG, JPG, TXT)</div>
+          <div className={`file-input-wrapper ${isFileSelected ? 'file-selected' : ''}`}>
+            <div className="file-input-button">Upload Concept File (PDF, PNG, JPG, TXT, PPTX)</div>
             <input
               type="file"
               onChange={handleFileChange}

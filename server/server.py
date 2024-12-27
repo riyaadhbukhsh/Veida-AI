@@ -52,6 +52,7 @@ from datetime import datetime
 import stripe
 import numpy as np
 import cv2
+from pptx import Presentation
 
 from paddleocr import PaddleOCR
 import logging
@@ -132,6 +133,7 @@ def create_checkout_session():
                 },
             ],
             mode='subscription',
+            allow_promotion_codes=True,
             success_url=os.getenv('STRIPE_SUCCESS_URL'),
             cancel_url=os.getenv('STRIPE_CANCEL_URL'),
             client_reference_id=clerk_id,
@@ -436,7 +438,7 @@ def extract_text():
         return jsonify({"error": "No selected file"}), 400
 
     file_type = file.filename.split('.')[-1].lower()
-    if file_type not in ['pdf', 'jpg', 'jpeg', 'png', 'txt']:
+    if file_type not in ['pdf', 'jpg', 'jpeg', 'png', 'txt','ppt','pptx']:
         return jsonify({"error": "Unsupported file type"}), 400
 
     extracted_text = ""
@@ -452,7 +454,9 @@ def extract_text():
             except UnicodeDecodeError:
                 file.stream.seek(0)
                 extracted_text = file.stream.read().decode('latin-1', errors='ignore')
-
+        elif file_type in ['ppt','pptx']:
+            extracted_text = process_pptx(file)
+        
         if not extracted_text.strip():
             return jsonify({
                 "error": "Sorry, we couldn't detect any text in that file! Try a higher resolution image or a text-based PDF."
@@ -510,7 +514,38 @@ def process_pdf(file):
             extracted_text += process_image(image)
 
     return extracted_text
+def process_pptx(file):
+    extracted_text = []
+    
+    try:
+        # Open the PowerPoint file
+        presentation = Presentation(file)
 
+        for slide in presentation.slides:
+            # Extract text from each slide
+            for shape in slide.shapes:
+                if shape.has_text_frame:
+                    for paragraph in shape.text_frame.paragraphs:
+                        for run in paragraph.runs:
+                            text = run.text.strip()
+                            if text:
+                                extracted_text.append(text + "\n")
+
+            # Extract images from each slide
+            for shape in slide.shapes:
+                if shape.shape_type == 13:  # Shape is a picture
+                    image_stream = shape.image.blob
+                    image_np = np.frombuffer(image_stream, np.uint8)
+                    image = cv2.imdecode(image_np, cv2.IMREAD_GRAYSCALE)
+
+                    # Process the image using OCR
+                    extracted_text.append(process_image(image))
+
+    except Exception as e:
+        print(f"Error processing PowerPoint file: {e}")
+        return None
+
+    return "".join(extracted_text)
 
 def process_image_file(file):
     image_bytes = file.read()

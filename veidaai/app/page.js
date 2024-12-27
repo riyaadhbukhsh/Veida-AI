@@ -154,7 +154,7 @@ export default function Home() {
           <div className="double-column-container">
             <div className="feature-column-text right-align">
               <h2>Upload Your Lecture Material</h2>
-              <p>We accept files in:<br/>.txt, .pdf, .jpg, .png</p>
+              <p>We accept files in:<br/>.txt, .pdf, .jpg, .png, .pptx</p>
               <button 
                 className="secondary" 
                 onClick={() => router.push('/client')} 
