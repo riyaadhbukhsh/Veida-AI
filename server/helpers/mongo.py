@@ -495,6 +495,8 @@ def get_mcqs(clerk_id, course_name,concept_name):
                 for concept in course.get('concepts', []):
                     if concept['concept_name'] == concept_name:
 
+                        return concept['concept_multiple_choice_questions']
+
                         if not is_premium:
                             return concept['concept_multiple_choice_questions'][:3]
                         else:
