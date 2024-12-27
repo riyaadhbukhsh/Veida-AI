@@ -477,6 +477,7 @@ def remove_flashcard(clerk_id, course_name, card_id):
 def get_mcqs(clerk_id, course_name,concept_name):
     
     user_courses = courses_collection.find_one({"clerk_id": clerk_id})
+    user_profile = users_collection.find_one({"clerk_id": clerk_id})
     if not user_courses:
         print(f"User not found for clerk_id: {clerk_id}")
         return []
@@ -484,7 +485,7 @@ def get_mcqs(clerk_id, course_name,concept_name):
     # Check if the user is premium
     #is_premium = user_courses.get('premium', False)
     
-    is_premium = check_premium_status(clerk_id)
+    is_premium = user_profile.get('premium', False)
     concept_name = decode_url_like_string(concept_name)
     course_name = decode_url_like_string(course_name)
 
