@@ -1,4 +1,4 @@
-# Use an official Python 3.11 runtime as a parent image
+# Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
 # Set the working directory
@@ -21,19 +21,21 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip to ensure compatibility with the latest packages
 RUN pip install --upgrade pip
 
-# Copy the requirements file and install dependencies
+# Install Python dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Clear any potentially corrupt PaddleOCR cache before initialization
+RUN rm -rf /root/.paddleocr/whl/rec/en/en_PP-OCRv4_rec_infer.tar
+
+# Pre-download PaddleOCR models to avoid runtime download issues
+RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(use_angle_cls=True, lang='en')"
 
 # Copy the rest of the application code
 COPY . .
 
 # Expose the necessary ports
-EXPOSE 8080/tcp
-EXPOSE 8080/udp
+EXPOSE 8080
 
-# Health check to ensure the container is running correctly
-HEALTHCHECK --interval=30s --timeout=30s --retries=3 CMD curl --fail http://localhost:8080/ || exit 1
-
-# Start Gunicorn server with fewer workers to reduce memory usage
+# Start the Gunicorn server
 CMD ["gunicorn", "server:app", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "4000"]
