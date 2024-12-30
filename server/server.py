@@ -69,7 +69,7 @@ pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 
 load_dotenv()
 
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": "https://www.veidaai.com"}}, supports_credentials=True)
 
 
 # MongoDB setup
@@ -416,7 +416,7 @@ def check_premium_status(clerk_id=None):
     return jsonify({"premium": user.get('premium', False)})
 
 
-@app.route('/api/extract_text', methods=['POST'])
+@app.route('/api/extract_text', methods=['POST','OPTIONS'])
 def extract_text():
     """
     Extracts text from uploaded files (PDF, JPG, JPEG, PNG).
@@ -426,7 +426,8 @@ def extract_text():
     Returns:
         tuple: A JSON response containing the extracted text and HTTP status code.
     """
-
+    if request.method == 'OPTIONS':
+        return '',204
     #!Debugging Protocol
     #return jsonify({"notes": "notes", "flashcards": "flashcards", "mc_questions": "mc_questions"}), 200
     
