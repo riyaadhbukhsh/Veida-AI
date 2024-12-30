@@ -9,6 +9,7 @@ import Navbar from '../components/navbar';
 import { dark } from "@clerk/themes";
 import Script from 'next/script';
 import { NotificationProvider } from '../context/NotificationContext';
+import HotjarRouteHandler from './hotjar-route-handler';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,8 @@ export default function RootLayout({ children }) {
       
       <html lang="en">
         <head>
+  
+          
         <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <title>{metadata.title}</title>
@@ -82,6 +85,23 @@ export default function RootLayout({ children }) {
               `,
             }}
           />
+          {/* Hotjar Tracking Code */}
+          <Script
+            id="hotjar-tracking"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(h,o,t,j,a,r){
+                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+                    h._hjSettings={hjid:5143782,hjsv:6};
+                    a=o.getElementsByTagName('head')[0];
+                    r=o.createElement('script');r.async=1;
+                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+                    a.appendChild(r);
+                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+              `,
+            }}
+          />
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></link>
         </head>
@@ -94,6 +114,7 @@ export default function RootLayout({ children }) {
               <div className="c2">
                 <NotificationProvider>
                   <Navbar />
+                  <HotjarRouteHandler />
                   {children}
                 </NotificationProvider>
               </div>

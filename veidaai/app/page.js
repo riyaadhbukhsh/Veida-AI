@@ -314,7 +314,7 @@ export default function Home() {
                     className={styles.captionSection}
                   >
                     <p style={{padding: 0}}>Test your memory on key ideas & important vocabulary</p>
-                    <button class="secondary" onClick={() => router.push('/client')}>
+                    <button className="secondary" onClick={() => router.push('/client')}>
                       Generate your own
                     </button>
                   </div>
@@ -324,7 +324,7 @@ export default function Home() {
                     className={styles.captionSection}
                   >
                     <p>MCQs test your retention with 5 strategies: synthesis, reorganization, comparison, application, and context.<br/><br/>In-depth explanations provided with each solution</p>
-                    <button class="secondary" onClick={() => router.push('/client')}>
+                    <button className="secondary" onClick={() => router.push('/client')}>
                       Generate your own
                     </button>
                   </div>
@@ -334,7 +334,7 @@ export default function Home() {
                     className={styles.captionSection}
                   >
                     <p>Outlined summaries focus on main ideas, sub-concepts, key details, and definitions.</p>
-                    <button class="secondary" onClick={() => router.push('/client')}>
+                    <button className="secondary" onClick={() => router.push('/client')}>
                       Generate your own
                     </button>
                   </div>
