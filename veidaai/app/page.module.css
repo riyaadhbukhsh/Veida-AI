@@ -278,7 +278,10 @@ div#choosePlanSection > h2 {
   padding: 1.5rem;
   padding-bottom: 0rem;
   border-radius: var(--card-corner-radius);
+  transition: all 0.3s ease; /* added hover effect */
 }
+
+
 
 #choosePlanSection > div li {
   font-size: var(--p2);
@@ -323,6 +326,10 @@ span.grayText {
   color: var(--black);
 }
 
+#premiumPlan > button:hover {
+  background-color: var(--black);
+  color: var(--white);
+}
 
 #premiumPlan > button {
   color: var(--white);
@@ -336,6 +343,26 @@ span.grayText {
   background-color: var(--black);
 }
 
+/* Hover Effect */
+@media screen and (min-width: 781px) {
+
+
+
+  #freePlan:hover {
+    transform: scale(1.15) translateX(20%); /* Adjust to center in container */
+    z-index: 10; /* Bring the hovered card forward */
+  }
+
+  #premiumPlan:hover {
+    transform: scale(1.15) translateX(-20%); /* Adjust to center in container */
+    z-index: 10; /* Bring the hovered card forward */
+  }
+
+  #premiumPlan:hover ~ #freePlan {
+    transform: scale(0.9); /* Shrink the non-hovered card */
+    z-index: 1; /* Push it back */
+  }
+}
 
 /*********************/
 /* TABLET FORMATTING */
@@ -741,4 +768,9 @@ span.grayText {
 .ctaButton:hover {
   background-color: white;
   color: black;
+}
+
+.selected {
+  transform: scale(1.15) translateX(-20%); /* Adjust to center in container */
+  z-index: 10; /* Bring the selected card forward */
 }

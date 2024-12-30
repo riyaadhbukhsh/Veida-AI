@@ -114,6 +114,14 @@ export default function Home() {
     newRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest'});
   }
 
+  // Add this script to your HTML file, preferably at the end of the body
+  useEffect(() => {
+    const premiumPlan = document.getElementById('premiumPlan');
+    if (premiumPlan) {
+      premiumPlan.classList.add('selected');
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -375,11 +383,11 @@ export default function Home() {
             </p>
             <p>The perfect plan if you’re just getting started with Veida AI</p>
             <ul>
-              <li>unlimited flashcard generation</li>
-              <li>flashcard review</li>
-              <li>max of 3 MCQ generations</li>
-              <li>outlined noted generation</li>
-              <li>2 courses maximum</li>
+              <li>Unlimited Flashcard Generation</li>
+              <li>Flashcard Review</li>
+              <li>Max Of 3 MCQ Generations</li>
+              <li>Outlined Noted Generation</li>
+              <li>2 Courses Maximum</li>
             </ul>
             <button
               className="tertiary"
@@ -399,9 +407,9 @@ export default function Home() {
             <p>Fully optimized studying with unlimited access to every Veida AI feature</p>
             <p>Everything in free, plus...</p>
             <ul>
-              <li>unlimited courses</li>
-              <li>unlimited MCQ generations</li>
-              <li>export options</li>
+              <li>Unlimited Courses</li>  
+              <li>Unlimited MCQ Generations</li>
+              <li>Export Options</li>
               <li>and more!</li> 
             </ul>
             <button
