@@ -69,8 +69,8 @@ pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 
 load_dotenv()
 
-CORS(app, resources={r"/api/*": {"origins": "https://www.veidaai.com"}}, supports_credentials=True)
 
+CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3000"]}}, supports_credentials=True)
 
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
@@ -81,6 +81,11 @@ db = client['VeidaAI']
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
+@app.before_request
+def log_request_headers():
+    print(f"Incoming Headers: {dict(request.headers)}")
+
+    
 @app.route('/api/get_course', methods=['GET'])
 def get_course_route():
     clerk_id = request.args.get('clerk_id')
