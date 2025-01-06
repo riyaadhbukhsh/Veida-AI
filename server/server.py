@@ -62,7 +62,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.CRITICAL)
 app.logger.setLevel(logging.CRITICAL)
 
-#ocr = PaddleOCR(use_angle_cls=True, lang='en')
+ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
 
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')

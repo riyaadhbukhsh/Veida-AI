@@ -86,7 +86,7 @@ export default function RootLayout({ children }) {
             }}
           />
           {/* Hotjar Tracking Code */}
-          {/* <Script
+          <Script
             id="hotjar-tracking"
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
@@ -101,7 +101,7 @@ export default function RootLayout({ children }) {
                 })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
               `,
             }}
-          /> */}
+          />
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></link>
         </head>
@@ -114,7 +114,7 @@ export default function RootLayout({ children }) {
               <div className="c2">
                 <NotificationProvider>
                   <Navbar />
-                  {/* <HotjarRouteHandler /> */}
+                  <HotjarRouteHandler />
                   {children}
                 </NotificationProvider>
               </div>

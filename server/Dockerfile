@@ -16,11 +16,9 @@ RUN apt-get update && apt-get install -y \
     apt-get clean
 
 COPY requirements.txt .
+
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Clear any potentially corrupt PaddleOCR cache before initialization
-RUN rm -rf /root/.paddleocr/whl/rec/en/en_PP-OCRv4_rec_infer.tar
 
 
 COPY . .
