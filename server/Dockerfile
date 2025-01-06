@@ -22,8 +22,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Clear any potentially corrupt PaddleOCR cache before initialization
 RUN rm -rf /root/.paddleocr/whl/rec/en/en_PP-OCRv4_rec_infer.tar
 
-# Pre-download PaddleOCR models
-RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(use_angle_cls=True, lang='en')"
 
 COPY . .
 

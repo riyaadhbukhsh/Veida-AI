@@ -70,8 +70,8 @@ pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 load_dotenv()
 
 
-#CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3001"]}}, supports_credentials=True)
-CORS(app, origins=["*"], supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3000"]}}, supports_credentials=True)
+#CORS(app, origins=["*"], supports_credentials=True)
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
 client = pymongo.MongoClient(mongo_uri)
@@ -148,7 +148,19 @@ def create_checkout_session():
                 }
             }
         )
+
+        #!Since the webhook is not working, we need to check the url manually
+        # success_url = os.getenv('STRIPE_SUCCESS_URL')
+        # cancel_url = os.getenv('STRIPE_CANCEL_URL')
+
+        # if session.url == success_url:
+        #     update_premium_status(clerk_id, True)
+        #     update_subscription_id(clerk_id, session.id)
+        # elif session.url == cancel_url:
+        #     pass  
+
         return jsonify({'url': session.url})
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
@@ -179,7 +191,7 @@ def cancel_subscription():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/webhook/stripe', methods=['POST'])
 def webhook():
     payload = request.data
     sig_header = request.headers.get('STRIPE_SIGNATURE')
