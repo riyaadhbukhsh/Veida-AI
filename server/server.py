@@ -70,7 +70,7 @@ pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD', 'tesseract')
 load_dotenv()
 
 
-#CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3000"]}}, supports_credentials=True)
+#CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3001"]}}, supports_credentials=True)
 CORS(app, origins=["*"], supports_credentials=True)
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
