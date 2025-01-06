@@ -14,8 +14,8 @@ jobs:
        
       - name: Configure git
         run: |
-          git config --global user.name "veidaai"
-          git config --global user.email "veidaaicentral@gmail.com"
+          git config --global user.name "riyaadhbukhsh"
+          git config --global user.email "rbukhsh@ucdavis.edu"
     
       - name: Push to backend
         run: |
