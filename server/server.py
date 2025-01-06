@@ -71,7 +71,8 @@ load_dotenv()
 
 
 #CORS(app, resources={r"/api/*": {"origins": ["https://www.veidaai.com", "http://localhost:3000"]}}, supports_credentials=True)
-CORS(app, origins=["*"], supports_credentials=True)
+CORS(app, origins=["https://www.veidaai.com"], supports_credentials=True)
+#CORS(app, origins=["*"], supports_credentials=True)
 # MongoDB setup
 mongo_uri = os.getenv('MONGO_URI')
 client = pymongo.MongoClient(mongo_uri)
